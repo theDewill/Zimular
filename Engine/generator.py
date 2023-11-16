@@ -5,6 +5,6 @@ resources = entityImporter.ImportEntities('../app/Resources')
 
 
 class Generator():
-    def __init__(imports = [],engine):
+    def __init__(self,imports = [],engine):
         
         pass    
