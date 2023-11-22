@@ -7,10 +7,11 @@ import os
 grandparent_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'utility'))
 print(grandparent_path)
 sys.path.append(grandparent_path)
-from entityImporter import ImportEntities
+from entityImporter import ImportFiles
 
 #load entities
-entities = ImportEntities('../app/Entity')
+entities = ImportFiles('../app/Entity')
+monitor = ImportFiles('../Services')[0]
 
 env = sp.Environment()
 

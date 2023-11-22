@@ -3,7 +3,7 @@ print(grandparent_path)
 sys.path.append(grandparent_path)
 from entityImporter import ImportEntities
 
-metrics = ImportEntities('../app/Metrics')
+metrics = ImportFiles('../app/Metrics')
 
 class MonitorData:
     def __init__(self,rid):

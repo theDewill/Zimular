@@ -3,7 +3,7 @@ import os
 #from dotenv import load_dotenv
 #load_dotenv() 
 
-def ImportEntities(pdir = os.getenv('ENTITYDIR')):
+def ImportFiles(pdir = os.getenv('ENTITYDIR')):
 
     grandparent_dir = os.path.abspath(os.path.join(os.getcwd(), "Framework/sim1"))
     pdir = os.path.join(grandparent_dir, 'agents')
