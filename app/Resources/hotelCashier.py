@@ -1,16 +1,28 @@
 import sys,os
 import simpy as sp
-grandparent_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'utility'))
-print(grandparent_path)
-sys.path.append(grandparent_path)
+
+#file importer 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','utility')))
 from entityImporter import ImportFiles
 
-#masterResource = ImportFiles('../../Services/services.py')
+masterResource = ImportFiles('../../Services')
+print(masterResource)
 
 class hotelCashier(masterResource):
-    def __init__(self):
+    def __init__(self, env, count):
         self.user = None
+        self.env = env
+        self.count = count
+        self.instances = sp.Resource(self.env,self.count, capacity=1)
 
-def setup(self,user):
-    self.user = user
+    #process generator for the internal entity
+
+    #@masterResource.process
+    def setup(self,user):
+        self.user = user
+        #jsadhfjsdhfjh
+        
+
+
+
 

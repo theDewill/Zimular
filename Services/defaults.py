@@ -5,3 +5,6 @@ class masterResource:
 class masterEntitiy():
     def __init__():
         pass
+
+def test():
+    pass
