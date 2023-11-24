@@ -3,6 +3,7 @@ import simpy as sp
 import sys
 import os
 
+
 #setup entity import
 grandparent_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'utility'))
 print(grandparent_path)
@@ -41,11 +42,6 @@ class customer:
         self.monitorData = Monitoring['external'][cid]
 
         
-hotelCashier = resource(env, capacity=1) # resource 1
-hotelAttendant = resource(env, capacity=1) # resource 2
-
-customer_workflow = [hotelCashier,hotelAttendant] #sample array 
-
 def gen_process():
     pass
 

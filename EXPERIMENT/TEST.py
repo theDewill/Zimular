@@ -5,6 +5,19 @@ print(grandparent_path)
 sys.path.append(grandparent_path)
 from entityImporter import ImportFiles
 
-impo = ImportFiles('../app/Metrics')
 
-print(impo[0])
+def Dec(func):
+    def inner(*args,**kwargs):
+        print("Before Function")
+        func(34)
+        print("After Function")
+    return inner
+
+@Dec
+def test(*arg):
+    print(f"inside test{arg[0]}")
+
+test()
+
+# impo = ImportFiles('../app/Metrics')
+
