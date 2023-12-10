@@ -1,14 +1,17 @@
 import sys,os
 import simpy as sp
+from defaults import masterResource
+from services import ResultMonitor
 
 #file importer 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','utility')))
 from entityImporter import ImportFiles
 
-masterResource = ImportFiles('../../Services')
+masterResource = ImportFiles('../Entity')
 print(masterResource)
 
 class hotelCashier(masterResource):
+
     def __init__(self, env, count):
         self.user = None
         self.env = env
@@ -17,11 +20,14 @@ class hotelCashier(masterResource):
 
     #process generator for the internal entity
 
-    #@masterResource.process
+    #@masterResource._process
     def setup(self,user):
         self.user = user
-        #jsadhfjsdhfjh
+
+    
+    
         
+
 
 
 
