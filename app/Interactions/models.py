@@ -1,6 +1,7 @@
 import os,sys
 from agents import agents
 from resources import resourceList
+from engine import env
 
 #----Here we define different interactions between n-parties (resources and agents)
 
