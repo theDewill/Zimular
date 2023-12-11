@@ -1,3 +1,7 @@
+import os,sys
+from agents import agents
+from resources import resourceList
+
 #----Here we define different interactions between n-parties (resources and agents)
 
 #TODO: have to couple set of interactions to create a workflow, and create several of such workflows to 
