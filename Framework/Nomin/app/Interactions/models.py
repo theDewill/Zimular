@@ -16,7 +16,7 @@ class CashierArrival():
     def __init__(self):
         self.workflow = ''
         self.order = ''
-        self._party1  = ''
+        self._party1  = 
         self._party2 = ''
 
 

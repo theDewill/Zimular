@@ -13,6 +13,14 @@ class ResultMonitor:
 #prepare monitoring set
 
 
+
+
+#----- Sample Creator-----
+
+def CreateSample(writable,agentClass,identity,size):
+    for count in range(0,size):
+        writable[identity][count] = agentClass(count)
+
 #------ EVENT HANDLing Deaprtment -----------
 
 class Event():
