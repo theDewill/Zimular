@@ -7,7 +7,7 @@ from engine import env
 
 #TODO: have to couple set of interactions to create a workflow, and create several of such workflows to 
 #pass them to Workflows in Services
-WorkFlows = []
+WorkFlows = [[],[],[]]
 
 #interaction 1 for workflow A
 class CashierArrival():
@@ -17,9 +17,12 @@ class CashierArrival():
         self._party1  = ''
         self._party2 = ''
 
+
     def createWorkflow(self):
         WorkFlows[self.workflow][self.order-1] = self
 
     def _initate():
         pass
+        
+    
 
