@@ -1,5 +1,5 @@
 #---agents Dictionery must be of entity objects with their identifiers as keys () - service ekt
-agents = {}
+agentList = {}
 # Imports
 from defaults import masterEntity
 from services import ResultMonitor 
@@ -12,7 +12,7 @@ class Customer(masterEntity):
         self.purpose = ""
         self.monitorData = ResultMonitor(cid,'ext')
 
-    @self._process
+    #@self._process
     def setup ():
         pass
 
@@ -22,4 +22,4 @@ class Customer(masterEntity):
 
 
 #object creation Area....
-agents['customer'] = Customer
+agentList['customer'] = Customer

@@ -18,7 +18,7 @@ class hotelCashier(masterResource):
 
     #process generator for the internal entity
 
-    #@masterResource._process
+    @masterResource._process
     def setup(self,user):
         self.user = user
 

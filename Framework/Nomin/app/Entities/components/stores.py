@@ -1,0 +1,1 @@
+storeList = {} #exportable object
