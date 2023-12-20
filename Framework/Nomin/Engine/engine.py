@@ -1,7 +1,10 @@
 # This engine here imports all the entities,workflows and initate the simulation 
 import simpy as sp
+import pandas as pd
 # Initializing the environment
 env = sp.Environment()
+table = {'Time':[],'Customer':[],'Activity':[],'Resource':[],'Things':[]}
+
 
 # Here is the initial configurations for file imports by adding them to sys path
 import os,sys
@@ -30,3 +33,5 @@ class Engine ():
 engine = Engine(entities) 
 env.process(engine._ignite())
 env.run(until=100)
+SimulationSheet = pd.DataFrame(table)
+print(SimulationSheet)

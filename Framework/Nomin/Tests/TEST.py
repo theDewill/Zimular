@@ -1,30 +1,24 @@
 import sys,os
 import simpy as sp
 
-grandparent_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'utility'))
-print(grandparent_path)
-sys.path.append(grandparent_path)
-from entityImporter import ImportFiles
+import pandas as pd
+from prettytable import PrettyTable
 
+# Existing DataFrame
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie'],
+    'Age': [25, 30, 35],
+    'City': ['New York', 'San Francisco', 'Los Angeles']
+}
 
-def Dec(func):
-    def inner(*args,**kwargs):
-        print("Before Function")
-        func(34)
-        print("After Function")
-    return inner
+df = pd.DataFrame(data)
 
-# @Dec
-# def test(*arg):
-#     print(f"inside test{arg[0]}")
+# Initialize PrettyTable with column names
+table = PrettyTable(df.columns)
 
-# test()
+# # Add rows to PrettyTable
+# for row in df.itertuples(index=False):
+#     table.add_row(row)
 
-# impo = ImportFiles('../app/Metrics')
-
-env = sp.Environment()
-res = sp.Resource(env, capacity=1)
-
-with res.request() as obj:
-    print(obj.proc)
-
+# Display the table
+print(table)
