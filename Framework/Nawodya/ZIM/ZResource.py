@@ -5,7 +5,11 @@ from .charts.charts import stairs_plot
 import sys
 
 
-Resource = {}
+ResourcePool= {}
+
+def resource_maker(env, Res):
+    for res in Res:
+        ResourcePool[res] = IRes(env, Res[res], res)
 
 
 class IRes:
@@ -47,13 +51,21 @@ class IRes:
                 str(self.env.now),
                 str(entity),
                 str(self.res_name),
-                "entry",
+                "queued",
                 str(self.env.active_process)
             ])
             self.user_time.append([str(req.proc), self.env.now])
             self.queue_time.append([self.env.now, len(self.res.queue)])
 
             yield req
+
+            System_Output.append([
+                str(self.env.now),
+                str(entity),
+                str(self.res_name),
+                "enter",
+                str(self.env.active_process)
+            ])
 
             if timeout is not None:
                 yield self.env.timeout(timeout)

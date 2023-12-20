@@ -1,26 +1,25 @@
-import simpy
-from ZIM.ZResource import IRes
+# main.py
+from ZIM.ZResource import ResourcePool
 
 
-env = simpy.Environment()
+class Workflow:
+    def __init__(self, env, entity):
+        self.env = env
+        self.entity = entity
 
-Resource = {
-    "counter": simpy.Resource(env=env, capacity=1),
-    "machine_A": simpy.Resource(env=env, capacity=1),
-    "machine_B": simpy.Resource(env=env, capacity=1),
-}
+    def work(self):
+        yield self.env.timeout(5)
+        yield self.env.process(
+            ResourcePool["machine_A"].run(
+                timeout=10,
+                entity=self.entity
+            )
+        )
 
-Resource_obj = {}
-
-
-def resource_maker():
-    for res in Resource:
-        Resource_obj[res] = IRes(env, Resource[res], res)
-
-resource_maker()
-print(Resource_obj)
-
-Resource_obj["counter"].run(
-    timeout=10,
-    entity="customer"
-)
+        yield self.env.timeout(8)
+        yield self.env.process(
+            ResourcePool["machine_B"].run(
+                timeout=2,
+                entity=self.entity
+            )
+        )
