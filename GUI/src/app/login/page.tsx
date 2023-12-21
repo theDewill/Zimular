@@ -45,10 +45,10 @@ export default function LoginPage() {
 
     return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
-        <h1>{loading ? "Processing" : "Login"}</h1>
+        <h1 className="text-3xl">{loading ? "Processing" : "Login"}</h1>
         <hr />
         
-        <label htmlFor="email">email</label>
+        <label htmlFor="email">Email</label>
         <input 
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
             id="email"
@@ -57,7 +57,7 @@ export default function LoginPage() {
             onChange={(e) => setUser({...user, email: e.target.value})}
             placeholder="email"
             />
-        <label htmlFor="password">password</label>
+        <label htmlFor="password">Password</label>
         <input 
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
             id="password"
@@ -69,7 +69,7 @@ export default function LoginPage() {
             <button
             onClick={onLogin}
             className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600">Login here</button>
-            <Link href="/signup">Visit Signup page</Link>
+            <Link href="/signup">Don&apos;t have an Acoount? create one</Link>
         </div>
     )
 
