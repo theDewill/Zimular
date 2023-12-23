@@ -10,16 +10,10 @@ class Workflow:
     def work(self):
         yield self.env.timeout(5)
         yield self.env.process(
-            ResourcePool["machine_A"].run(
-                timeout=10,
-                entity=self.entity
-            )
+            ResourcePool["machine_A"].run()
         )
 
         yield self.env.timeout(8)
         yield self.env.process(
-            ResourcePool["machine_B"].run(
-                timeout=2,
-                entity=self.entity
-            )
+            ResourcePool["machine_B"].run()
         )

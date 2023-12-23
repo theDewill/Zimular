@@ -1,1 +1,0 @@
-#here you can define custome events and utilize them in your app, you must use EventHandler class in Services
