@@ -25,3 +25,6 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+.custom-img{
+  background-image:url(./assests/bg.jpg);
+}
