@@ -33,7 +33,7 @@ class OutputTable:
         console.print(table)
 
 
-System_table_col = ["Time", "Entity", "Component", "Action", "Act_Process"]
+System_table_col = ["Time", "Entity", "Component", "Action", "priority"]
 
 
 System_Output = OutputTable("System Output", System_table_col)
