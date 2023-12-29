@@ -11,7 +11,7 @@ class ZContainerGenerator():
     giving procedure is optional and default is 1 and 2 can be given
     '''
     def __init__(self,env,procedure=1):
-        self.CPool = {}
+        #self.CPool = {}
         self.env = env
         self.procedure = procedure
     '''
@@ -26,12 +26,9 @@ class ZContainerGenerator():
     '''
     def createContainers(self,containerSlot):
         for key in range(containerSlot.keys()):
-            #self.CPool.setdefault(key)
             ContainerPool.setdefault(key)
             number = 0
             for number in range(containerSlot[key][0]):
-                #supposing inital value is 0, if not  give it as a parameter
-                #self.CPool[key].append(ZContainer(self.env,key,number,containerSlot[key][1])) 
                 ContainerPool[key].append(ZContainer(self.env,key,number,containerSlot[key][1]))
                 number+=1
 
