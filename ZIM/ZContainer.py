@@ -19,11 +19,14 @@ class ZContainerGenerator():
     '''
     must pass an array including container configs for each container in count[[capacity,initialValue],etc..]
     '''
-    def createContainers(self,containerName,count,configs):
-        self.CPool.setdefault(containerName)
-        for c in range(count):
-            #supposing inital value is 0, if not  give it as a parameter
-            self.CPool[containerName].append(ZContainer(self.env,containerName,c,configs[c][0],configs[c][1])) 
+    def createContainers(self,containerSlot):
+        for key in range(containerSlot.keys()):
+            self.CPool.setdefault(key)
+            number = 0
+            for number in range(containerSlot[key][0]):
+                #supposing inital value is 0, if not  give it as a parameter
+                self.CPool[containerName].append(ZContainer(self.env,key,number,containerSlot[key][1])) 
+                number+=1
 
     def load(self,containerName,amount):
         if self.procedure == 1:
@@ -71,10 +74,10 @@ class ZContainerGenerator():
     
 
 class ZContainer():
-    def __init__(self,env,name,number,capacity,initValue=0):
+    def __init__(self,env,name,number,Simpycontainer):
         self.env = env
         self.identity = {'name':name,'number':number}
-        self.container = Container(initValue,capacity)
+        self.container = Simpycontainer
         self.monitor = {}
         #Later tis can be poltted in a graph which is unique for container instance
         self.usageSheet = {'title':f'{self.identity[name]}_{self.identity[number]}','data':{'Time':[],'level':[]}} 
