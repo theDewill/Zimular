@@ -1,10 +1,11 @@
 from ZIM.ZGen import EntityGenerator
 from run import Workflow
-from componets import env, ResourceSlot
+from componets import env, ResourceSlot, ContainerSlot
 from ZIM.ZResource import resource_maker
+from ZIM.ZContainer import ZContainerGenerator
 from ZIM.output_table import System_Output
 
-
+container_generator = ZContainerGenerator(env)
 generator = EntityGenerator(env, Workflow)
 
 
@@ -21,6 +22,7 @@ def run_simulation():
     print("Running simulation...")
     print("creating resources...")
     resource_maker(env, ResourceSlot)
+    container_generator.createContainers(ContainerSlot)
     print("creating entities...")
     env.process(customer_generator())
     env.run()

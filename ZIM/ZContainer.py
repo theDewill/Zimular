@@ -1,14 +1,19 @@
 from simpy import Container
  
+ContainerPool = {}
+
 '''
 1) can use ZContainerGenerator to create container pools and manage them 
 2) use ZContainer to create a single container and manage it
 ''' 
 class ZContainerGenerator():
-    def __init__(self,env,containers):
+    '''
+    giving procedure is optional and default is 1 and 2 can be given
+    '''
+    def __init__(self,env,procedure=1):
         self.CPool = {}
         self.env = env
-        self.procedure = 1 
+        self.procedure = procedure
     '''
         thsi shows how the containers are selected for populating and consuming items
         1 (default)- when populating the highest level is filled first then go for rest, consumed from lowest level container first
@@ -21,26 +26,28 @@ class ZContainerGenerator():
     '''
     def createContainers(self,containerSlot):
         for key in range(containerSlot.keys()):
-            self.CPool.setdefault(key)
+            #self.CPool.setdefault(key)
+            ContainerPool.setdefault(key)
             number = 0
             for number in range(containerSlot[key][0]):
                 #supposing inital value is 0, if not  give it as a parameter
-                self.CPool[containerName].append(ZContainer(self.env,key,number,containerSlot[key][1])) 
+                #self.CPool[key].append(ZContainer(self.env,key,number,containerSlot[key][1])) 
+                ContainerPool[key].append(ZContainer(self.env,key,number,containerSlot[key][1]))
                 number+=1
 
     def load(self,containerName,amount):
         if self.procedure == 1:
             chosenContainer = None
             highestContainerLevel = 0
-            for container in self.CPool[containerName]:
+            for container in ContainerPool[containerName]:
                 if container.container.level > highestContainerLevel:
                     chosenContainer = container
                     highestContainerLevel = container.container.level
             chosenContainer.load(amount)
         else:
             chosenContainer = None
-            lowestContainerLevel = self.CPool[containerName][0].container.level
-            for container in self.CPool[containerName]:
+            lowestContainerLevel = ContainerPool[containerName][0].container.level
+            for container in ContainerPool[containerName]:
                 if container.container.level < lowestContainerLevel:
                     chosenContainer = container
                     lowestContainerLevel = container.container.level
@@ -49,8 +56,8 @@ class ZContainerGenerator():
     def consume(self,containerName,amount):
         if self.procedure == 1:
             chosenContainer = None
-            lowestContainerLevel = self.CPool[containerName][0].container.level
-            for container in self.CPool[containerName]:
+            lowestContainerLevel = ContainerPool[containerName][0].container.level
+            for container in ContainerPool[containerName]:
                 if container.container.level < lowestContainerLevel:
                     chosenContainer = container
                     lowestContainerLevel = container.container.level
@@ -58,7 +65,7 @@ class ZContainerGenerator():
         else:
             chosenContainer = None
             highestContainerLevel = 0
-            for container in self.CPool[containerName]:
+            for container in ContainerPool[containerName]:
                 if container.container.level > highestContainerLevel:
                     chosenContainer = container
                     highestContainerLevel = container.container.level
