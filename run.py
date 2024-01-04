@@ -1,6 +1,6 @@
 # main.py
 from ZIM.ZResource import ResourcePool
-
+import random
 
 
 class Workflow:
@@ -12,9 +12,6 @@ class Workflow:
         yield self.env.timeout(5)
         yield self.env.process(
             ResourcePool["machine_A"].run(
-                func=fsd,
-                arg=[],
-
                 timeout=10,
                 entity=self.entity
             )
@@ -24,6 +21,16 @@ class Workflow:
         yield self.env.process(
             ResourcePool["machine_B"].run(
                 timeout=2,
+                entity=self.entity
+            )
+        )
+
+    def work1(self):
+        yield self.env.timeout(5)
+        yield self.env.process(
+            ResourcePool["test_q"].run(
+                random.randint(-2, 0),
+                timeout=10,
                 entity=self.entity
             )
         )

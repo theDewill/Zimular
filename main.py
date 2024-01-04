@@ -17,6 +17,15 @@ def customer_generator():
         yield env.timeout(1)
 
 
+def customer_generator1():
+    for _ in range(5):
+        entity = [generator.generate_entity() for _ in range(1)]
+
+        _process_entity = [env.process(ent.work()) for ent in entity]
+        # env.process(entity.workflow())
+        yield env.timeout(1)
+
+
 def run_simulation():
     print("Running simulation...")
     print("creating resources...")
