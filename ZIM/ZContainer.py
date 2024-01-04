@@ -1,14 +1,19 @@
 from simpy import Container
  
+ContainerPool = {}
+
 '''
 1) can use ZContainerGenerator to create container pools and manage them 
 2) use ZContainer to create a single container and manage it
 ''' 
 class ZContainerGenerator():
-    def __init__(self,env,containers):
-        self.CPool = {}
+    '''
+    giving procedure is optional and default is 1 and 2 can be given
+    '''
+    def __init__(self,env,procedure=1):
+        #self.CPool = {}
         self.env = env
-        self.procedure = 1 
+        self.procedure = procedure
     '''
         thsi shows how the containers are selected for populating and consuming items
         1 (default)- when populating the highest level is filled first then go for rest, consumed from lowest level container first
@@ -19,25 +24,31 @@ class ZContainerGenerator():
     '''
     must pass an array including container configs for each container in count[[capacity,initialValue],etc..]
     '''
-    def createContainers(self,containerName,count,configs):
-        self.CPool.setdefault(containerName)
-        for c in range(count):
-            #supposing inital value is 0, if not  give it as a parameter
-            self.CPool[containerName].append(ZContainer(self.env,containerName,c,configs[c][0],configs[c][1])) 
+    def createContainers(self,containerSlot):
+        for key in containerSlot.keys():
+            print(f"error found = {containerSlot[key][0]}")
+            ContainerPool.setdefault(str(key))
+            #print(f"containerPool - {ContainerPool[key]}")
+
+
+            for number in range(int(containerSlot[key][0])):
+                ContainerPool[key] = ZContainer(self.env,str(key),number,containerSlot[key][1])
+                print(ContainerPool[key])
+
 
     def load(self,containerName,amount):
         if self.procedure == 1:
             chosenContainer = None
             highestContainerLevel = 0
-            for container in self.CPool[containerName]:
+            for container in ContainerPool[containerName]:
                 if container.container.level > highestContainerLevel:
                     chosenContainer = container
                     highestContainerLevel = container.container.level
             chosenContainer.load(amount)
         else:
             chosenContainer = None
-            lowestContainerLevel = self.CPool[containerName][0].container.level
-            for container in self.CPool[containerName]:
+            lowestContainerLevel = ContainerPool[containerName][0].container.level
+            for container in ContainerPool[containerName]:
                 if container.container.level < lowestContainerLevel:
                     chosenContainer = container
                     lowestContainerLevel = container.container.level
@@ -46,8 +57,8 @@ class ZContainerGenerator():
     def consume(self,containerName,amount):
         if self.procedure == 1:
             chosenContainer = None
-            lowestContainerLevel = self.CPool[containerName][0].container.level
-            for container in self.CPool[containerName]:
+            lowestContainerLevel = ContainerPool[containerName][0].container.level
+            for container in ContainerPool[containerName]:
                 if container.container.level < lowestContainerLevel:
                     chosenContainer = container
                     lowestContainerLevel = container.container.level
@@ -55,7 +66,7 @@ class ZContainerGenerator():
         else:
             chosenContainer = None
             highestContainerLevel = 0
-            for container in self.CPool[containerName]:
+            for container in ContainerPool[containerName]:
                 if container.container.level > highestContainerLevel:
                     chosenContainer = container
                     highestContainerLevel = container.container.level
@@ -71,13 +82,14 @@ class ZContainerGenerator():
     
 
 class ZContainer():
-    def __init__(self,env,name,number,capacity,initValue=0):
+    def __init__(self,env,name,number,Simpycontainer):
         self.env = env
-        self.identity = {'name':name,'number':number}
-        self.container = Container(initValue,capacity)
+        self.identity = {'name':str(name),'number':number}
+        self.container = Simpycontainer
         self.monitor = {}
         #Later tis can be poltted in a graph which is unique for container instance
-        self.usageSheet = {'title':f'{self.identity[name]}_{self.identity[number]}','data':{'Time':[],'level':[]}} 
+        #print(f"identity - {self.identity[name]}")
+        self.usageSheet = {'title':f'{self.identity['name']}_{self.identity['number']}','data':{'Time':[],'level':[]}}
         self.Trackusage = self.env.process(self.trackUsage())
 
 
