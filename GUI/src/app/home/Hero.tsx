@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link';
 
 const Hero = () => {
   return (
@@ -13,7 +14,7 @@ const Hero = () => {
         ensuring a streamlined workflow. Experience the future of productivity – <br></br>
         start simulating your workload today!</p>
         <div className='flex space-x-4'>
-            <button className='px-8 py-2 border'>Start Now!</button>
+            <Link href="/login"><button className='px-8 py-2 border' >Start Now!</button></Link>
             <button className='space-x-4 px-8 py-2 border'>Read Me First</button>
         </div>
       </div>

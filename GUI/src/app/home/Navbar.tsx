@@ -41,13 +41,16 @@ const Navbar = () => {
             <Link href='/'>Home</Link>
           </li>
           <li className='p-4'>
-            <Link href='/#gallery'>Documentation</Link>
+            <Link href='/index'>Documentation</Link>
           </li>
           <li className='p-4'>
             <Link href='#contact'>Contact</Link>
           </li>
           <li className='p-4'>
-            <Link href='/contact'>About Us</Link>
+            <Link href='#about'>About Us</Link>
+          </li>
+          <li className='p-4'>
+            <Link href='/login'>Log in</Link>
           </li>
         </ul>
 

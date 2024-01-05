@@ -1,7 +1,8 @@
-import Image from 'next/image'
+
 import Hero from './home/Hero'
 import Contact from './home/Contact'
 import Navbar from './home/Navbar'
+import About from './home/About'
 
 
 export default function Home() {
@@ -10,6 +11,7 @@ export default function Home() {
       <Navbar/>
       <Hero/>
       <Contact/>
+      
     </main>
   )
 }
