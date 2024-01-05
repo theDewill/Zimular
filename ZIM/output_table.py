@@ -31,6 +31,7 @@ class OutputTable:
 
         console = Console()
         console.print(table)
+        print("table printed")
 
 
 System_table_col = ["Time", "Entity", "Component", "Action", "priority"]

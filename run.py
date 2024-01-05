@@ -13,6 +13,7 @@ class Workflow:
         self.entity = entity
 
     def work(self):
+        
         yield self.env.timeout(5)
         yield self.env.process(
             ResourcePool["machine_A"].run(

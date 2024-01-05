@@ -34,10 +34,13 @@ class ZContainerGenerator():
             for number in range(int(containerSlot[key][0])):
                 ContainerPool[key] = ZContainer(self.env,str(key),number,containerSlot[key][1])
                 print(ContainerPool[key])
+        
+        print("done execution")
 
 
     def load(self,containerName,amount):
         if self.procedure == 1:
+            print("procedure 1")
             chosenContainer = None
             highestContainerLevel = 0
             for container in ContainerPool[containerName]:
@@ -89,15 +92,15 @@ class ZContainer():
         self.monitor = {}
         #Later tis can be poltted in a graph which is unique for container instance
         #print(f"identity - {self.identity[name]}")
-        self.usageSheet = {'title':f'{self.identity['name']}_{self.identity['number']}','data':{'Time':[],'level':[]}}
-        self.Trackusage = self.env.process(self.trackUsage())
+        self.usageSheet = {'title':f'{self.identity["name"]}_{self.identity["number"]}','data':{'Time':[],'level':[]}}
+        #self.Trackusage = self.env.process(self.trackUsage())
 
 
     def trackUsage(self):
-        while True:
             self.usageSheet['Time']=[self.env.now] 
             self.usageSheet['level']=[self.container.level]
-            yield self.env.timeout(5) #every 5 time units, this will record its level and timeStamp
+            #every 5 time units, this will record its level and timeStamp
+
 
     def Full_fill(self):
         self.container.put(self.container.capacity-self.container.level)

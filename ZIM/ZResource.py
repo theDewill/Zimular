@@ -85,6 +85,8 @@ class IRes(IResource):
 
         self.system_table_append(entity, "leave")
 
+        
+
 
 class IPiroRes(IResource):
     def __init__(self, env: Environment, res: PriorityResource, res_name):
