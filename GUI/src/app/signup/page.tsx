@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import {useRouter} from "next/navigation";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import Navbar from "../home/Navbar";
 
 
 
@@ -44,40 +45,46 @@ export default function SignupPage() {
 
 
     return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-        <h1 className="text-3xl">{loading ? "Processing" : "Signup"}</h1>
-        <hr />
-        <label htmlFor="username">Username</label>
-        <input 
-        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
-            id="username"
-            type="text"
-            value={user.username}
-            onChange={(e) => setUser({...user, username: e.target.value})}
-            placeholder="username"
-            />
-        <label htmlFor="email">Email</label>
-        <input 
-        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
-            id="email"
-            type="text"
-            value={user.email}
-            onChange={(e) => setUser({...user, email: e.target.value})}
-            placeholder="email"
-            />
-        <label htmlFor="password">password</label>
-        <input 
-        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
-            id="password"
-            type="password"
-            value={user.password}
-            onChange={(e) => setUser({...user, password: e.target.value})}
-            placeholder="password"
-            />
-            <button
-            onClick={onSignup}
-            className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600">{buttonDisabled ? "No signup" : "Signup"}</button>
-            <Link href="/login">Already have an Account?</Link>
+        
+        <div className="flex justify-center items-center h-screen bg-slate-900">
+            <Navbar/>
+            <div className="w-96 p-6 shadow-lg bg-white rounded-md">
+                <h1 className="text-3xl block text-center font-semibold">{loading ? "Processing" : "Signup"}</h1>
+                <hr />
+                <label htmlFor="username" className="mt-3 block text-base mb-2">Username</label>
+                <input 
+                className="border w-full text-base px-2 py-1 focus:outline-none focus:ring-0 focus:border-gray-600 rounded-md"
+                    id="username"
+                    type="text"
+                    value={user.username}
+                    onChange={(e) => setUser({...user, username: e.target.value})}
+                    placeholder="username"
+                    />
+                <label htmlFor="email" className="mt-3 block text-base mb-2">Email</label>
+                <input 
+                className="border w-full text-base px-2 py-1 focus:outline-none focus:ring-0 focus:border-gray-600 rounded-md"
+                    id="email"
+                    type="text"
+                    value={user.email}
+                    onChange={(e) => setUser({...user, email: e.target.value})}
+                    placeholder="email"
+                    />
+                <label htmlFor="password" className="mt-3 block text-base mb-2">Password</label>
+                <input 
+                className="border w-full text-base px-2 py-1 focus:outline-none focus:ring-0 focus:border-gray-600 rounded-md"
+                    id="password"
+                    type="password"
+                    value={user.password}
+                    onChange={(e) => setUser({...user, password: e.target.value})}
+                    placeholder="password"
+                    />
+                    <div className="mt-5">
+                    <button
+                    onClick={onSignup}
+                    className="border-2 border-blue-700 bg-indigo-700 text-white py-1 w-full rounded-md hover:bg-transparent hover:text-indigo-700 font-semibold">{buttonDisabled ? "No signup" : "Signup"}</button></div>
+                    <div className="mt-3 text-sm text-cyan-950 font-semibold">
+                    <Link href="/login">Already have an Account?</Link></div>
+            </div>
         </div>
     )
 
