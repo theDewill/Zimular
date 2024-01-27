@@ -1,42 +1,74 @@
 from ZIM.ZGen import EntityGenerator
-from run import Workflow
-from componets import env, ResourceSlot, ContainerSlot
-from ZIM.ZResource import resource_maker
-from ZIM.ZContainer import ZContainerGenerator
+from run import Workflow1
 from ZIM.output_table import System_Output
+import simpy
+from ZIM.ZResource import ResourcePool
 
-container_generator = ZContainerGenerator(env)
-generator = EntityGenerator(env, Workflow)
+env = simpy.Environment()
+workinit = Workflow1(env)
+
+entity_format = {
+    "type": "customer",
+    "id": 0,
+    "priority": lambda: executer(),
+}
+
+def executer():
+    return -1
+
+generator = EntityGenerator(env, workinit, entity_format, init_count=1)
 
 
 def customer_generator():
+    
+    # for _ in range(5):
+    #     env.process(generator.generate_entity())
+    #     yield env.timeout(1)
     for _ in range(5):
-        entity = [generator.generate_entity() for _ in range(1)]
-
-        _process_entity = [env.process(ent.work()) for ent in entity]
-        # env.process(entity.workflow())
+        entity = generator.generate_entity()
+        env.process(workinit.work(entity))
         yield env.timeout(1)
-
 
 def customer_generator1():
-    for _ in range(5):
-        entity = [generator.generate_entity() for _ in range(1)]
 
-        _process_entity = [env.process(ent.work()) for ent in entity]
-        # env.process(entity.workflow())
-        yield env.timeout(1)
+    env.process(workinit.work(
+        generator.enter_format(
+            priority=0
+        )
+    ))
+    yield env.timeout(1)
+
+    env.process(workinit.work(
+        generator.enter_format(
+            priority=0
+        )
+    ))
+    yield env.timeout(1)
+
+
+    env.process(workinit.work(
+        generator.enter_format(
+            priority=-1
+        )
+    ))
+
 
 
 def run_simulation():
     print("Running simulation...")
     print("creating resources...")
-    resource_maker(env, ResourceSlot)
-    container_generator.createContainers(ContainerSlot)
     print("creating entities...")
     env.process(customer_generator())
     env.run()
     print("Simulation done.")
     System_Output.show_table()
 
-
-run_simulation()
+    print(ResourcePool["counter"].user_time)
+    print(ResourcePool["counter"].leave_time)
+    print("--------------------------------------------------------")
+    # print(ResourcePool["counter1"].user_time)
+    # print(ResourcePool["counter1"].leave_time)
+    
+    print(ResourcePool["counter"].output_customer_otime())
+if __name__ == "__main__":
+    run_simulation()

@@ -34,7 +34,7 @@ class OutputTable:
         print("table printed")
 
 
-System_table_col = ["Time", "Entity", "Component", "Action", "priority"]
+System_table_col = ["Time", "Entity", "Component", "Action", "Additional Info"]
 
 
 System_Output = OutputTable("System Output", System_table_col)

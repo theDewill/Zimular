@@ -8,30 +8,30 @@ import sys
 ResourcePool= {}
 
 
-def resource_maker(env, Res):
-
-    for res in Res:
-        print(Res[res])
-        if isinstance(Res[res], PriorityResource):
-            ResourcePool[res] = IPiroRes(env, Res[res], res)
-        elif isinstance(Res[res], Resource):
-            ResourcePool[res] = IRes(env, Res[res], res)
-
-    print(ResourcePool)
-
-
 class IResource:
     def __init__(self, env: Environment, res: Resource, res_name):
+        ResourcePool[res_name] = self
+
         self.env = env
         self.res = res
         self.res_name = res_name
+        print(self)
         self.cap = res.capacity
         self.user_time = []
         self.queue_time = []
         self.enter_time = []
         self.leave_time = []
 
-    def system_table_append(self, entity,activity: str, priority: int = 0):
+    def run_func(self):
+        print("you maybe calling wrong run method")
+
+    @staticmethod
+    def run(func):
+        def wrapper(self, *args, **kwargs):
+            return self.run_func(func, *args, **kwargs)
+        return wrapper
+
+    def system_table_append(self, entity, activity: str, priority= 0):
         """
         Appends the system output table.
         """
@@ -40,8 +40,26 @@ class IResource:
             str(entity),
             str(self.res_name),
             activity,
-            str(priority)
+            f'priority={str(priority)}'
         ])
+
+    def update_user_time(self, entity):
+        """
+        Updates the user time.
+        """
+        self.user_time.append([entity, self.env.now])
+
+    def update_queue_time(self):
+        """
+        Updates the queue time.
+        """
+        self.queue_time.append([self.env.now, len(self.res.queue)])
+
+    def update_leave_time(self, entity):
+        """
+        Updates the leave time.
+        """
+        self.leave_time.append([entity, self.env.now])
 
     def staits_plot(self):
         """
@@ -65,53 +83,62 @@ class IRes(IResource):
     def __init__(self, env: Environment, res: Resource, res_name):
         super().__init__(env, res, res_name)
 
-    def run(self, timeout: int = None, func=None, arg=[], entity="entity"):
+    def run_func(self, func=None, *args, entity="entity", **kwargs):
 
         with self.res.request() as req:
-            self.system_table_append(entity, "queued")
-            self.user_time.append([str(req.proc), self.env.now])
-            self.queue_time.append([self.env.now, len(self.res.queue)])
+            self.system_table_append(f'{entity["type"]}_{entity["id"]}', "queued")
+            #self.user_time.append([str(req.proc), self.env.now])
+            self.update_user_time(entity=f'{entity["type"]}_{entity["id"]}')
+            #self.queue_time.append([self.env.now, len(self.res.queue)])
+            self.update_queue_time()
 
             yield req
+            self.enter_time.append([f'{entity["type"]}_{entity["id"]}', self.env.now])
+            self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter")
 
-            self.system_table_append(entity, "enter")
+            yield self.env.process(func(self, *args, **kwargs))
+            
+        self.update_leave_time(entity=f'{entity["type"]}_{entity["id"]}')    
 
-            if timeout is not None:
-                yield self.env.timeout(timeout)
-            elif func is not None:
-                yield self.env.process(func(*arg))
-            else:
-                raise Exception("No function or timeout provided")
-
-        self.system_table_append(entity, "leave")
+        self.system_table_append(f'{entity["type"]}_{entity["id"]}', "leave")
 
         
 
 
 class IPiroRes(IResource):
+    """
+    Represents an interactive p resource in a simulation environment.
+    """
+
     def __init__(self, env: Environment, res: PriorityResource, res_name):
         super().__init__(env, res, res_name)
         self.priority = 0
 
-    def run(self, prio, timeout: int = None, func=None, arg=[], entity="entity"):
-        self.priority = prio
-        with self.res.request(priority=prio) as req:
+    def run_func(self, func=None, *args, entity="entity", priority=0,**kwargs):
 
-            self.system_table_append(entity, "queued", priority=self.priority)
+        with self.res.request(priority=priority) as req:
 
-            self.user_time.append([str(req.proc), self.env.now])
-            self.queue_time.append([self.env.now, len(self.res.queue)])
+            self.system_table_append(f'{entity["type"]}_{entity["id"]}', "queued", priority=ttes(entity["priority"]))
+
+            #self.user_time.append([str(req.proc), self.env.now])
+            self.update_user_time(entity=f'{entity["type"]}_{entity["id"]}')
+            #self.queue_time.append([self.env.now, len(self.res.queue)])
+            self.update_queue_time()
 
             yield req
 
-            self.system_table_append(entity, "enter", priority=self.priority)
+            self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter", priority=ttes(entity["priority"]))
 
-            if timeout is not None:
-                yield self.env.timeout(timeout)
-            elif func is not None:
-                yield self.env.process(func(*arg))
-            else:
-                raise Exception("No function or timeout provided")
+            yield self.env.process(func(self, *args, **kwargs))
 
-        self.system_table_append(entity, "leave", priority=self.priority)
+        self.update_leave_time(entity=f'{entity["type"]}_{entity["id"]}')
 
+        self.system_table_append(f'{entity["type"]}_{entity["id"]}', "leave", priority=ttes(entity["priority"]))
+
+
+
+def ttes(item):
+    if callable(item):
+        return item()
+    else:
+        return item

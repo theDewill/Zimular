@@ -1,41 +1,30 @@
 # main.py
-from ZIM.ZResource import ResourcePool
-
-import random
-
-from ZIM.ZContainer import ContainerPool
+from componets import Counter, Counter1
 
 
-
-class Workflow:
-    def __init__(self, env, entity):
+class Workflow1:
+    def __init__(self, env):
         self.env = env
-        self.entity = entity
+        self.counter = Counter(self.env)
+        #self.counter1 = Counter1(self.env)
 
-    def work(self):
+    def work(self, entity):
         
-        yield self.env.timeout(5)
+        yield self.env.timeout(2)
+        
         yield self.env.process(
-            ResourcePool["machine_A"].run(
-                timeout=10,
-                entity=self.entity
+            self.counter.run_counter(
+                t1=3,
+                entity=entity
             )
         )
 
-        yield self.env.timeout(8)
-        yield self.env.process(
-            ResourcePool["machine_B"].run(
-                timeout=2,
-                entity=self.entity
-            )
-        )
+        yield self.env.timeout(1)
 
-    def work1(self):
-        yield self.env.timeout(5)
-        yield self.env.process(
-            ResourcePool["test_q"].run(
-                random.randint(-2, 0),
-                timeout=10,
-                entity=self.entity
-            )
-        )
+        # yield self.env.process(
+        #     self.counter1.run_counter(
+        #         t1=10,
+        #         entity=entity,
+        #         priority=entity["priority"]
+        #     )
+        # )

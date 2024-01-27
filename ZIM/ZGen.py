@@ -1,14 +1,44 @@
 # Path: zimular/ZIM/ZResource.py
 
 class EntityGenerator:
-    def __init__(self, env, workflow, name_prefix="Customer"):
+    def __init__(self, env, workflow, entity_format, init_count=0):
         self.env = env
-        self.name_prefix = name_prefix
         self.workflow = workflow
-        self.entity_count = 0
+        self.entity_format = entity_format
+        self.entity_count = init_count
 
     def generate_entity(self):
-        entity_name = f"{self.name_prefix}_{self.entity_count}"
-        entity = self.workflow(self.env, entity_name)
+        
+        #entity = self.workflow.work(entity=entity_name)
+        entity = self.entity_format.copy()
+        entity = self.entity_list_check(entity)
+        try:
+            entity["id"] = self.entity_count
+        except KeyError:
+            raise KeyError("entity_format must have an id key") 
+        
         self.entity_count += 1
+
         return entity
+
+    def entity_list_check(self, entity_list):
+
+        for key, value in entity_list.items():
+            if callable(value):
+
+                if key == "type":
+                    raise KeyError("entity_format must not have a type key or not be a callable")
+                
+                if key == "id":
+                    raise KeyError("entity_format must not have an id key or not be a callable")
+                
+                entity_list[key] = value()
+
+            return entity_list
+
+    def enter_format(self, priority):
+        ent = self.entity_format.copy()
+        ent["priority"] = priority
+        ent["id"] = self.entity_count
+        self.entity_count += 1
+        return ent 

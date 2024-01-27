@@ -1,21 +1,48 @@
 import simpy
+from ZIM.ZResource import IRes, IPiroRes
 
 
-env = simpy.Environment()
+class Counter(IRes):
+    def __init__(self, env):
+        super().__init__(
+            env,
+            simpy.Resource(env=env, capacity=1),
+            "counter"
+        )
 
-ResourceSlot = {
-    "counter": simpy.Resource(env=env, capacity=1),
-    "machine_A": simpy.Resource(env=env, capacity=1),
-    "machine_B": simpy.Resource(env=env, capacity=1),
-    "test_q": simpy.PriorityResource(env=env, capacity=1),
-}
+    @IRes.run
+    def run_counter(self, t1):
+        print(t1)
+        yield self.env.timeout(t1)
 
-'''
-Here a configuration for a container must be 
-eg:- [count of similar containers, simpy implementation of container]
-'''
-ContainerSlot = {
-    "container1": [2,simpy.Container(env=env, capacity=100, init=0)],
-    "container2": [3,simpy.Container(env=env, capacity=100, init=0)],
-    "container3": [2,simpy.Container(env=env, capacity=100, init=0)],
-}
+
+    def output_customer_otime(self):
+        arr = []
+        for i in range(len(self.user_time)):
+            time = self.leave_time[i][1] - self.user_time[i][1]
+            arr.append([self.user_time[i][0], time])
+
+        return arr
+
+class Counter1(IPiroRes):
+    def __init__(self, env):
+        super().__init__(
+            env,
+            simpy.PriorityResource(env=env, capacity=1),
+            "counter1"
+        )
+
+    @IRes.run
+    def run_counter(self, t1):
+        print(t1)
+        yield self.env.timeout(t1)
+
+    def output_customer_otime(self):
+        arr = []
+        for i in range(len(self.user_time)):
+            time = self.user_time[i][1] - self.leave_time[i][1]
+            arr.append([self.user_time[i][0], time])
+
+        return arr
+        
+
