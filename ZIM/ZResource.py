@@ -96,7 +96,7 @@ class IRes(IResource):
             self.enter_time.append([f'{entity["type"]}_{entity["id"]}', self.env.now])
             self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter")
 
-            yield self.env.process(func(self, *args, **kwargs))
+            yield self.env.process(func(self, *args, entity=entity, **kwargs))
             
         self.update_leave_time(entity=f'{entity["type"]}_{entity["id"]}')    
 

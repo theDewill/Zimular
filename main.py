@@ -3,6 +3,7 @@ from run import Workflow1
 from ZIM.output_table import System_Output
 import simpy
 from ZIM.ZResource import ResourcePool
+from ZIM.ZContainer import ContainerPool
 
 env = simpy.Environment()
 workinit = Workflow1(env)
@@ -69,6 +70,7 @@ def run_simulation():
     # print(ResourcePool["counter1"].user_time)
     # print(ResourcePool["counter1"].leave_time)
     
-    print(ResourcePool["counter"].output_customer_otime())
+    print(ContainerPool["item_container"].put_output)
+    print(ContainerPool["item_container"].get_output)
 if __name__ == "__main__":
     run_simulation()

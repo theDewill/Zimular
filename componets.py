@@ -1,5 +1,7 @@
 import simpy
 from ZIM.ZResource import IRes, IPiroRes
+from ZIM.ZContainer import IContainer
+
 
 
 class Counter(IRes):
@@ -9,11 +11,13 @@ class Counter(IRes):
             simpy.Resource(env=env, capacity=1),
             "counter"
         )
+        self.container = Item_container(env)
 
     @IRes.run
-    def run_counter(self, t1):
+    def run_counter(self, t1, entity):
         print(t1)
         yield self.env.timeout(t1)
+        self.container.put(1, entity=entity)
 
 
     def output_customer_otime(self):
@@ -46,3 +50,13 @@ class Counter1(IPiroRes):
         return arr
         
 
+class Item_container(IContainer):
+    def __init__(self, env):
+        super().__init__(
+            env,
+            simpy.Container(env=env, capacity=100, init=0),
+            "item_container"
+        )
+
+    def output_data(self):
+        return self.put_output, self.get_output
