@@ -2,6 +2,7 @@ import simpy
 from ZIM.ZResource import IRes, IPiroRes
 from ZIM.ZContainer import IContainer
 
+simpy.FilterStore
 
 
 class Counter(IRes):
@@ -12,6 +13,7 @@ class Counter(IRes):
             "counter"
         )
         self.container = Item_container(env)
+        
 
     @IRes.run
     def run_counter(self, t1, entity):
@@ -27,6 +29,7 @@ class Counter(IRes):
             arr.append([self.user_time[i][0], time])
 
         return arr
+
 
 class Counter1(IPiroRes):
     def __init__(self, env):

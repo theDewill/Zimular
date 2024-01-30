@@ -7,7 +7,7 @@ class Workflow1:
         self.env = env
         self.counter = Counter(self.env)
         # self.counter1 = Counter1(self.env)
-
+        
     def work(self, entity):
         yield self.env.timeout(2)
 
