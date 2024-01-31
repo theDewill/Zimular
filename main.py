@@ -4,6 +4,7 @@ from ZIM.output_table import System_Output
 import simpy
 from ZIM.ZResource import ResourcePool
 from ZIM.ZContainer import ContainerPool
+from ZIM.ZStore import StorePool
 
 env = simpy.Environment()
 workinit = Workflow1(env)
@@ -72,5 +73,8 @@ def run_simulation():
     
     print(ContainerPool["item_container"].put_output)
     print(ContainerPool["item_container"].get_output)
+    print("--------------------------------------------------------")
+    print(StorePool["item_store"].put_output)
+    print(StorePool["item_store"].get_output)
 if __name__ == "__main__":
     run_simulation()

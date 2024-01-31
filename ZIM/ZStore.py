@@ -1,6 +1,7 @@
 #ZStore.py
-import simpy
+from simpy import FilterStore, PriorityStore, Store
 from  .output_table import System_Output
+from typing import Callable, Any
 
 StorePool = {}
 
@@ -10,9 +11,17 @@ class IStore:
         self.store = simpy_store
         self.name = name
         self.capacity = simpy_store.capacity
-        self.items = []
+        
         self.put_output = []    # [put_time, put_amount, level(after), entity]
         self.get_output = []    # [get_time, get_amount, level(after), entity]
+        StorePool[name] = self
+
+    def item_show(self):
+        '''
+        show items in container
+        '''
+        return self.store.items
+        
 
     def put(self, item, entity="unknown"):
         '''
@@ -20,19 +29,21 @@ class IStore:
         '''
         entity = entity_name(entity)
 
-        self.store.put(item)
+        put_item = self.store.put(item)
         self.update_put_output(item, entity)
         self.system_table_append( entity=entity, activity="put")
+        return put_item
 
-    def get(self, item, entity="unknown"):
+    def get(self, entity="unknown"):
         '''
         get amount of items from container
         '''
         entity = entity_name(entity)
 
-        self.store.get(item)
+        item = self.store.get()
         self.update_get_output(item, entity)
         self.system_table_append( entity=entity, activity="get")
+        return item
 
     def level(self):
         '''
@@ -74,19 +85,52 @@ class IStore:
         ])
 
 class ZStore(IStore):
+
     def __init__(self, env, simpy_store, name):
+
+        if not isinstance(simpy_store, Store):
+            raise TypeError("simpy_store must be a Store")
+
         super().__init__(env, simpy_store, name)
 
 class ZFilterStore(IStore):
     def __init__(self, env, simpy_store, name):
+
+        if not isinstance(simpy_store, FilterStore):
+            raise TypeError("simpy_store must be a FilterStore")
+        
         super().__init__(env, simpy_store, name)
-        self.filter = simpy_store.filter
+
+    def get(self, func: Callable, entity="unknown"):
+        entity = entity_name(entity)
+
+        item = self.store.get(func)
+        self.update_get_output(item, entity)
+        self.system_table_append( entity=entity, activity="get<F>")
+        
+        return item
 
 class ZPriorityStore(IStore):
     def __init__(self, env, simpy_store, name):
+
+        if not isinstance(simpy_store, PriorityStore):
+            raise TypeError("simpy_store must be a PriorityStore")
+
         super().__init__(env, simpy_store, name)
 
+    def item_append(self, item, entity="unknown"):
+        '''
+        append item to container 
+        '''
+        entity = entity_name(entity)
     
+        self.store.items.append(item)
+
+        self.update_put_output(item, entity)
+        self.system_table_append( entity=entity, activity="put<item>")
+
+    
+        
 
 
 def entity_name(entity) -> str:

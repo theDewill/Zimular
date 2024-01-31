@@ -1,8 +1,7 @@
 import simpy
 from ZIM.ZResource import IRes, IPiroRes
 from ZIM.ZContainer import IContainer
-
-simpy.FilterStore
+from ZIM.ZStore import ZStore, ZFilterStore
 
 
 class Counter(IRes):
@@ -56,9 +55,22 @@ class Counter1(IPiroRes):
 class Item_container(IContainer):
     def __init__(self, env):
         super().__init__(
+            env=env,
+            capacity=5,
+            init=0,
+            name="item_container"
+        )
+
+    def output_data(self):
+        return self.put_output, self.get_output
+    
+
+class Item_store(ZFilterStore):
+    def __init__(self, env):
+        super().__init__(
             env,
-            simpy.Container(env=env, capacity=100, init=0),
-            "item_container"
+            simpy.FilterStore(env=env, capacity=5),
+            "item_store"
         )
 
     def output_data(self):

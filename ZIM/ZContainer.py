@@ -1,16 +1,15 @@
 # ZContainer.py
-
+from simpy import Container
 from .output_table import System_Output
 
 ContainerPool = {}
 
-class IContainer:
+class IContainer(Container):
 
-    def __init__(self, env, simpy_container, name, ):
+    def __init__(self, env, name,  capacity = 0, init = 0):
+        super().__init__(env=env, capacity=capacity, init=init)
         self.env = env
-        self.container = simpy_container
         self.name = name
-        self.capacity = simpy_container.capacity
         self.put_output = []    # [put_time, put_amount, level(after), entity]
         self.get_output = []    # [get_time, get_amount, level(after), entity]
         ContainerPool[name] = self
@@ -21,7 +20,8 @@ class IContainer:
         '''
         entity = entity_name(entity)
 
-        self.container.put(amount)
+        #self.put(amount)
+        super().put(amount)
         self.update_put_output(amount, entity)
         self.system_table_append( entity=entity, activity="put")
 
@@ -31,7 +31,8 @@ class IContainer:
         '''
         entity = entity_name(entity)
 
-        self.container.get(amount)
+        #self.container.get(amount)
+        super().get(amount)
         self.update_get_output(amount, entity)
         self.system_table_append( entity=entity, activity="get")
 
@@ -39,26 +40,26 @@ class IContainer:
         '''
         returns the current level of the container
         '''
-        return self.container.level
+        return super().level
     
     def update_put_output(self, amount, entity):
         if entity == "unknown":
             self.put_output.append(
-                [self.env.now, amount, self.container.level]
+                [self.env.now, amount, super().level]
             )
         else:
             self.put_output.append(
-                [self.env.now, amount, self.container.level, entity]
+                [self.env.now, amount, super().level, entity]
             )
 
     def update_get_output(self, amount, entity):
         if entity == "unknown":
             self.get_output.append(
-                [self.env.now, amount, self.container.level]
+                [self.env.now, amount, super().level]
             )
         else:
             self.get_output.append(
-                [self.env.now, amount, self.container.level, entity]
+                [self.env.now, amount, super().level, entity]
             )
 
     def system_table_append(self, entity, activity: str):
@@ -70,7 +71,7 @@ class IContainer:
             str(entity),
             str(self.name),
             activity,
-            f'container_level={str(self.container.level)}'
+            f'container_level={str(super().level)}'
         ])
 
 
