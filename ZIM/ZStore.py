@@ -136,6 +136,8 @@ class ZPriorityStore(IStore):
 def entity_name(entity) -> str:
     if entity == "unknown":
         return "unknown"
+    elif isinstance(entity, str):
+        return entity
     else:
         return f'{entity["type"]}_{entity["id"]}'
 
