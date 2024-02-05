@@ -11,14 +11,14 @@ class Counter(IRes):
             simpy.Resource(env=env, capacity=1),
             "counter"
         )
-        self.container = Item_container(env)
+        
         
 
     @IRes.run
     def run_counter(self, t1, entity):
         print(t1)
         yield self.env.timeout(t1)
-        self.container.put(1, entity=entity)
+        
 
 
     def output_customer_otime(self):
