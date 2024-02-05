@@ -24,10 +24,10 @@ class ZEvent(Event):
         """Trigger *event*."""
 
         entity = entity_name(entity)
-        trigger = super().trigger(event)
+        super().trigger(event)
         self.succeed_time.append(["trigger", self.env.now, entity])
         self.system_table_append(entity=entity, activity="trigger", info=info)
-        return trigger
+        
     
     def fail(self, exception: BaseException, entity="unknown", info: str=None) -> Event:
         """Fail the event with *exception*."""
@@ -38,14 +38,6 @@ class ZEvent(Event):
         self.system_table_append(entity=entity, activity="fail", info=info)
         return fail
     
-    def defuse(self, exception: BaseException, entity="unknown", info: str=None) -> Event:
-        """Defuse the event with *exception*."""
-
-        entity = entity_name(entity)
-        defuse = super().defuse(exception)
-        self.succeed_time.append(["defuse", self.env.now, entity])
-        self.system_table_append(entity=entity, activity="defuse", info=info)
-        return defuse
     
     def system_table_append(self, entity, activity: str, info: str=None):
         """
