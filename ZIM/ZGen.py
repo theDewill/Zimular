@@ -41,4 +41,8 @@ class EntityGenerator:
         ent["priority"] = priority
         ent["id"] = self.entity_count
         self.entity_count += 1
-        return ent 
+        return ent
+    
+
+def entity_scrape():
+    pass

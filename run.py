@@ -19,7 +19,7 @@ class Workflow1:
 
         item = yield self.store.get(lambda item: item in ['item - 1','item - 2'], entity=entity)
 
-        print(item)
+        #print(item)
         yield self.env.timeout(1)
 
         # yield self.env.process(
@@ -33,7 +33,7 @@ class Workflow1:
     def store_start(self):
         for i in range(4):
             yield self.env.timeout(1)
-            yield self.store.put(f'item - {i}')
+            self.store.put(f'item - {i}')
 
 
     def outstore(self, entity):

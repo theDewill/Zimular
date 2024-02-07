@@ -23,38 +23,10 @@ generator = EntityGenerator(env, workinit, entity_format, init_count=1)
 
 def customer_generator():
     
-    # for _ in range(5):
-    #     env.process(generator.generate_entity())
-    #     yield env.timeout(1)
     for _ in range(5):
         entity = generator.generate_entity()
         env.process(workinit.work(entity))
         yield env.timeout(1)
-
-def customer_generator1():
-
-    env.process(workinit.work(
-        generator.enter_format(
-            priority=0
-        )
-    ))
-    yield env.timeout(1)
-
-    env.process(workinit.work(
-        generator.enter_format(
-            priority=0
-        )
-    ))
-    yield env.timeout(1)
-
-
-    env.process(workinit.work(
-        generator.enter_format(
-            priority=-1
-        )
-    ))
-
-
 
 def run_simulation():
     print("Running simulation...")

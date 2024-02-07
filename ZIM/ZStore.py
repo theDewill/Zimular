@@ -29,7 +29,7 @@ class IStore:
         '''
         entity = entity_name(entity)
 
-        put_item = yield self.store.put(item)
+        put_item = self.store.put(item)
         self.update_put_output(item, entity)
         self.system_table_append( entity=entity, activity="put")
         return put_item
@@ -40,7 +40,7 @@ class IStore:
         '''
         entity = entity_name(entity)
 
-        item = yield self.store.get()
+        item = self.store.get()
         self.update_get_output(item, entity)
         self.system_table_append( entity=entity, activity="get")
         return item

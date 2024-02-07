@@ -15,7 +15,6 @@ class IResource:
         self.env = env
         self.res = res
         self.res_name = res_name
-        print(self)
         self.cap = res.capacity
         self.user_time = []
         self.queue_time = []
@@ -126,10 +125,11 @@ class IPiroRes(IResource):
             self.update_queue_time()
 
             yield req
+            self.enter_time.append([f'{entity["type"]}_{entity["id"]}', self.env.now])
 
             self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter", priority=ttes(entity["priority"]))
 
-            yield self.env.process(func(self, *args, **kwargs))
+            yield self.env.process(func(self, *args, entity=entity, **kwargs))
 
         self.update_leave_time(entity=f'{entity["type"]}_{entity["id"]}')
 
@@ -142,3 +142,11 @@ def ttes(item):
         return item()
     else:
         return item
+    
+def entity_name(entity) -> str:
+    if entity == "unknown":
+        return "unknown"
+    elif isinstance(entity, str):
+        return entity
+    else:
+        return f'{entity["type"]}_{entity["id"]}'
