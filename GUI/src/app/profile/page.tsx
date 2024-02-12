@@ -23,7 +23,7 @@ export default function ProfilePage() {
     const getUser = async () => {
         const res = await axios.get('api/users/me');
         console.log(res.data);
-        setData(res.data.data._id)
+        setData(res.data.data.username)
     }
     return (
         <div className=" flex flex-col items-center justify-center min-h-screen py-2">
