@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 import uuid
-from abc import ABC, abstractmethod
 import json
 
 
@@ -20,15 +19,25 @@ class FileHandler:
         Check if the folder tree exists. If not, create it.
         '''
 
-        for dir in [self.INPUT_FOLDER, self.OUTPUT_FOLDER, self.INPUT_FOLDER_DATA, self.INPUT_FOLDER_CONFIG, self.OUTPUT_FOLDER_DATA]:
+        for dir in [self.INPUT_FOLDER, self.OUTPUT_FOLDER, self.INPUT_FOLDER_CONFIG, self.OUTPUT_FOLDER_DATA]:
             if not os.path.exists(dir):
                 print(f'{dir} does not exist. Creating...')
                 os.makedirs(dir)
             else:
                 print(f'{dir} exists.')
 
-    def create_input_structure(self):
-        pass
+    def create_input_structure(self, inputStructPath, inputStruct):
+
+        '''
+        Create the input structure file
+        '''
+
+        filename = os.path.join(inputStructPath, "input_struct.json")
+
+        with open(filename, "w") as file:
+            json.dump(inputStruct, file)
+
+        return filename
 
     def create_output_data_folder(self):
         '''
@@ -49,28 +58,61 @@ class FileHandler:
         
 
 class InputHandler:
-    def __init__(self, input_struct):
+    def __init__(self):
+
+        '''
+            Handles input data from API
+        '''
+
+        self.input_structure = None
+        self.input_data_path = None
+
+    def setInput(self, input_struct_path):
+
+        '''
+        Set the input structure and input data path
+        '''
+
+        self.input_data_path = input_struct_path
+        try:
+
+            with open(self.input_data_path, "r") as file:
+                input_struct = json.load(file)
+
+        except FileNotFoundError:
+            print(f"File {input_struct_path} not found.")
+            return False
 
         self.input_structure = input_struct
-        self.input_data_path = ""
 
-    @staticmethod
-    def buildInput(inputStructPath, inputStruct):
-        filename = os.path.join(inputStructPath, "input_struct.json")
+        return self.input_structure
 
-        with open(filename, "w") as file:
-            json.dump(inputStruct, file)
+    def getInput(self, input_group: str, input_name: str):
 
-        return filename
-        
+        '''
+        Get the input value from the input structure
+        args(
+            input_group: str,
+            input_name: str
+        )
+        '''
 
-    def getInput(self, input_group, input_name, default):
-        pass
+        Data = self.input_structure[input_group][input_name]
+        if Data["value"] == "":
+            return Data["default"]
+        else:
+            return Data["value"]
 
-    def setInputPath(self, inputStructPath, file_name):
-        file_set = os.path.join(inputStructPath, file_name)
-        self.input_data_path = file_set
-        return file_set
         
     def checkInput(self):
-        pass
+
+        '''
+        Check if the input structure and input data path are set
+        '''
+
+        if self.input_structure is None:
+            if self.input_data_path is None:
+                print("No input data path set.")
+            return False
+        
+    
