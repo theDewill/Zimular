@@ -1,6 +1,7 @@
 import sys
+import os
 
-SAVE_FOLDER = ""
+SAVE_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sim_db")
 
 def main():
     arg = sys.argv[1]
