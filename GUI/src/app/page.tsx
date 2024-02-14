@@ -10,8 +10,7 @@ export default function Home() {
     <main >
       <Navbar/>
       <Hero/>
-      <Contact/>
-      
+      <Contact/>   
     </main>
   )
 }
