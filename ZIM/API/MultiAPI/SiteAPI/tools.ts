@@ -6,7 +6,7 @@ const { MongoClient, ServerApiVersion }  = require('mongodb')
 
 // }
 
-class connectionManager {
+class conManager {
 
     public connectionPool : Map<number, any>;
 
@@ -77,10 +77,22 @@ class MongoTools {
         console.log(result.data[`${session}`].input);
     }
 
+    async storeInput(u_id : string, s_id : string) {
+        await this.connect()
+        const col = this.Mongo.db("ZimularDB").collection("users");
+        const query = { uid: Number(u_id) };
+        const options = { upsert: true };
+        let session = `session_${s_id}`;
+        let updateDoc = { $set: {} };
+        updateDoc.$set[`data.${session}.input`] = {id: 23};
+        await col.updateOne(query, updateDoc, options);
+        console.log("done update")
+    }
+
     async storeOutput (u_id : string, s_id : string, outputData : any) { // here output has the read and recived json from fmk model
         await this.connect()
         const col = this.Mongo.db("ZimularDB").collection("users");
-        const query = { uid: u_id };
+        const query = { uid: Number(u_id) };
         const options = { upsert: true };
         let session = `session_${s_id}`;
         let updateDoc = { $set: {} };
@@ -95,9 +107,10 @@ class MongoTools {
 }
 
 let mongo = new MongoTools('admin','pass');
-mongo.storeOutput('1', '1',{id: 23});
-let newDoc = mongo.getInputs('1','1')
+mongo.storeInput('1', '1');
+//let newDoc = mongo.getInputs('1','1')
 
+export { MongoTools};
 
 
 
