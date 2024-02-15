@@ -1,0 +1,42 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.authenticate = exports.parseAuthentication = void 0;
+const commons_1 = require("@feathersjs/commons");
+const authentication_1 = require("@feathersjs/authentication");
+const debug = (0, commons_1.createDebug)('@feathersjs/koa/authentication');
+function parseAuthentication(settings = {}) {
+    return async (ctx, next) => {
+        var _a;
+        const app = ctx.app;
+        const service = (_a = app.defaultAuthentication) === null || _a === void 0 ? void 0 : _a.call(app, settings.service);
+        if (!service) {
+            return next();
+        }
+        const config = service.configuration;
+        const authStrategies = settings.strategies || config.parseStrategies || config.authStrategies || [];
+        if (authStrategies.length === 0) {
+            debug('No `authStrategies` or `parseStrategies` found in authentication configuration');
+            return next();
+        }
+        const authentication = await service.parse(ctx.req, ctx.res, ...authStrategies);
+        if (authentication) {
+            debug('Parsed authentication from HTTP header', authentication);
+            ctx.feathers = { ...ctx.feathers, authentication };
+        }
+        return next();
+    };
+}
+exports.parseAuthentication = parseAuthentication;
+function authenticate(settings, ...strategies) {
+    const hook = (0, authentication_1.authenticate)(settings, ...strategies);
+    return async (ctx, next) => {
+        const app = ctx.app;
+        const params = ctx.feathers;
+        const context = { app, params };
+        await hook(context);
+        ctx.feathers = context.params;
+        return next();
+    };
+}
+exports.authenticate = authenticate;
+//# sourceMappingURL=authentication.js.map
