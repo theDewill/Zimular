@@ -1,6 +1,7 @@
 const exp = require('express');
 const bodyParser = require('body-parser');
-imprt {MongoTools} from './tools'
+const {MongoTools} = require('./tools');
+const axios = require('axios');
 
 
 
@@ -12,6 +13,17 @@ const server = http.createServer(app);
  //comment here
 
 
-app.get('/sendInputs', (req, res) => {
-
+app.get('/sendInputs', async (req, res) => {
+    let uid = req.query.uid;
+    let sid = req.query.sid;
+    let data = req.query.data;
+    await mongo.storeInput(uid, sid, data);
+    //-- calling the input settings sender
+    const response = await axios.post('http://localhost:3000/sendInputs', {
+        uid: uid,
+        sid: sid
+    })
+    
+    
 })
+

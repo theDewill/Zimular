@@ -20,7 +20,11 @@ async def socket_connect(url,u_id):
     WBdata = json.loads(WBjson)
     
     async with wb.connect(WBdata['webUri'].strip()) as websocket:
-        await websocket.send(json.dumps({"type": "init" ,"uid" : u_id}))
+        with open("/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/MultiAPI/ModelApi/JSON/startup.json", "r") as file:
+                    data = json.load(file)
+                    #response = await websocket.send(json.dumps(data))
+                    #return response.text
+                    await websocket.send(json.dumps({"type": "calib" ,"uid" : u_id, "content" : data}))
         while True:
             response = await websocket.recv()
             json_reponse = json.loads(response)
@@ -28,23 +32,32 @@ async def socket_connect(url,u_id):
             print(json_reponse)
 
             if json_reponse['type'] == "calib":
-                with open("/Users/nominsendinu/DEWILL/CODE/Projects/MultiAPI/ModelApi/JSON/startup.json", "r") as file:
-                    data = json.load(file)
-                    response = await websocket.send(json.dumps(data))
-                    return response.text
+                #TODO: yet to be implemented [UNCOMMENT]
+                print("calib recieved")
                 
             elif json_reponse['type'] == "data":
-                #TODO: yet to be tested
+                #TODO: yet to be implemented [UNCOMMENT]
                 file_name = json_reponse["file_name"]
-                with open(f"/Users/nominsendinu/DEWILL/CODE/Projects/MultiAPI/ModelApi/JSON/recieved/{file_name}.json", "a") as file:
+                out_file_name = file_name[file_name.find('_'):]
+                
+                #with open(f"/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/MultiAPI/ModelApi/JSON/recieved/{file_name}.json", "a") as file:
+
+                with open(f"/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/MultiAPI/ModelApi/JSON/recieved/inputs.json", "w") as file:
                     json.dump(json_reponse, file)
                     print("--file saved--")
 
-                os.system("zim engine start cmd")
-                #zim engine starts and aftr generating output json in outputs
-                with open(f"/Users/nominsendinu/DEWILL/CODE/Projects/MultiAPI/ModelApi/JSON/outputs/{file_name}.json", "r") as outfile:
-                    data = json.load(outfile)
-                    await websocket.send(json.dumps(data))
+                #TODO: replace this with the actual engine from appa
+                os.system("python3 /Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/engineClone.py")
+                # #zim engine starts and aftr generating output json in outputs
+                with open(f"/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/MultiAPI/ModelApi/JSON/outputs/outputs.json", "r") as outfile:
+                    send_package = {
+                        "type" : "data",
+                        "file_name" : out_file_name,
+                        "uid" : json_reponse["uid"],
+                        "sid" : json_reponse["sid"],
+                        "content" : json.load(outfile),
+                    }
+                    await websocket.send(json.dumps(send_package))
                     print("output file sent")
             else:
                 print("Invalid type")
@@ -68,7 +81,7 @@ def ignite():
 
 #TODO: check ignite command
 #argument must be the url path in node server which return sokcet ur and process the sent json 
-asyncio.get_event_loop().run_until_complete(socket_connect('http://localhost:8009/handshake',123))
+asyncio.get_event_loop().run_until_complete(socket_connect('http://localhost:8009/handshake',12))
 
 
 
