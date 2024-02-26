@@ -44,7 +44,7 @@ async def socket_connect(url,u_id):
 
                 with open(f"/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/MultiAPI/ModelApi/JSON/recieved/inputs.json", "w") as file:
                     json.dump(json_reponse, file)
-                    print("--file saved--")
+                    print("Got the input file and saved")
 
                 #TODO: replace this with the actual engine from appa
                 os.system("python3 /Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/engineClone.py")
@@ -58,7 +58,7 @@ async def socket_connect(url,u_id):
                         "content" : json.load(outfile),
                     }
                     await websocket.send(json.dumps(send_package))
-                    print("output file sent")
+                    print("output file sent via Socket")
             else:
                 print("Invalid type")
                 return False
