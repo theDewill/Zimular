@@ -2,6 +2,7 @@
 from componets import *
 
 
+
 class Workflow1:
     def __init__(self, env):
         self.env = env
@@ -15,7 +16,7 @@ class Workflow1:
 
         yield self.env.timeout(2)
 
-        yield self.env.process(self.counter.run_counter(t1=3, entity=entity))
+        yield self.env.process(self.counter.run_counter(entity=entity))
 
         item = yield self.store.get(lambda item: item in ['item - 1','item - 2'], entity=entity)
 
@@ -39,7 +40,7 @@ class Workflow1:
     def outstore(self, entity):
         if entity["id"] in [1,2]:
             return True
-        
+
 
     
         

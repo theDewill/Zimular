@@ -2,6 +2,7 @@ import simpy
 from ZIM.ZResource import IRes, IPiroRes
 from ZIM.ZContainer import IContainer
 from ZIM.ZStore import ZStore, ZFilterStore
+from manage import SIMINPUT
 
 
 class Counter(IRes):
@@ -11,16 +12,12 @@ class Counter(IRes):
             simpy.Resource(env=env, capacity=1),
             "counter"
         )
+        self.t1 = SIMINPUT.getInput("group 1", "counter_t1")
         
-        
-
     @IRes.run
-    def run_counter(self, t1, entity):
-        print(t1)
-        yield self.env.timeout(t1)
+    def run_counter(self, entity):
+        yield self.env.timeout(self.t1)
         
-
-
     def output_customer_otime(self):
         arr = []
         for i in range(len(self.user_time)):

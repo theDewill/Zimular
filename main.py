@@ -1,52 +1,25 @@
-from ZIM.ZGen import EntityGenerator
-from run import Workflow1
 from ZIM.output_table import System_Output
 import simpy
-from ZIM.ZResource import ResourcePool
-from ZIM.ZContainer import ContainerPool
-from ZIM.ZStore import StorePool
+from manage import runReady
+from Genarator import customer_generator
 
 env = simpy.Environment()
-workinit = Workflow1(env)
-
-entity_format = {
-    "type": "customer",
-    "id": 0,
-    "priority": lambda: executer(),
-}
-
-def executer():
-    return -1
-
-generator = EntityGenerator(env, workinit, entity_format, init_count=1)
 
 
-def customer_generator():
-    
-    for _ in range(5):
-        entity = generator.generate_entity()
-        env.process(workinit.work(entity))
-        yield env.timeout(1)
+def output():
+    pass
 
 def run_simulation():
-    print("Running simulation...")
-    print("creating resources...")
-    print("creating entities...")
-    env.process(customer_generator())
+    env.process(customer_generator(env=env))
     env.run()
     print("Simulation done.")
+
+    
+if __name__ == "__main__":
+    print("----------------START-----------------")
+    runReady()
+    run_simulation()
     System_Output.show_table()
 
-    print(ResourcePool["counter"].user_time)
-    print(ResourcePool["counter"].leave_time)
-    print("--------------------------------------------------------")
-    # print(ResourcePool["counter1"].user_time)
-    # print(ResourcePool["counter1"].leave_time)
+    print("----------------END-----------------")
     
-    print(ContainerPool["item_container"].put_output)
-    print(ContainerPool["item_container"].get_output)
-    print("--------------------------------------------------------")
-    print(StorePool["item_store"].put_output)
-    print(StorePool["item_store"].get_output)
-if __name__ == "__main__":
-    run_simulation()
