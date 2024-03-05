@@ -1,2 +1,7 @@
 unit_test/
 __pycache__/
+venv/
+
+# Added by cargo
+
+/target
