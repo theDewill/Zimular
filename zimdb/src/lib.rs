@@ -1,32 +1,36 @@
-use std::collections::HashMap;
-
-use db::Bignum;
-use pyo3::{
-    prelude::*,
-    types::{PyDict, PyList},
+use db::{Bignum, CatComp};
+use mongodb::{
+    bson::{doc, to_document, Bson, Document},
+    options::UpdateOptions,
+    sync::{Client, Collection},
 };
+use pyo3::{prelude::*, types::PyList};
+use serde::{Deserialize, Serialize};
 
 mod db;
+mod mconn;
 
 /// A Python module implemented in Rust.
 #[pymodule]
 fn zimdb(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<ZimDB>()?;
-    m.add_function(wrap_pyfunction!(getdic, m)?)?;
     Ok(())
 }
 
 #[pyclass]
+#[derive(Debug, Serialize, Deserialize)]
 struct ZimDB {
     db: db::DB,
+    table: db::SimuTable,
 }
 
 #[pymethods]
 impl ZimDB {
     #[new]
-    fn new(name: &str, conn: &str) -> PyResult<Self> {
+    fn new(dbname: &str, name: &str, conn: &str, tablename: &str) -> PyResult<Self> {
         Ok(ZimDB {
-            db: db::DB::new(name, conn).unwrap(),
+            db: db::DB::new(dbname, name, conn, tablename).unwrap(),
+            table: db::SimuTable::new(tablename),
         })
     }
 
@@ -34,24 +38,25 @@ impl ZimDB {
         &mut self,
         py: Python,
         time: PyObject,
-        component_category: u8,
-        component_name: u64,
-        action: u32,
+        component_category: &str,
+        component_name: &str,
+        action: &str,
         entity: &str,
         metadata: &PyList,
     ) -> PyResult<()> {
         let time = process_bignum(py, time);
-        let metadata = pylist_to_vec_of_tuples(py, metadata);
-        self.db
-            .add_data(
-                time,
-                component_category,
-                component_name,
-                action,
-                entity,
-                metadata,
-            )
-            .unwrap();
+        let component_category = str_to_catcomp(component_category);
+        let metadata = pylist_to_vec_of_tuples(metadata);
+
+        self.table.add_data(
+            time,
+            component_category,
+            component_name,
+            action,
+            entity,
+            metadata,
+        );
+
         Ok(())
     }
 
@@ -61,23 +66,71 @@ impl ZimDB {
     }
 
     //init component_info
+
+    fn add_resource(&mut self, name: &str, workflow: &str, component_name: &str) -> PyResult<()> {
+        self.db
+            .add_resource(name, workflow, component_name)
+            .unwrap();
+        Ok(())
+    }
+
+    fn add_container(&mut self, name: &str, workflow: &str, component_name: &str) -> PyResult<()> {
+        self.db
+            .add_container(name, workflow, component_name)
+            .unwrap();
+        Ok(())
+    }
+
+    fn add_store(&mut self, name: &str, workflow: &str, component_name: &str) -> PyResult<()> {
+        self.db.add_store(name, workflow, component_name).unwrap();
+        Ok(())
+    }
+
+    fn add_custom(&mut self, name: &str, workflow: &str, component_name: &str) -> PyResult<()> {
+        self.db.add_custom(name, workflow, component_name).unwrap();
+        Ok(())
+    }
+
     fn printdb(&self) -> PyResult<()> {
         println!("{:#?}", self.db);
         Ok(())
     }
 
-    fn getsizedb(&self) {
-        println!("{:?}", self.db.get_db_size());
+    fn printtable(&self) -> PyResult<()> {
+        println!("{:#?}", self.table);
+        Ok(())
+    }
+
+    fn getsizetable(&self) -> PyResult<usize> {
+        Ok(self.table.tablelen())
+    }
+
+    fn senddb(&self) -> PyResult<()> {
+        let client = Client::with_uri_str(self.db.get_conn()).unwrap();
+        let db = client.database(self.db.get_dbname());
+        let coll = db.collection::<db::DB>(self.db.get_name());
+        let input = coll.insert_one(&self.db, None);
+        if input.is_ok() {
+            Ok(())
+        } else {
+            panic!("mongo insert Error");
+        }
+    }
+
+    fn sendtable(&self) -> PyResult<()> {
+        let client = Client::with_uri_str(self.db.get_conn()).unwrap();
+        let db = client.database(self.db.get_dbname());
+        let coll = db.collection::<db::SimuTable>(self.db.get_name());
+        let input = coll.insert_one(&self.table, None);
+        if input.is_ok() {
+            Ok(())
+        } else {
+            panic!("mongo insert Error");
+        }
     }
 }
 
-#[pyfunction]
-fn getdic(py: Python, py_dic: &PyList) {
-    let b = pylist_to_vec_of_tuples(py, py_dic);
-    println!("{:?}", b);
-}
-
-fn pylist_to_vec_of_tuples(py: Python, py_list: &PyList) -> Vec<(String, String)> {
+fn pylist_to_vec_of_tuples(py_list: &PyList) -> Vec<(String, String)> {
     let mut vec_of_tuples = Vec::new();
 
     for inner_list in py_list.iter() {
@@ -89,6 +142,20 @@ fn pylist_to_vec_of_tuples(py: Python, py_list: &PyList) -> Vec<(String, String)
     }
 
     vec_of_tuples
+}
+
+fn str_to_catcomp(comp_cat: &str) -> CatComp {
+    match comp_cat {
+        "resource" => CatComp::Resource,
+        "piorityresource" => CatComp::PriorityResource,
+        "peemptiveresource" => CatComp::PreemptiveResource,
+        "store" => CatComp::Store,
+        "prioritystore" => CatComp::PriorityStore,
+        "filterstore" => CatComp::FilterStore,
+        "container" => CatComp::Container,
+        "custom" => CatComp::Custom,
+        _ => panic!("Unsupported type"),
+    }
 }
 
 fn process_bignum(py: Python, value: PyObject) -> Bignum {

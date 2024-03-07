@@ -2,6 +2,15 @@
 from componets import *
 
 
+# -------------template----------------
+# class workflow:
+
+#     def __init__(self) -> None:
+#         pass
+
+#     def work(self, entity):
+#         pass
+        
 
 class Workflow1:
     def __init__(self, env):

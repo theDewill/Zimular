@@ -4,6 +4,16 @@ from ZIM.ZContainer import IContainer
 from ZIM.ZStore import ZStore, ZFilterStore
 from manage import SIMINPUT
 
+# -------------template----------------
+
+# class <Componet_Name>(componet_type_class):
+#     def __init__(self) -> None:
+#         super.__init__(env, simpyInit, name)
+#         // other init likes outputs
+
+#     def method(self, args):
+#         pass
+
 
 class Counter(IRes):
     def __init__(self, env):

@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 type DBResult<T> = std::result::Result<T, DBERRO>;
@@ -11,143 +12,85 @@ pub enum DBERRO {
     UnknownError,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Bignum {
     Int(i64),
     Float(f64),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
+pub enum CatComp {
+    Resource,
+    PriorityResource,
+    PreemptiveResource,
+    Store,
+    FilterStore,
+    PriorityStore,
+    Container,
+    Custom,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct DB {
+    db_name: String,
     name: String,
     conn: String,
     modifid: bool,
     save_time: u64,
-    database: Box<SimOutData>,
+    database: String,
     component_info: ComponentInfo,
-    code_table: CodeTable,
 }
 
-#[derive(Debug)]
-pub struct CodeTable {
-    component_category: HashMap<u8, String>,
-    component_name: HashMap<u64, String>,
-    action: HashMap<u32, String>,
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SimuTable {
+    name: String,
+    table: Box<Vec<SimOutData>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ComponentInfo {
     workflow: HashMap<String, Comp>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Comp {
-    resources: HashMap<String, IResource>,
-    containers: HashMap<String, IContainer>,
-    store: HashMap<String, IStore>,
-    custom: HashMap<String, ICustom>,
+    resources: HashMap<String, CompInfo>,
+    containers: HashMap<String, CompInfo>,
+    store: HashMap<String, CompInfo>,
+    custom: HashMap<String, CompInfo>,
 }
 
-#[derive(Debug)]
-pub struct IResource {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CompInfo {
     name: String,
-    quantity: Bignum,
-    metadata: HashMap<String, String>,
+    catagory: String,
+    notification: HashMap<String, String>,
+    data: HashMap<String, String>,
 }
 
-#[derive(Debug)]
-pub struct IContainer {
-    name: String,
-    quantity: Bignum,
-    metadata: HashMap<String, String>,
-}
-
-#[derive(Debug)]
-pub struct IStore {
-    name: String,
-    quantity: Bignum,
-    metadata: HashMap<String, String>,
-}
-
-#[derive(Debug)]
-pub struct ICustom {
-    name: String,
-    quantity: Bignum,
-    metadata: HashMap<String, String>,
-}
-
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SimOutData {
-    time: Vec<Bignum>,
-    component_category: Vec<u8>,
-    component_name: Vec<u64>,
-    action: Vec<u32>,
-    entity: Vec<String>,
-    metadata: Vec<Vec<(String, String)>>,
+    time: Bignum,
+    component_category: CatComp,
+    component_name: String,
+    action: String,
+    entity: String,
+    metadata: Vec<(String, String)>,
 }
 
 impl DB {
-    pub fn new(name: &str, conn: &str) -> DBResult<DB> {
+    pub fn new(dbname: &str, name: &str, conn: &str, tablename: &str) -> DBResult<DB> {
         Ok(DB {
+            db_name: dbname.to_string(),
             name: name.to_string(),
             conn: conn.to_string(),
             modifid: false,
             save_time: 0,
-            database: Box::new(SimOutData {
-                time: Vec::new(),
-                component_category: Vec::new(),
-                component_name: Vec::new(),
-                action: Vec::new(),
-                entity: Vec::new(),
-                metadata: Vec::new(),
-            }),
+            database: tablename.to_string(),
             component_info: ComponentInfo {
                 workflow: HashMap::new(),
             },
-            code_table: CodeTable::new(),
         })
-    }
-
-    pub fn get_mut_database(&mut self) -> DBResult<&mut SimOutData> {
-        Ok(&mut self.database)
-    }
-
-    pub fn get_database(&self) -> DBResult<&SimOutData> {
-        Ok(&self.database)
-    }
-
-    pub fn get_mut_component_info(&mut self) -> DBResult<&mut ComponentInfo> {
-        Ok(&mut self.component_info)
-    }
-
-    pub fn get_component_info(&self) -> DBResult<&ComponentInfo> {
-        Ok(&self.component_info)
-    }
-
-    pub fn add_data(
-        &mut self,
-        time: Bignum,
-        component_category: u8,
-        component_name: u64,
-        action: u32,
-        entity: &str,
-        metadata: Vec<(String, String)>,
-    ) -> DBResult<()> {
-        if self.database.time.len() == self.database.component_category.len()
-            && self.database.component_category.len() == self.database.component_name.len()
-            && self.database.component_name.len() == self.database.action.len()
-            && self.database.action.len() == self.database.entity.len()
-        {
-            self.database.time.push(time);
-            self.database.component_category.push(component_category);
-            self.database.component_name.push(component_name);
-            self.database.action.push(action);
-            self.database.entity.push(entity.to_string());
-            self.database.metadata.push(metadata);
-            Ok(())
-        } else {
-            return Err(DBERRO::UnknownError);
-        }
     }
 
     pub fn add_workflow(&mut self, name: &str) -> DBResult<()> {
@@ -164,56 +107,120 @@ impl DB {
         Ok(())
     }
 
-    pub fn add_code_cc(&mut self, code: u8, name: &str) -> DBResult<()> {
-        if self.code_table.component_category.contains_key(&code) {
-            return Err(DBERRO::AlreadyExists);
-        }
-        self.code_table
-            .component_category
-            .insert(code, name.to_string());
-        Ok(())
-    }
-
-    pub fn add_code_cn(&mut self, code: u64, name: &str) -> DBResult<()> {
-        if self.code_table.component_name.contains_key(&code) {
-            return Err(DBERRO::AlreadyExists);
-        }
-        self.code_table
-            .component_name
-            .insert(code, name.to_string());
-        Ok(())
-    }
-
-    pub fn add_code_act(&mut self, code: u32, name: &str) -> DBResult<()> {
-        if self.code_table.action.contains_key(&code) {
-            return Err(DBERRO::AlreadyExists);
-        }
-        self.code_table.action.insert(code, name.to_string());
-        Ok(())
-    }
-
-    pub fn get_db_size(&self) {
-        let time = std::mem::size_of_val(&self.database.time);
-        let component_category = std::mem::size_of_val(&self.database.component_category);
-        let component_name = std::mem::size_of_val(&self.database.component_name);
-        let action = std::mem::size_of_val(&self.database.action);
-        let entity = std::mem::size_of_val(&self.database.entity);
-        let metadata = std::mem::size_of_val(&self.database.metadata);
-
-        println!(
-            "time: {}, component_category: {}, component_name: {}, action: {}, entity: {}, metadata: {}",
-            time, component_category, component_name, action, entity, metadata
+    pub fn add_resource(&mut self, name: &str, workflow: &str, catagory: &str) -> DBResult<()> {
+        let comp = self
+            .component_info
+            .workflow
+            .get_mut(workflow)
+            .ok_or(DBERRO::NotFound)?;
+        comp.resources.insert(
+            name.to_string(),
+            CompInfo {
+                name: name.to_string(),
+                catagory: catagory.to_string(),
+                notification: HashMap::with_capacity(0),
+                data: HashMap::with_capacity(0),
+            },
         );
+        Ok(())
+    }
+
+    pub fn add_container(&mut self, name: &str, workflow: &str, catagory: &str) -> DBResult<()> {
+        let comp = self
+            .component_info
+            .workflow
+            .get_mut(workflow)
+            .ok_or(DBERRO::NotFound)?;
+        comp.containers.insert(
+            name.to_string(),
+            CompInfo {
+                name: name.to_string(),
+                catagory: catagory.to_string(),
+                notification: HashMap::with_capacity(0),
+                data: HashMap::with_capacity(0),
+            },
+        );
+        Ok(())
+    }
+
+    pub fn add_store(&mut self, name: &str, workflow: &str, catagory: &str) -> DBResult<()> {
+        let comp = self
+            .component_info
+            .workflow
+            .get_mut(workflow)
+            .ok_or(DBERRO::NotFound)?;
+        comp.store.insert(
+            name.to_string(),
+            CompInfo {
+                name: name.to_string(),
+                catagory: catagory.to_string(),
+                notification: HashMap::with_capacity(0),
+                data: HashMap::with_capacity(0),
+            },
+        );
+        Ok(())
+    }
+
+    pub fn add_custom(&mut self, name: &str, workflow: &str, catagory: &str) -> DBResult<()> {
+        let comp = self
+            .component_info
+            .workflow
+            .get_mut(workflow)
+            .ok_or(DBERRO::NotFound)?;
+        comp.custom.insert(
+            name.to_string(),
+            CompInfo {
+                name: name.to_string(),
+                catagory: catagory.to_string(),
+                notification: HashMap::with_capacity(0),
+                data: HashMap::with_capacity(0),
+            },
+        );
+        Ok(())
+    }
+
+    pub fn get_conn(&self) -> &str {
+        &self.conn
+    }
+
+    pub fn get_dbname(&self) -> &str {
+        &self.db_name
+    }
+
+    pub fn get_name(&self) -> &str {
+        &self.name
     }
 }
 
-impl CodeTable {
-    pub fn new() -> CodeTable {
-        CodeTable {
-            component_category: HashMap::new(),
-            component_name: HashMap::new(),
-            action: HashMap::new(),
+impl SimuTable {
+    pub fn new(name: &str) -> SimuTable {
+        SimuTable {
+            name: name.to_string(),
+            table: Box::new(Vec::new()),
         }
+    }
+
+    pub fn add_data(
+        &mut self,
+        time: Bignum,
+        component_category: CatComp,
+        component_name: &str,
+        action: &str,
+        entity: &str,
+        metadata: Vec<(String, String)>,
+    ) {
+        self.table.push(SimOutData {
+            time,
+            component_category,
+            component_name: component_name.to_string(),
+            action: action.to_string(),
+            entity: entity.to_string(),
+            metadata,
+        });
+    }
+
+    pub fn tablelen(&self) -> usize {
+        self.table.len()
     }
 }
 
