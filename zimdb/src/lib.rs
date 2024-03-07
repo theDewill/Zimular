@@ -1,4 +1,4 @@
-use db::{Bignum, CatComp};
+use db::{Bignum, CatComp, SimOutData};
 use mongodb::{
     bson::{doc, to_document, Bson, Document},
     options::UpdateOptions,
@@ -127,6 +127,23 @@ impl ZimDB {
         } else {
             panic!("mongo insert Error");
         }
+    }
+
+    fn sendtablecollection(&self) -> PyResult<()>{
+        let client = Client::with_uri_str(self.db.get_conn()).unwrap();
+        let db = client.database(self.db.get_dbname());
+        let coll = db.collection::<Document>(self.db.get_table());
+
+        let docs = self.table.table.iter().map(|x| to_document(&x).unwrap()).collect::<Vec<Document>>();
+
+        let input = coll.insert_many(docs, None);
+        if input.is_ok() {
+            Ok(())
+        } else {
+            panic!("mongo insert Error");
+        }
+    
+
     }
 }
 

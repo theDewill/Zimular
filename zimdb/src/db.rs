@@ -44,7 +44,7 @@ pub struct DB {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SimuTable {
     name: String,
-    table: Box<Vec<SimOutData>>,
+    pub table: Box<Vec<SimOutData>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -189,6 +189,10 @@ impl DB {
 
     pub fn get_name(&self) -> &str {
         &self.name
+    }
+
+    pub fn get_table(&self) -> &str {
+        &self.database
     }
 }
 

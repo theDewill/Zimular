@@ -4,7 +4,7 @@ from typing import List, Union
 
 DBNAME = "SimulationDB"
 SETNAME = "SimulationSet"
-TABLENAME = "SimulationTable"
+TABLENAME = "SimulationTable1"
 MONGO_URI = "mongodb://localhost:27017/"
 
 
@@ -42,7 +42,7 @@ class DataManager:
         self.data.sendtable()
 
     def test1(self):
-        for i in range(1000):
+        for i in range(1000000):
             self.add_data(
                 i,
                 random.choice(["resource", "store", "container"]),
@@ -54,3 +54,7 @@ class DataManager:
 
 
 ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI)
+
+ZIMDB.test1()
+ZIMDB.send_db()
+ZIMDB.data.sendtablecollection()
