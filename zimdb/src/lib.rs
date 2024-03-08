@@ -1,14 +1,12 @@
-use db::{Bignum, CatComp, SimOutData};
+use db::{Bignum, CatComp};
 use mongodb::{
-    bson::{doc, to_document, Bson, Document},
-    options::UpdateOptions,
-    sync::{Client, Collection},
+    bson::{doc, to_document, Document}, options::FindOptions, sync::Client
 };
 use pyo3::{prelude::*, types::PyList};
 use serde::{Deserialize, Serialize};
 
 mod db;
-mod mconn;
+
 
 /// A Python module implemented in Rust.
 #[pymodule]
@@ -41,8 +39,8 @@ impl ZimDB {
         component_category: &str,
         component_name: &str,
         action: &str,
-        entity: &str,
-        metadata: &PyList,
+        entity: Option<String>,
+        metadata: Option<&PyList>,
     ) -> PyResult<()> {
         let time = process_bignum(py, time);
         let component_category = str_to_catcomp(component_category);
@@ -129,12 +127,17 @@ impl ZimDB {
         }
     }
 
-    fn sendtablecollection(&self) -> PyResult<()>{
+    fn sendtablecollection(&self) -> PyResult<()> {
         let client = Client::with_uri_str(self.db.get_conn()).unwrap();
         let db = client.database(self.db.get_dbname());
         let coll = db.collection::<Document>(self.db.get_table());
 
-        let docs = self.table.table.iter().map(|x| to_document(&x).unwrap()).collect::<Vec<Document>>();
+        let docs = self
+            .table
+            .table
+            .iter()
+            .map(|x| to_document(&x).unwrap())
+            .collect::<Vec<Document>>();
 
         let input = coll.insert_many(docs, None);
         if input.is_ok() {
@@ -142,23 +145,74 @@ impl ZimDB {
         } else {
             panic!("mongo insert Error");
         }
-    
-
     }
-}
 
-fn pylist_to_vec_of_tuples(py_list: &PyList) -> Vec<(String, String)> {
-    let mut vec_of_tuples = Vec::new();
+    fn getcomp(&self, com_name: &str, act: &str) -> PyResult<Vec<(f64, String)>> {
+        let client = Client::with_uri_str(self.db.get_conn()).unwrap();
+        let db = client.database(self.db.get_dbname());
+        let coll = db.collection::<Document>(self.db.get_table());
 
-    for inner_list in py_list.iter() {
-        if let Ok(inner) = inner_list.extract::<Vec<String>>() {
-            if inner.len() == 2 {
-                vec_of_tuples.push((inner[0].clone(), inner[1].clone()));
+        let filter = doc! {"component_name": com_name, "action": act};
+        
+        let mut res = Vec::new();
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        //let input = coll.find(filter, None).unwrap();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_doc) = document.get_document("time") {
+                        if let Ok(time_float) = time_doc.get_f64("Float") {
+                            if let Ok(entity) = document.get_str("entity") {
+                                res.push((time_float, entity.to_string()));
+                            }
+                        } else if let Ok(time_int) = time_doc.get_i64("Int") {
+                            if let Ok(entity) = document.get_str("entity") {
+                                res.push((time_int as f64, entity.to_string()));
+                            }
+                        }
+                    }
+                } else {
+                    println!("Error: document is not found");
+                }
             }
         }
+
+        
+
+        // println!("{:#?}", res);
+
+        Ok(res)
     }
 
-    vec_of_tuples
+ 
+}
+
+fn pylist_to_vec_of_tuples(py_list: Option<&PyList>) -> Option<Vec<(String, String)>> {
+    let mut vec_of_tuples = Vec::new();
+    // match py_list{
+    //     Some(v) => println!("v: {:?}", v),
+    //     None => println!("None")
+    // }
+
+    if let Some(list) = py_list {
+        for item in list.iter() {
+            if let Ok(item) = item.extract::<Vec<String>>(){
+                if item.len() == 2 {
+                    vec_of_tuples.push((item[0].clone(), item[1].clone()));
+                }else {
+                    panic!("Unsupported type [Pylist -> [[str, str]] ]");
+                }
+            }else {
+                panic!("Unsupported type [Pylist -> [[str, str]] ]");}
+            
+        }
+        Some(vec_of_tuples)
+    } else {
+        None
+    }
 }
 
 fn str_to_catcomp(comp_cat: &str) -> CatComp {

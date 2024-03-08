@@ -6,10 +6,7 @@ type DBResult<T> = std::result::Result<T, DBERRO>;
 #[derive(Debug)]
 pub enum DBERRO {
     NotFound,
-    AlreadyExists,
-    InvalidData,
-    ConnectionError,
-    UnknownError,
+
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -70,12 +67,12 @@ pub struct CompInfo {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SimOutData {
-    time: Bignum,
-    component_category: CatComp,
-    component_name: String,
-    action: String,
-    entity: String,
-    metadata: Vec<(String, String)>,
+    pub time: Bignum,
+    pub component_category: CatComp,
+    pub component_name: String,
+    pub action: String,
+    pub entity: Option<String>,
+    pub metadata: Option<Vec<(String, String)>>,
 }
 
 impl DB {
@@ -210,15 +207,15 @@ impl SimuTable {
         component_category: CatComp,
         component_name: &str,
         action: &str,
-        entity: &str,
-        metadata: Vec<(String, String)>,
+        entity: Option<String>,
+        metadata: Option<Vec<(String, String)>>,
     ) {
         self.table.push(SimOutData {
             time,
             component_category,
             component_name: component_name.to_string(),
             action: action.to_string(),
-            entity: entity.to_string(),
+            entity,
             metadata,
         });
     }
@@ -226,8 +223,4 @@ impl SimuTable {
     pub fn tablelen(&self) -> usize {
         self.table.len()
     }
-}
-
-pub fn connect_db() -> DBResult<()> {
-    Ok(())
 }

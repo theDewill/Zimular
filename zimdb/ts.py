@@ -1,11 +1,24 @@
 import zimdb
 import random
 from typing import List, Union
+import pprint
 
 DBNAME = "SimulationDB"
 SETNAME = "SimulationSet"
 TABLENAME = "SimulationTable1"
-MONGO_URI = "mongodb://localhost:27017/"
+MONGO_URI = "mongodb+srv://antiloger:077antiloger@cluster0.i9knr5x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
+class ComponetInfo:
+
+    def __init__(self) -> None:
+        self.get_data = []
+        self.put_data = []
+        self.post_data = []
+
+    def show_table(self):
+        pprint.pprint(f"get ->> {self.get_data}")
+        pprint.pprint(f"put ->> {self.put_data}")
+        pprint.pprint(f"post ->> {self.post_data}")
 
 
 class DataManager:
@@ -29,8 +42,8 @@ class DataManager:
         componet_cat: str,
         componet_name: str,
         action: str,
-        entity: str,
-        metadata: List[List[str]],
+        entity: Union[str, None],
+        metadata: Union[List[List[str]], None],
     ):
         # need error handling
         self.data.add_data(time, componet_cat, componet_name, action, entity, metadata)
@@ -42,19 +55,41 @@ class DataManager:
         self.data.sendtable()
 
     def test1(self):
-        for i in range(1000000):
+        for i in range(10000):
             self.add_data(
                 i,
                 random.choice(["resource", "store", "container"]),
                 random.choice(["A", "B", "C"]),
-                random.choice(["get", "post", "put", "delete"]),
+                random.choice(["get", "post", "put"]),
                 f"user{i}",
                 [["hello", "1"], ["world", "2"]],
             )
+
+    def test2(self):
+        self.add_data(
+            11,
+            random.choice(["resource", "store", "container"]),
+            random.choice(["A", "B", "C"]),
+            random.choice(["get", "post", "put", "delete"]),
+            None,
+            None,
+        )
+
+    def get_comp_data(self, component: str) -> ComponetInfo:
+        comp = ComponetInfo()
+        comp.get_data = self.data.getcomp(component, "get")
+        comp.put_data = self.data.getcomp(component, "put")
+        comp.post_data = self.data.getcomp(component, "post")
+
+        return comp
 
 
 ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI)
 
 ZIMDB.test1()
-ZIMDB.send_db()
+#ZIMDB.test2()
+#ZIMDB.data.printtable()
+# ZIMDB.send_db()
 ZIMDB.data.sendtablecollection()
+ZIMDB.get_comp_data("A").show_table()
+
