@@ -28,3 +28,4 @@ class PoolManager(ABC):
     
     def getComponentPool(name: str):
         return PoolManager.ComponentPool[name]
+    

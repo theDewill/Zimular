@@ -1,12 +1,13 @@
 #ZStore.py
 from simpy import FilterStore, PriorityStore, Store
 from  .output_table import System_Output
-from typing import Callable, Any
+from typing import Callable, Any, Union
+from ZIM.ZDB import ZIMDB
 
 StorePool = {}
 
 class IStore:
-    def __init__(self, env, simpy_store, name):
+    def __init__(self, env, simpy_store: Union[Store, FilterStore, PriorityStore], name):
         self.env = env
         self.store = simpy_store
         self.name = name
@@ -21,29 +22,6 @@ class IStore:
         show items in container
         '''
         return self.store.items
-        
-
-    def put(self, item, entity="unknown"):
-        '''
-        put amount of items into container
-        '''
-        entity = entity_name(entity)
-
-        put_item = self.store.put(item)
-        self.update_put_output(item, entity)
-        self.system_table_append( entity=entity, activity="put")
-        return put_item
-
-    def get(self, entity="unknown"):
-        '''
-        get amount of items from container
-        '''
-        entity = entity_name(entity)
-
-        item = self.store.get()
-        self.update_get_output(item, entity)
-        self.system_table_append( entity=entity, activity="get")
-        return item
 
     def level(self):
         '''
@@ -51,25 +29,34 @@ class IStore:
         '''
         return len(self.store.items)
 
-    def update_get_output(self, item, entity):
+    def update_get_output(self, category, item, entity):
         if entity == "unknown":
-            self.get_output.append(
-                [self.env.now, item, len(self.store.items)]
-            )
-        else:
-            self.get_output.append(
-                [self.env.now, item, len(self.store.items), entity]
-            )
+            entity = None
 
-    def update_put_output(self, item, entity):
+        ZIMDB.add_data(
+            self.env.now,
+            category,
+            self.name,
+            "get",
+            entity,
+            len(self.store.items),
+            [["item", str(item)]]
+        )
+
+    def update_put_output(self, category, item, entity):
         if entity == "unknown":
-            self.put_output.append(
-                [self.env.now, item, len(self.store.items)]
-            )
-        else:
-            self.put_output.append(
-                [self.env.now, item, len(self.store.items), entity]
-            )
+            entity = None
+
+        ZIMDB.add_data(
+            self.env.now,
+            category,
+            self.name,
+            "put",
+            entity,
+            len(self.store.items),
+            [["item", str(item)]]
+        )
+            
 
     def system_table_append(self, entity, activity: str):
 
@@ -93,6 +80,22 @@ class ZStore(IStore):
 
         super().__init__(env, simpy_store, name)
 
+    def put(self, item, entity="unknown"):
+        entity = entity_name(entity)
+
+        put_item = self.store.put(item)
+        self.update_put_output("store" , item, entity)
+        #self.system_table_append( entity=entity, activity="put")
+        return put_item
+
+    def get(self, entity="unknown"):
+        entity = entity_name(entity)
+
+        item = self.store.get()
+        self.update_get_output("store", item, entity)
+        #self.system_table_append( entity=entity, activity="get")
+        return item
+
 class ZFilterStore(IStore):
     def __init__(self, env, simpy_store, name):
 
@@ -105,10 +108,18 @@ class ZFilterStore(IStore):
         entity = entity_name(entity)
 
         item = self.store.get(func)
-        self.update_get_output(item, entity)
-        self.system_table_append( entity=entity, activity="get<F>")
+        self.update_get_output("filterstore", item, entity)
+        #self.system_table_append( entity=entity, activity="get<F>")
         
         return item
+    
+    def put(self, item, entity="unknown"):
+        entity = entity_name(entity)
+
+        put_item = self.store.put(item)
+        self.update_put_output("filterstore", item, entity)
+        #self.system_table_append( entity=entity, activity="put<F>")
+        return put_item
 
 class ZPriorityStore(IStore):
     def __init__(self, env, simpy_store, name):
@@ -128,6 +139,14 @@ class ZPriorityStore(IStore):
 
         self.update_put_output(item, entity)
         self.system_table_append( entity=entity, activity="put<item>")
+
+    def get(self, entity="unknown"):
+        entity = entity_name(entity)
+
+        item = self.store.get()
+        self.update_get_output("prioritystore", item, entity)
+        #self.system_table_append( entity=entity, activity="get<P>")
+        return item
 
     
         

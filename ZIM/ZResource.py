@@ -3,7 +3,8 @@ from simpy import Resource, Environment, PriorityResource
 from .output_table import System_Output
 from .charts.charts import stairs_plot
 import sys
-
+from .ZDB import ZIMDB
+from typing import Union, Dict
 
 ResourcePool= {}
 
@@ -16,10 +17,6 @@ class IResource:
         self.res = res
         self.res_name = res_name
         self.cap = res.capacity
-        self.user_time = []
-        self.queue_time = []
-        self.enter_time = []
-        self.leave_time = []
 
     def run_func(self):
         print("you maybe calling wrong run method")
@@ -42,23 +39,51 @@ class IResource:
             f'priority={str(priority)}'
         ])
 
-    def update_user_time(self, entity):
+    def update_user_time(self, category, entity, prio):
         """
         Updates the user time.
         """
-        self.user_time.append([entity, self.env.now])
+        # self.user_time.append([entity, self.env.now])
+        ZIMDB.add_data(
+            self.env.now,
+            category,
+            self.res_name,
+            "queued",
+            entity,
+            len(self.res.queue),
+            None
+            #prio
+        )
 
-    def update_queue_time(self):
+    def enter_time(self, category, entity, prio):
         """
-        Updates the queue time.
+        Updates the enter time.
         """
-        self.queue_time.append([self.env.now, len(self.res.queue)])
+        ZIMDB.add_data(
+            self.env.now,
+            category,
+            self.res_name,
+            "enter",
+            entity,
+            len(self.res.queue),
+            None
+            #prio
+        )
 
-    def update_leave_time(self, entity):
+    def update_leave_time(self, category, entity, prio):
         """
         Updates the leave time.
         """
-        self.leave_time.append([entity, self.env.now])
+        ZIMDB.add_data(
+            self.env.now,
+            category,
+            self.res_name,
+            "leave",
+            entity,
+            len(self.res.queue),
+            None
+            #prio
+        )
 
     def staits_plot(self):
         """
@@ -82,24 +107,24 @@ class IRes(IResource):
     def __init__(self, env: Environment, res: Resource, res_name):
         super().__init__(env, res, res_name)
 
-    def run_func(self, func=None, *args, entity="entity", **kwargs):
+    def run_func(self, func=None, *args, entity: Union[str, Dict, None]="entity", **kwargs):
 
         with self.res.request() as req:
-            self.system_table_append(f'{entity["type"]}_{entity["id"]}', "queued")
+            #self.system_table_append(f'{entity["type"]}_{entity["id"]}', "queued")
             #self.user_time.append([str(req.proc), self.env.now])
-            self.update_user_time(entity=f'{entity["type"]}_{entity["id"]}')
+            self.update_user_time(category="resource",entity=f'{entity["type"]}_{entity["id"]}', prio=str(ttes(entity["priority"])))
             #self.queue_time.append([self.env.now, len(self.res.queue)])
-            self.update_queue_time()
-
+            
             yield req
-            self.enter_time.append([f'{entity["type"]}_{entity["id"]}', self.env.now])
-            self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter")
+            #self.enter_time.append([f'{entity["type"]}_{entity["id"]}', self.env.now])
+            self.enter_time(category="resource",entity=f'{entity["type"]}_{entity["id"]}', prio=str(ttes(entity["priority"])))
+            #self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter")
 
             yield self.env.process(func(self, *args, entity=entity, **kwargs))
             
-        self.update_leave_time(entity=f'{entity["type"]}_{entity["id"]}')    
+        self.update_leave_time(category="resource", entity=f'{entity["type"]}_{entity["id"]}', prio=str(ttes(entity["priority"])))    
 
-        self.system_table_append(f'{entity["type"]}_{entity["id"]}', "leave")
+        #self.system_table_append(f'{entity["type"]}_{entity["id"]}', "leave")
 
         
 
@@ -117,23 +142,21 @@ class IPiroRes(IResource):
 
         with self.res.request(priority=priority) as req:
 
-            self.system_table_append(f'{entity["type"]}_{entity["id"]}', "queued", priority=ttes(entity["priority"]))
-
+            # self.system_table_append(f'{entity["type"]}_{entity["id"]}', "queued", priority=ttes(entity["priority"]))
             #self.user_time.append([str(req.proc), self.env.now])
-            self.update_user_time(entity=f'{entity["type"]}_{entity["id"]}')
+            self.update_user_time(category="piorityresource",entity=f'{entity["type"]}_{entity["id"]}', prio=str(ttes(entity["priority"])))
             #self.queue_time.append([self.env.now, len(self.res.queue)])
-            self.update_queue_time()
 
             yield req
-            self.enter_time.append([f'{entity["type"]}_{entity["id"]}', self.env.now])
+            self.enter_time(category="piorityresource",entity=f'{entity["type"]}_{entity["id"]}', prio=str(ttes(entity["priority"])))
 
-            self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter", priority=ttes(entity["priority"]))
+            # self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter", priority=ttes(entity["priority"]))
 
             yield self.env.process(func(self, *args, entity=entity, **kwargs))
 
-        self.update_leave_time(entity=f'{entity["type"]}_{entity["id"]}')
+        self.update_leave_time(category="piorityresource", entity=f'{entity["type"]}_{entity["id"]}', prio=str(ttes(entity["priority"])))    
 
-        self.system_table_append(f'{entity["type"]}_{entity["id"]}', "leave", priority=ttes(entity["priority"]))
+        # self.system_table_append(f'{entity["type"]}_{entity["id"]}', "leave", priority=ttes(entity["priority"]))
 
 
 

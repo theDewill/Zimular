@@ -1,12 +1,16 @@
 use db::{Bignum, CatComp};
 use mongodb::{
-    bson::{doc, to_document, Document}, options::FindOptions, sync::Client
+    bson::{doc, to_document, Document},
+    options::FindOptions,
+    sync::Client,
 };
+use pyo3::exceptions::PyValueError;
+use prettytable::{Table, Row, Cell};
 use pyo3::{prelude::*, types::PyList};
 use serde::{Deserialize, Serialize};
 
 mod db;
-
+mod qeng;
 
 /// A Python module implemented in Rust.
 #[pymodule]
@@ -40,6 +44,7 @@ impl ZimDB {
         component_name: &str,
         action: &str,
         entity: Option<String>,
+        info: Option<f64>,
         metadata: Option<&PyList>,
     ) -> PyResult<()> {
         let time = process_bignum(py, time);
@@ -52,6 +57,7 @@ impl ZimDB {
             component_name,
             action,
             entity,
+            info,
             metadata,
         );
 
@@ -153,7 +159,7 @@ impl ZimDB {
         let coll = db.collection::<Document>(self.db.get_table());
 
         let filter = doc! {"component_name": com_name, "action": act};
-        
+
         let mut res = Vec::new();
 
         let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
@@ -180,14 +186,43 @@ impl ZimDB {
             }
         }
 
-        
-
         // println!("{:#?}", res);
 
         Ok(res)
     }
 
- 
+
+    
+
+    fn print_table_col(&self) -> PyResult<()> {
+        let client = Client::with_uri_str(self.db.get_conn()).unwrap();
+        let db = client.database(self.db.get_dbname());
+        let coll = db.collection::<Document>(self.db.get_table());
+
+        // Query the collection
+        let mut cursor = coll.find(None, None).map_err(|e| PyValueError::new_err(format!("MongoDB error: {}", e)))?;
+
+        // Create a table
+        let mut table = Table::new();
+        table.set_format(*prettytable::format::consts::FORMAT_CLEAN);
+
+        // Add headers
+        if let Some(doc) = cursor.next().transpose().map_err(|e| PyValueError::new_err(format!("MongoDB error: {}", e)))? {
+            let headers: Vec<_> = doc.keys().map(|k| k.to_string()).collect();
+            table.add_row(Row::from(headers));
+        }
+
+        // Add rows
+        while let Some(doc) = cursor.next().transpose().map_err(|e| PyValueError::new_err(format!("MongoDB error: {}", e)))? {
+            let row: Vec<_> = doc.values().map(|v| Cell::new(&v.to_string())).collect();
+            table.add_row(Row::from(row));
+        }
+        
+        // Print the table
+        table.printstd();
+
+        Ok(())
+    }
 }
 
 fn pylist_to_vec_of_tuples(py_list: Option<&PyList>) -> Option<Vec<(String, String)>> {
@@ -199,15 +234,15 @@ fn pylist_to_vec_of_tuples(py_list: Option<&PyList>) -> Option<Vec<(String, Stri
 
     if let Some(list) = py_list {
         for item in list.iter() {
-            if let Ok(item) = item.extract::<Vec<String>>(){
+            if let Ok(item) = item.extract::<Vec<String>>() {
                 if item.len() == 2 {
                     vec_of_tuples.push((item[0].clone(), item[1].clone()));
-                }else {
+                } else {
                     panic!("Unsupported type [Pylist -> [[str, str]] ]");
                 }
-            }else {
-                panic!("Unsupported type [Pylist -> [[str, str]] ]");}
-            
+            } else {
+                panic!("Unsupported type [Pylist -> [[str, str]] ]");
+            }
         }
         Some(vec_of_tuples)
     } else {

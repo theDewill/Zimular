@@ -36,6 +36,7 @@ class DataManager:
         self.table = tablename
         self.uri = uri
         self.data = zimdb.ZimDB(self.dbname, self.setname, self.uri, self.table)
+        print("DB connected ..............................")
 
     def add_data(
         self,
@@ -47,6 +48,7 @@ class DataManager:
         info: Union[int, float, None],
         metadata: Union[List[List[str]], None],
     ):
+        #print(time, componet_cat, componet_name, action, entity, info, metadata)
         # need error handling
         self.data.add_data(time, componet_cat, componet_name, action, entity, info, metadata)
 
@@ -56,6 +58,17 @@ class DataManager:
     def send_table(self):
         self.data.sendtable()
 
+    def uptable(self):
+        self.data.sendtablecollection()
+
+    def get_comp_data(self, component: str) -> ComponetInfo:
+        comp = ComponetInfo()
+        comp.get_data = self.data.getcomp(component, "get")
+        comp.put_data = self.data.getcomp(component, "put")
+        comp.post_data = self.data.getcomp(component, "post")
+
+        return comp
+    
     def test1(self):
         for i in range(100):
             self.add_data(
@@ -68,32 +81,7 @@ class DataManager:
                 None,
             )
 
-    def test2(self):
-        self.add_data(
-            11,
-            random.choice(["resource", "store", "container"]),
-            random.choice(["A", "B", "C"]),
-            random.choice(["get", "post", "put", "delete"]),
-            None,
-            random.choice([1, 2, 3, 4, 5]),
-            None,
-        )
-
-    def get_comp_data(self, component: str) -> ComponetInfo:
-        comp = ComponetInfo()
-        comp.get_data = self.data.getcomp(component, "get")
-        comp.put_data = self.data.getcomp(component, "put")
-        comp.post_data = self.data.getcomp(component, "post")
-
-        return comp
 
 
 ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI)
 
-ZIMDB.test1()
-#ZIMDB.test2()
-#ZIMDB.data.printtable()
-# ZIMDB.send_db()
-ZIMDB.data.sendtablecollection()
-#ZIMDB.get_comp_data("A").show_table()
-ZIMDB.data.print_table_col()

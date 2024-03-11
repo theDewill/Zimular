@@ -2,9 +2,9 @@ from ZIM.output_table import System_Output
 import simpy
 from manage import runReady
 from Genarator import customer_generator
+from ZIM.ZDB import ZIMDB
 
 env = simpy.Environment()
-
 
 def output():
     pass
@@ -19,7 +19,9 @@ if __name__ == "__main__":
     print("----------------START-----------------")
     runReady()
     run_simulation()
-    System_Output.show_table()
+    #System_Output.show_table()
+    ZIMDB.uptable()
+    ZIMDB.data.print_table_col()
 
     print("----------------END-----------------")
     

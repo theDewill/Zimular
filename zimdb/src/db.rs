@@ -72,6 +72,7 @@ pub struct SimOutData {
     pub component_name: String,
     pub action: String,
     pub entity: Option<String>,
+    pub info: Option<f64>,
     pub metadata: Option<Vec<(String, String)>>,
 }
 
@@ -208,6 +209,7 @@ impl SimuTable {
         component_name: &str,
         action: &str,
         entity: Option<String>,
+        info: Option<f64>,
         metadata: Option<Vec<(String, String)>>,
     ) {
         self.table.push(SimOutData {
@@ -216,6 +218,7 @@ impl SimuTable {
             component_name: component_name.to_string(),
             action: action.to_string(),
             entity,
+            info,
             metadata,
         });
     }
