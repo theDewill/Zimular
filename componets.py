@@ -1,14 +1,12 @@
 import simpy
-from ZIM.ZResource import IRes, IPiroRes
-from ZIM.ZContainer import IContainer
-from ZIM.ZStore import ZStore, ZFilterStore
+from ZIM.ZComponets import IRes, ZStore
 import random
 
 
 
 class Modeling_Machien(IRes):
-    def __init__(self, env, name):
-        super().__init__(env, simpy.Resource(env, capacity=1), name)
+    def __init__(self, env, name, workflow_name):
+        super().__init__(env, simpy.Resource(env, capacity=1), name, workflow_name=workflow_name)
         
         
     @IRes.run
@@ -22,24 +20,24 @@ class Modeling_Machien(IRes):
         print("Modeling_Machien is working")
 
 class Inspection_Machien(IRes):
-    def __init__(self, env, name):
-        super().__init__(env, simpy.Resource(env, capacity=1), name)
+    def __init__(self, env, name, workflow_name):
+        super().__init__(env, simpy.Resource(env, capacity=1), name, workflow_name=workflow_name)
         
     @IRes.run
     def run(self, entity):
         yield self.env.timeout(random.randint(1, 3))
 
 class Packing_Machien(IRes):
-    def __init__(self, env, name):
-        super().__init__(env, simpy.Resource(env, capacity=1), name)
+    def __init__(self, env, name, workflow_name):
+        super().__init__(env, simpy.Resource(env, capacity=1), name, workflow_name=workflow_name)
         
     @IRes.run
     def run(self, entity):
         yield self.env.timeout(random.randint(10, 15))
 
 class Modeling_Store(ZStore):
-    def __init__(self, env):
-        super().__init__(env, simpy.Store(env, capacity=10), "Modeling_Store")
+    def __init__(self, env, workflow_name):
+        super().__init__(env, simpy.Store(env, capacity=10), "Modeling_Store", workflow_name=workflow_name)
     
 
 

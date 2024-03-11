@@ -20,8 +20,8 @@ if __name__ == "__main__":
     runReady()
     run_simulation()
     #System_Output.show_table()
-    ZIMDB.uptable()
-    ZIMDB.data.print_table_col()
+    #ZIMDB.uptable()
+    #ZIMDB.data.print_table_col()
 
     print("----------------END-----------------")
     
