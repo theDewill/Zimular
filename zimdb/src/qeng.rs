@@ -72,7 +72,35 @@ impl QueryDB {
         // comp_name, action -> metadata ->PyDic<> 
     }
 
-    fn get_info(&self, comp_name: &str, action: &str) -> PyResult<()> {
+    fn get_info(&self, comp_name: &str, action: &str) -> PyResult<Vec<(f64, f64)>> {
+               
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res = Vec::new();
+
+        let filter = doc! {"component_name": comp_name, "action": action};
+        
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+               
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_doc) = document.get_document("time") {
+                        if let Ok(time_float) = time_doc.get_f64("Float") {
+                            if let Ok(entity) = document.get_f64("info") {
+                                res.push((time_float, entity.to_string()));
+                            }
+                        }
+                    }
+                } else {
+                    println!("Error: document is not found");
+                }
+            }
+        }
+
+        Ok(res)
 
     }
 

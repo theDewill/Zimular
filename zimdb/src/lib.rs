@@ -1,11 +1,11 @@
-use db::{Bignum, CatComp};
+use db::CatComp;
 use mongodb::{
     bson::{doc, to_document, Document},
     options::FindOptions,
     sync::Client,
 };
+use prettytable::{Cell, Row, Table};
 use pyo3::exceptions::PyValueError;
-use prettytable::{Table, Row, Cell};
 use pyo3::{prelude::*, types::PyList};
 use serde::{Deserialize, Serialize};
 
@@ -38,8 +38,7 @@ impl ZimDB {
 
     fn add_data(
         &mut self,
-        py: Python,
-        time: PyObject,
+        time: f64,
         component_category: &str,
         component_name: &str,
         action: &str,
@@ -47,7 +46,6 @@ impl ZimDB {
         info: Option<f64>,
         metadata: Option<&PyList>,
     ) -> PyResult<()> {
-        let time = process_bignum(py, time);
         let component_category = str_to_catcomp(component_category);
         let metadata = pylist_to_vec_of_tuples(metadata);
 
@@ -174,10 +172,6 @@ impl ZimDB {
                             if let Ok(entity) = document.get_str("entity") {
                                 res.push((time_float, entity.to_string()));
                             }
-                        } else if let Ok(time_int) = time_doc.get_i64("Int") {
-                            if let Ok(entity) = document.get_str("entity") {
-                                res.push((time_int as f64, entity.to_string()));
-                            }
                         }
                     }
                 } else {
@@ -191,33 +185,40 @@ impl ZimDB {
         Ok(res)
     }
 
-
-    
-
     fn print_table_col(&self) -> PyResult<()> {
         let client = Client::with_uri_str(self.db.get_conn()).unwrap();
         let db = client.database(self.db.get_dbname());
         let coll = db.collection::<Document>(self.db.get_table());
 
         // Query the collection
-        let mut cursor = coll.find(None, None).map_err(|e| PyValueError::new_err(format!("MongoDB error: {}", e)))?;
+        let mut cursor = coll
+            .find(None, None)
+            .map_err(|e| PyValueError::new_err(format!("MongoDB error: {}", e)))?;
 
         // Create a table
         let mut table = Table::new();
         table.set_format(*prettytable::format::consts::FORMAT_CLEAN);
 
         // Add headers
-        if let Some(doc) = cursor.next().transpose().map_err(|e| PyValueError::new_err(format!("MongoDB error: {}", e)))? {
+        if let Some(doc) = cursor
+            .next()
+            .transpose()
+            .map_err(|e| PyValueError::new_err(format!("MongoDB error: {}", e)))?
+        {
             let headers: Vec<_> = doc.keys().map(|k| k.to_string()).collect();
             table.add_row(Row::from(headers));
         }
 
         // Add rows
-        while let Some(doc) = cursor.next().transpose().map_err(|e| PyValueError::new_err(format!("MongoDB error: {}", e)))? {
+        while let Some(doc) = cursor
+            .next()
+            .transpose()
+            .map_err(|e| PyValueError::new_err(format!("MongoDB error: {}", e)))?
+        {
             let row: Vec<_> = doc.values().map(|v| Cell::new(&v.to_string())).collect();
             table.add_row(Row::from(row));
         }
-        
+
         // Print the table
         table.printstd();
 
@@ -264,14 +265,14 @@ fn str_to_catcomp(comp_cat: &str) -> CatComp {
     }
 }
 
-fn process_bignum(py: Python, value: PyObject) -> Bignum {
-    match value.extract::<i64>(py) {
-        Ok(f) => Bignum::Int(f),
-        Err(_) => match value.extract::<f64>(py) {
-            Ok(i) => Bignum::Float(i),
-            Err(_) => {
-                panic!("Unsupported type");
-            }
-        },
-    }
-}
+//fn process_bignum(py: Python, value: PyObject) -> Bignum {
+//    match value.extract::<i64>(py) {
+//        Ok(f) => Bignum::Int(f),
+//        Err(_) => match value.extract::<f64>(py) {
+//            Ok(i) => Bignum::Float(i),
+//            Err(_) => {
+//                panic!("Unsupported type");
+//            }
+//        },
+//    }
+//}

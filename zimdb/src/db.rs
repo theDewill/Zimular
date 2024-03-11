@@ -6,14 +6,13 @@ type DBResult<T> = std::result::Result<T, DBERRO>;
 #[derive(Debug)]
 pub enum DBERRO {
     NotFound,
-
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum Bignum {
-    Int(i64),
-    Float(f64),
-}
+//#[derive(Debug, Serialize, Deserialize)]
+//pub enum Bignum {
+//    Int(i64),
+//    Float(f64),
+//}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CatComp {
@@ -67,7 +66,7 @@ pub struct CompInfo {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SimOutData {
-    pub time: Bignum,
+    pub time: f64,
     pub component_category: CatComp,
     pub component_name: String,
     pub action: String,
@@ -204,7 +203,7 @@ impl SimuTable {
 
     pub fn add_data(
         &mut self,
-        time: Bignum,
+        time: f64,
         component_category: CatComp,
         component_name: &str,
         action: &str,
