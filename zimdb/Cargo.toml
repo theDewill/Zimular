@@ -12,6 +12,7 @@ crate-type = ["cdylib"]
 [dependencies]
 pyo3 = "0.20.3"
 prettytable-rs = "*"
+ndarray = "0.15.3"
 serde = { version = "1.0", features = ["derive"] }
 
 [dependencies.mongodb]
