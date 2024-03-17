@@ -6,26 +6,27 @@ __pycache__/
 
 # dependencies
 /webui/node_modules
+/webui/zimular_ui/node_modules
 /webui/.pnp
-/webui.pnp.js
-/webui.yarn/install-state.gz
+/webui/.pnp.js
+/webui/.yarn/install-state.gz
 
 # testing
-/webui/coverage
+/webui/zimular_ui/coverage
 
 # next.js
-/webui/.next/
-/webui/out/
+/webui/zimular_ui/.next/
+/webui/zimular_ui/out/
 
 # production
-/webui/build
+/webui/zimular_ui/build
 
 # misc
-/webui/.DS_Store
-/webui/*.pem
+/webui/zimular_ui/.DS_Store
+/webui/zimular_ui/*.pem
 
 # debug
-/webui/npm-debug.log*
+/webui/zimular_ui/npm-debug.log*
 /webui/yarn-debug.log*
 /webui/yarn-error.log*
 
@@ -33,9 +34,13 @@ __pycache__/
 /webui/.env*
 /webui/.local
 
+/webui/zimular_ui/.env*
+/webui/zimular_ui/.local
+
 # vercel
-/webui/.vercel
+/webui/zimular_ui/.vercel
 
 # typescript
 /webui/*.tsbuildinfo
-/webui/next-env.d.ts
+/webui/zimular_ui/*.tsbuildinfo
+/webui/zimular_ui/next-env.d.ts
