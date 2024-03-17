@@ -1,2 +1,41 @@
 unit_test/
 __pycache__/
+
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/webui/node_modules
+/webui/.pnp
+/webui.pnp.js
+/webui.yarn/install-state.gz
+
+# testing
+/webui/coverage
+
+# next.js
+/webui/.next/
+/webui/out/
+
+# production
+/webui/build
+
+# misc
+/webui/.DS_Store
+/webui/*.pem
+
+# debug
+/webui/npm-debug.log*
+/webui/yarn-debug.log*
+/webui/yarn-error.log*
+
+# local env files
+/webui/.env*
+/webui/.local
+
+# vercel
+/webui/.vercel
+
+# typescript
+/webui/*.tsbuildinfo
+/webui/next-env.d.ts
