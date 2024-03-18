@@ -1,3 +1,8 @@
+// import {getUI} from '@/utils/mngFetcher' //TODO: this is temporary 
+
+
+// export const inputs : any[] = [];
+// inputs.push(getUI(1,1,1));
 
 export const inputs = [
   {

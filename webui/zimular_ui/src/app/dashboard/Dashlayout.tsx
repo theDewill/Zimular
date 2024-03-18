@@ -4,7 +4,7 @@
 import Sidenav from '@/components/side-nav';
 import { IndexProvider } from '@/utils/IndexProvider';
 import React from 'react';
-import { inputs } from './data/playlists';
+
 
 const DashLayout: React.FC<{ children: React.ReactNode }> = (attr) => {
 

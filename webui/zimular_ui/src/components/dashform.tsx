@@ -1,7 +1,7 @@
 "use client"
-import React from 'react'
-import { inputs } from '@/app/dashboard/data/playlists'
-//import {getUI} from '@/utils/mngFetcher' //TODO: this is temporary 
+import React, { useEffect } from 'react'
+//import { inputs } from '@/app/dashboard/data/playlists'
+
 import { TriangleRightIcon } from '@radix-ui/react-icons'
 import {
     Accordion,
@@ -25,39 +25,29 @@ import { Input } from './ui/input';
 import { DialogClose } from '@radix-ui/react-dialog'
 
 
-// let inputs : any[] = [];
-// inputs.push(getUI(1,1,1));
+let inputs : any[] = [];
+
+// In your page.tsx
+
+  
 
 
 
+const Dashform = (attr : any) => {
 
-const Dashform = (attr:any) => {
+    useEffect(() => {
+        async function fetchData() {
+          const response = await fetch('/getui');
+          const result = await response.json();
+          console.log("result ek recieved : " + result.data);
+          inputs.push(result.data);
+        }
+      
+        fetchData();
+      }, []);
 
     const [formData, setFormData] = React.useState({});
-
     
-
-
-
-    // const handleSubmit = (e:any) => {
-    //     e.preventDefault();
-
-    //     const updatedFormData: { [key: string]: any } = { ...formData }
-
-    //     inputs.forEach((input) => {
-    //             input.group.forEach((group) => {
-    //                 group.fields.forEach((field) => {
-    //                     const value = e.target.elements[field.id].value;
-    //                     updatedFormData[input.user_id] = updatedFormData[input.user_id] || {};
-    //                     updatedFormData[input.user_id][group.group_id] = updatedFormData[input.user_id][group.group_id] || {};
-    //                     updatedFormData[input.user_id][group.group_id][field.name] = field.type === "checkbox" ? e.target.elements[field.id].checked : value;
-    //                 });
-    //             });
-    //         });
-
-    //     setFormData(updatedFormData)}
-
-
 
         //TODO: second data
         const handleSubmit = async (e : any) => {
@@ -83,7 +73,7 @@ const Dashform = (attr:any) => {
             });
         
             const responseData = await response.json();
-            console.log(responseData);
+            
             // Handle the response data as needed
         }
         
@@ -97,7 +87,7 @@ const Dashform = (attr:any) => {
         <div className={test}>
                 <form onSubmit={handleSubmit}>
                     <div className="flex justify-between mt-3">
-                        <p className="text-5xl font-bold">Input <span className="text-lg">[ {inputs[0].input} ]</span></p>
+                        <p className="text-5xl font-bold">Input <span className="text-lg">[ {inputs[0]} ]</span></p>
                         <Dialog>
                             <DialogTrigger asChild>
                                 <Button variant="default" type="submit">

@@ -9,6 +9,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 //TODO: simID and sesId : remove them if not needed
 async function getUI(userid : number , sesID : number, simID : number) {
   try {
+   
     
     await client.connect();
     // const database = client.db('ZimularDB');
@@ -16,8 +17,9 @@ async function getUI(userid : number , sesID : number, simID : number) {
     const collection = client.db('ZimularDB').collection('users');
     const query = { uid: userid  };
     const document = await collection.findOne(query);
-    const sim_session = document ? document.simulations?.[String(simID)]?.sessions?.[String(sesID)] : null;
-    return { sim_session }; // This creates an object literal with a property 'flowers'.
+    const sim_ui= document ? document.simulations?.[String(simID)]?.ui : null;
+    
+    return { sim_ui }; // This creates an object literal with a property 'flowers'.
   } catch (err) {
     console.error('Failed to retrieve document:', err);
   } finally {

@@ -174,6 +174,14 @@ class MongoTools {
         return result.data[session].input;
     }
 
+    async getUI (u_id : number, simID : number) {
+        await this.connect()
+        const col = this.Mongo.db("ZimularDB").collection("users");
+        const query = { uid: u_id };
+        const result = await col.findOne(query);
+        return result.simulations[String(simID)].ui;
+    }
+
     async storeUI (uid : number, simID : number, sesID : number, data : any) {
         await this.connect()
         const col = this.Mongo.db("ZimularDB").collection("users");
@@ -300,6 +308,14 @@ let sessionManager = new SessionManager();
     //waitng till output gets writtn to mongo
     await EventHandler.getEvent(uid, String(sid) ).waiting;
   })
+
+
+  app.get('/getui', async (req : any, res : any) => {
+    let uid = req.query.uid;
+    let simID = req.query.simID;
+    let results = await mongo.getUI(1, 1);
+    res.json({"data": results});
+  });
 
   app.get('/sendInputs', async (req : any, res : any) => {
     //i must pass this 2 only with query or whatevr
