@@ -53,7 +53,7 @@ export default function SignupPage() {
                 <hr />
                 <label htmlFor="username" className="mt-3 block text-black text-base mb-2">Username</label>
                 <input 
-                className="border w-full text-base px-2 py-1 focus:outline-none focus:ring-0 focus:border-gray-600 rounded-md"
+                className="border w-full text-base px-2 py-1 text-black focus:outline-none focus:ring-0 focus:border-gray-600 rounded-md"
                     id="username"
                     type="text"
                     value={user.username}
@@ -62,7 +62,7 @@ export default function SignupPage() {
                     />
                 <label htmlFor="email" className="mt-3 block text-black text-base mb-2">Email</label>
                 <input 
-                className="border w-full text-base px-2 py-1 focus:outline-none focus:ring-0 focus:border-gray-600 rounded-md"
+                className="border w-full text-base px-2 py-1 text-black focus:outline-none focus:ring-0 focus:border-gray-600 rounded-md"
                     id="email"
                     type="text"
                     value={user.email}

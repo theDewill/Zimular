@@ -1,6 +1,8 @@
 import React from "react";
 import { TextField } from "@mui/material";
 
+
+
 const data = {
     "form": {
         "group": [
@@ -10,25 +12,25 @@ const data = {
                 "fields":[
                     {
                         "id": "input1",
-                        "name" : "name",
+                        "name" : "",
                         "label" : "Input 1",
                         "required" : true,
                     },
                     {
                         "id": "input2",
-                        "name" : "name2",
+                        "name" : "",
                         "label" : "Input 2",
                         "required" : true,
                     },
                     {
                         "id": "input3",
-                        "name" : "name3",
+                        "name" : "",
                         "label" : "Input 3",
                         "required" : true,
                     },
                     {
                         "id": "input4",
-                        "name" : "name4",
+                        "name" : "",
                         "label" : "Input 4",
                         "required" : true,
                     }
@@ -40,25 +42,25 @@ const data = {
                 "fields": [
                     {
                         "id": "input1",
-                        "name" : "name",
+                        "name" : "",
                         "label" : "Input 1",
                         "required" : true,
                     },
                     {
                         "id": "input2",
-                        "name" : "name2",
+                        "name" : "",
                         "label" : "Input 2",
                         "required" : true,
                     },
                     {
                         "id": "input3",
-                        "name" : "name3",
+                        "name" : "",
                         "label" : "Input 3",
                         "required" : true,
                     },
                     {
                         "id": "input4",
-                        "name" : "name4",
+                        "name" : "",
                         "label" : "Input 4",
                         "required" : true,
                     }
@@ -74,12 +76,13 @@ export default function Form() {
             {
                 data.form.group.map((item) => {
                     return (
-                        <div key={item.group_id}>
-                            <h2>{item.group_name}</h2>
+                        <div className="mb-6  space-x-10 space-y-6" key={item.group_id}>
+                            <h2 className="mb-5 pl-5">{item.group_name}</h2>
                             {
                                 item.fields.map((field) => {
                                     return(
-                                        <TextField
+                                        
+                                        <TextField 
                                             key={field.id}
                                             label={field.label}
                                             required={field.required}
@@ -87,6 +90,7 @@ export default function Form() {
                                             defaultValue={field.name}
                                             size="small"
                                         />
+                                        
                                     )
                                 })
                             }
