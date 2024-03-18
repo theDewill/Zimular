@@ -23,7 +23,7 @@ async def socket_connect(url,u_id):
     WBdata = json.loads(WBjson)
     
     async with wb.connect(WBdata['webUri'].strip()) as websocket:
-        with open("/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/MultiAPI/ModelApi/JSON/startup.json", "r") as file:
+        with open("/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/Framework/ZIM/API/MultiAPI/ModelApi/JSON/startup.json", "r") as file:
                     data = json.load(file)
                     #response = await websocket.send(json.dumps(data))
                     #return response.text
@@ -100,7 +100,7 @@ def ignite():
 
 #TODO: check ignite command
 #argument must be the url path in node server which return sokcet ur and process the sent json 
-asyncio.get_event_loop().run_until_complete(socket_connect('http://localhost:3003/handshake',12))
+asyncio.get_event_loop().run_until_complete(socket_connect('http://localhost:3004/handshake',12))
 
 
 

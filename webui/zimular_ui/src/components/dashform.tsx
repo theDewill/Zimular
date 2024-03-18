@@ -1,7 +1,7 @@
 "use client"
 import React from 'react'
-//import { inputs } from '@/app/dashboard/data/playlists'
-import {getUI} from '@/utils/mngFetcher' //TODO: this is temporary 
+import { inputs } from '@/app/dashboard/data/playlists'
+//import {getUI} from '@/utils/mngFetcher' //TODO: this is temporary 
 import { TriangleRightIcon } from '@radix-ui/react-icons'
 import {
     Accordion,
@@ -25,8 +25,8 @@ import { Input } from './ui/input';
 import { DialogClose } from '@radix-ui/react-dialog'
 
 
-let inputs : any[] = [];
-inputs.push(getUI(1,1,1));
+// let inputs : any[] = [];
+// inputs.push(getUI(1,1,1));
 
 
 

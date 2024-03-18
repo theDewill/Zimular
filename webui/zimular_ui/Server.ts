@@ -3,12 +3,13 @@ const { createServer } = require('http');
 const next = require('next');
 const { Server } = require('ws');
 const bodyParser = require('body-parser');
-const {storeUI} = require('@/utils/mngFetcher');
+
 //const { connectManager, MongoTools , EventManager, SessionManager } = require ('./tools');
-const { MongoClient, ServerApiVersion }  = require('mongodb')
+const { MongoClient, ServerApiVersion }  = require('mongodb');
 
 
-//-----SOCKET MODEL----
+
+//-----SOCKET MODEL----ß
 // connectionpool socket object structure
 // {
 //     'socketid' : 12,
@@ -260,7 +261,10 @@ const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
 
+
 nextApp.prepare().then(() => {
+
+    console.log("done preparing.... next app");
 
   const app = express();
   app.use(bodyParser.json());
@@ -400,13 +404,17 @@ let sessionManager = new SessionManager();
     
   });
 
-  app.all('*', (req : any, res : any) => {
+  app.all('*', async (req : any, res : any) => {
     return handle(req, res);
   });
 
-  let port = 3003
+  let port = 3004
   server.listen(port, ( err : any ) => {
     if (err) throw err;
     console.log(`> Ready on http://localhost:${port}`);
   });
-});
+
+
+}); //next end
+
+
