@@ -1,3 +1,4 @@
+import Card from "@/components/card";
 import Areachart from "@/components/charts/Areachart";
 import Doughnutchart from "@/components/charts/Doughnutchart";
 import Horizontalchart from "@/components/charts/Horizontalchart";
@@ -16,7 +17,12 @@ export default function Overview() {
             {/* <Linechart /> */}
             {/* <Multiaxislinechart /> */}
             {/* <Piechart /> */}
-            <Doughnutchart/>
+            {/* <Doughnutchart/> */}
+            <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-1">
+                    <Card title="Overview" description="This is the overview page" />
+                </div>
+            </div>
         </div>
     )
 }
