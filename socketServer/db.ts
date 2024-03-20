@@ -18,7 +18,7 @@ class MongoTools {
     }
 
 
-    async findSim(userId : number) {
+    async findActiveSim(userId : number) {
         try {
             await this.connect()
             const collection = this.Mongo.db("ZimularDB").collection("users");
@@ -120,6 +120,44 @@ class MongoTools {
         }
     }
 
+
+    async createNextSession(userId : number , simId : number, ses_id : number) {
+        try {
+            await this.connect()
+            const collection = this.Mongo.db("ZimularDB").collection("users");
+
+            
+
+            // Define the structure of the new simulation
+            const newSes = {
+                [`simulations.${simId}.sessions.${ses_id}`]: {
+                    inputs: {},
+                    outputOV: {}
+                }
+            };
+
+            // Update the document for the specified user ID
+            const updateResult = await collection.updateOne(
+                { "uid": userId }, // Filter document by user ID
+                { $set: newSes } // Use $set operator to add the new simulation
+            );
+
+            if (updateResult.matchedCount === 0) {
+                console.log("User ID not found.");
+                return null; // User ID was not found in the collection
+            } else if (updateResult.modifiedCount === 1) {
+                console.log(`Empty session with ID ${ses_id} created for user ${userId}.`);
+                return ses_id; // Successfully created the empty simulation
+            } else {
+                console.log("Simulation was not created.");
+                return null; // The operation did not succeed
+            }
+        } catch (error) {
+            console.error("Error in createEmptySim:", error);
+            throw error; // Or handle it as per your application's error handling policy
+        }
+    }
+
     async connect() {
         await this.Mongo.connect();
         await this.Mongo.db("admin").command({ ping: 1 });
@@ -161,22 +199,20 @@ class MongoTools {
         const qry = {uid : Number(uid)};
         const options = { upsert: true };
         let updateDoc :any = { $set: {} };
-        console.log("this is the content from startup.json" , data);
         updateDoc.$set[`simulations.${simID}.ui`] = data;
         await col.updateOne(qry, updateDoc, options);
         console.log(`upated ui for the simualtion ${simID}`)
     }
 
-    async storeInput(u_id : string, s_id : string , data : any) {
+    async storeInput(u_id : number, sim_id : number , ses_id : number , data : any) {
         await this.connect()
         const col = this.Mongo.db("ZimularDB").collection("users");
-        const query = { uid: Number(u_id) };
+        const query = { uid: u_id };
         const options = { upsert: true };
-        let session = `session_${s_id}`;
         let updateDoc :any = { $set: {} };
-        updateDoc.$set[`data.${session}.input`] = data;
+        updateDoc.$set[`simulations.${sim_id}.sessions.${ses_id}.input`] = data;
         await col.updateOne(query, updateDoc, options);
-        console.log(`upated input data for session - ${s_id} to mongo`)
+        console.log(`upated input data for session - ${ses_id} to mongo`);
     }
 
     async storeOutput (u_id : string, s_id : string, outputData : any) { // here output has the read and recived json from fmk model

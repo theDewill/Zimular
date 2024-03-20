@@ -52,18 +52,18 @@ const wsk = new Server({ server });
     //i must pass this 2 only with query or whatevr
     let uid = req.query.uid;
     let data = req.query.data;
-  
+    let ifActiveSim = await mongo.findActiveSim(Number(uid));
     
     let sid = sessionManager.getSession(Number(uid))?.toString();
     //this has the data entered by user via web interfaec
-    await mongo.storeInput(uid, String(sid) , data);
+    await mongo.storeInput(Number(uid), Number(ifActiveSim), Number(sid) , data);
     //-- calling the input settings sender
     let send_pack = {
       'type': 'data', // here 1) calib - need startup again [model changed or first time]  2) data - normal transmission input output
       'file_name' : `inputs_${uid}_${sid}`, 
       'uid' : uid,
       'sid' : sid,
-      'content': await mongo.getInputs(uid, String(sid)),
+      'content': data ,
     }
     let socket = conManager.getSocket(Number(uid));
     socket.send(JSON.stringify(send_pack));
@@ -78,7 +78,8 @@ const wsk = new Server({ server });
     //     sid: sid,
     //     content : await mongo.getOutput(uid, sid)
     //   });
-      sessionManager.nextSession(Number(uid)); // this will increment the session number
+    sessionManager.nextSession(Number(uid)); // this will increment the session number
+    await mongo.createNextSession(Number(uid) , Number(ifActiveSim), Number(sessionManager.getSession(Number(uid))));
       //--here i must update the sid in event manager cevent
       res.json({"status": "successFully event demolished"});
   
@@ -91,7 +92,7 @@ const wsk = new Server({ server });
     sessionManager.setSession(Number(uid));
     EventHandler.on(uid, String(sessionManager.getSession(Number(uid))));
     
-    let ifActiveSim = await mongo.findSim(Number(uid));
+    let ifActiveSim = await mongo.findActiveSim(Number(uid));
     if (ifActiveSim != null) {
         res.json({"status": "sim already exists"});
         return;
@@ -138,7 +139,9 @@ const wsk = new Server({ server });
   
     socket.on('message', async (message : any) => {
         
-      message = JSON.parse(message);
+        message = JSON.parse(message);
+
+        //Message Type : Calib
         if (message['type'] == 'calib') {
           console.log(`calib message received with uid: ${message['uid']}`);
           conManager.addConnection(Number(message['uid']) , socket);
@@ -147,25 +150,27 @@ const wsk = new Server({ server });
         //   sessionManager.setSession(Number(message['uid']));
         //   EventHandler.on(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
 
-         
-
-          await mongo.storeUI(Number(message['uid']), 1, message['content']);
+        let ifActSim = await mongo.findActiveSim(Number(message['uid']));
+        if (ifActSim != null) {
+          await mongo.storeUI(Number(message['uid']), Number(ifActSim), message['content']);
+          EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(message['uid']))), "ui");
+        } else {
+          let createdSim = await mongo.createEmptySim(Number(message['uid']));
+          await mongo.storeUI(Number(message['uid']), Number(createdSim), message['content']);
           EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(message['uid']))), "ui");
           
-        //   let sock = conManager.getSocket(Number(message['uid']));
-        //   sock.send(JSON.stringify({"type": "calib","msg" : "so here the wave from socket"}));
-
-
-          
+        }
           
         }
+        //Message Type : Data
         else if (message['type'] == 'data') {
+          console.log(`data message received with uid: ${message['uid']}`);
             if (sessionManager.getSession(Number(message['uid'])) != 1) {
               EventHandler.on(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
             }
-          
-  
-            await mongo.storeOutput(message['uid'], String(sessionManager.getSession(Number(message['uid']))), message['content']);
+            let ifActSim = await mongo.findActiveSim(Number(message['uid']));
+            // This is the Overview
+            await mongo.storeOutput(message['uid'], String(ifActSim), String(sessionManager.getSession(Number(message['uid']))), message['content']);
             //TODO: here i will have to call a custom event that will resolve await in SendInput endpoiint hold and send the response
   
             //now releasing the response thread
