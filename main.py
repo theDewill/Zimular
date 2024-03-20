@@ -1,8 +1,8 @@
 from ZIM.output_table import System_Output
 import simpy
-from manage import runReady
 from Genarator import customer_generator
-from ZIM.ZDB import ZIMDB
+from manage import runReady
+
 
 env = simpy.Environment()
 
@@ -17,6 +17,7 @@ def run_simulation():
     
 if __name__ == "__main__":
     print("----------------START-----------------")
+    
     runReady()
     run_simulation()
     #System_Output.show_table()

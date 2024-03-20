@@ -319,7 +319,7 @@ class IStore:
         self, env, simpy_store: Union[Store, FilterStore, PriorityStore], name
     ):
         self.env = env
-        self.store = simpy_store
+        self.store: Union[Store, FilterStore, PriorityStore] = simpy_store
         self.name = name
         self.capacity = simpy_store.capacity
 

@@ -1,6 +1,12 @@
 # main.py
-from componets import *
-
+from ZIM.ZComponets import ZStore
+from componets import (
+    Inspection_Machien,
+    Modeling_Machien,
+    Packing_Machien,
+    Modeling_Store,
+)
+import simpy
 
 # -------------template----------------
 # class workflow:

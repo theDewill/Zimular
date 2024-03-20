@@ -29,9 +29,9 @@ struct ZimDB {
 #[pymethods]
 impl ZimDB {
     #[new]
-    fn new(dbname: &str, name: &str, conn: &str, tablename: &str) -> PyResult<Self> {
+    fn new(dbname: &str, name: &str, conn: &str, tablename: &str, len: usize) -> PyResult<Self> {
         Ok(ZimDB {
-            db: db::DB::new(dbname, name, conn, tablename).unwrap(),
+            db: db::DB::new(dbname, name, conn, tablename, len).unwrap(),
             table: db::SimuTable::new(tablename),
         })
     }
@@ -59,7 +59,18 @@ impl ZimDB {
             metadata,
         );
 
+        if self.table.tablelen() == self.db.get_dblen() {
+            self.sendtablecollection().unwrap();
+            self.table.clear_table();
+            self.db.change_modifid(true);
+            self.db.change_savetime();
+        }
+
         Ok(())
+    }
+
+    fn add_input_data_group(&mut self, groupname: &str, key: &str, value: &str) -> PyResult<()> {
+        Ok(self.db.add_inputdata(groupname, key, value).unwrap())
     }
 
     fn add_workflow(&mut self, name: &str) -> PyResult<()> {
@@ -67,29 +78,16 @@ impl ZimDB {
         Ok(())
     }
 
-    //init component_info
-
-    fn add_resource(&mut self, name: &str, workflow: &str, component_name: &str) -> PyResult<()> {
+    fn addcomp_toworkflow(
+        &mut self,
+        workflow_name: &str,
+        comp_name: &str,
+        comp_cat: &str,
+    ) -> PyResult<()> {
+        let comp_cat = str_to_catcomp(comp_cat);
         self.db
-            .add_resource(name, workflow, component_name)
+            .add_com_to_workflow(workflow_name, comp_cat, comp_name)
             .unwrap();
-        Ok(())
-    }
-
-    fn add_container(&mut self, name: &str, workflow: &str, component_name: &str) -> PyResult<()> {
-        self.db
-            .add_container(name, workflow, component_name)
-            .unwrap();
-        Ok(())
-    }
-
-    fn add_store(&mut self, name: &str, workflow: &str, component_name: &str) -> PyResult<()> {
-        self.db.add_store(name, workflow, component_name).unwrap();
-        Ok(())
-    }
-
-    fn add_custom(&mut self, name: &str, workflow: &str, component_name: &str) -> PyResult<()> {
-        self.db.add_custom(name, workflow, component_name).unwrap();
         Ok(())
     }
 

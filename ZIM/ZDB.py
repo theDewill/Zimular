@@ -7,10 +7,11 @@ DBNAME = "SimulationDB"
 SETNAME = "SimulationSet"
 TABLENAME = "SimulationTable1"
 MONGO_URI = "mongodb://localhost:27017"
+BUFFER_SIZE = 10000
 # "mongodb+srv://antiloger:077antiloger@cluster0.i9knr5x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-class ComponetInfo:
 
+class ComponetInfo:
     def __init__(self) -> None:
         self.get_data = []
         self.put_data = []
@@ -30,12 +31,15 @@ class DataManager:
 
     """
 
-    def __init__(self, dbname, setname, tablename, uri):
+    def __init__(self, dbname, setname, tablename, uri, buffer_size):
         self.dbname = dbname
         self.setname = setname
         self.table = tablename
         self.uri = uri
-        self.data = zimdb.ZimDB(self.dbname, self.setname, self.uri, self.table)
+        self.buffer_size = buffer_size
+        self.data = zimdb.ZimDB(
+            self.dbname, self.setname, self.uri, self.table, self.buffer_size
+        )
         print("DB connected ..............................")
 
     def add_data(
@@ -48,9 +52,11 @@ class DataManager:
         info: Union[int, float, None],
         metadata: Union[List[List[str]], None],
     ):
-        #print(time, componet_cat, componet_name, action, entity, info, metadata)
+        # print(time, componet_cat, componet_name, action, entity, info, metadata)
         # need error handling
-        self.data.add_data(time, componet_cat, componet_name, action, entity, info, metadata)
+        self.data.add_data(
+            time, componet_cat, componet_name, action, entity, info, metadata
+        )
 
     def send_db(self):
         self.data.senddb()
@@ -68,7 +74,7 @@ class DataManager:
         comp.post_data = self.data.getcomp(component, "post")
 
         return comp
-    
+
     def test1(self):
         for i in range(100):
             self.add_data(
@@ -82,6 +88,4 @@ class DataManager:
             )
 
 
-
-ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI)
-
+ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI, BUFFER_SIZE)
