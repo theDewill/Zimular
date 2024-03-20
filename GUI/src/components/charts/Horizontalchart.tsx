@@ -1,60 +1,79 @@
+import React from "react";
 import {
-    Chart as Chartjs,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-} from 'chart.js';
-import { Bar } from "react-chartjs-2";
-import React from 'react'
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from "recharts";
 
-Chartjs.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+const data = [
+  {
+    name: "Page A",
+    uv: 4000,
+    pv: 2400,
+    amt: 2400
+  },
+  {
+    name: "Page B",
+    uv: 3000,
+    pv: 1398,
+    amt: 2210
+  },
+  {
+    name: "Page C",
+    uv: 2000,
+    pv: 9800,
+    amt: 2290
+  },
+  {
+    name: "Page D",
+    uv: 2780,
+    pv: 3908,
+    amt: 2000
+  },
+  {
+    name: "Page E",
+    uv: 1890,
+    pv: 4800,
+    amt: 2181
+  },
+  {
+    name: "Page F",
+    uv: 2390,
+    pv: 3800,
+    amt: 2500
+  },
+  {
+    name: "Page G",
+    uv: 3490,
+    pv: 4300,
+    amt: 2100
+  }
+];
 
-const options = {
-    indexAxis: 'y' as const,
-    elements: {
-        bar: {
-            borderWidth: 2,
-        },
-    },
-    responsive: true,
-    plugins: {
-        legend: {
-            position: 'left',
-        },
-        title: {
-            display: true,
-            text: 'Zimular Data Viz',
-        },
-    },
-};
-
-const data = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [
-        {
-            label: 'My First Dataset',
-            data: [65, 59, 80, 81, 56, 55],
-            backgroundColor: 'rgb(255, 99, 132)',
-        },
-        {
-            label: 'My Second Dataset',
-            data: [28, 48, 40, 19, 86, 27],
-            backgroundColor: 'rgb(54, 162, 235)',
-        }
-    ],
-};
-
-
-const Horizontalchart = () => {
-
-    return (
-        <div>
-            <Bar data={data} options={options} />
-        </div>
-    )
+export default function Horizontalchrt() {
+  return (
+    <BarChart
+      width={500}
+      height={300}
+      data={data}
+      margin={{
+        top: 5,
+        right: 30,
+        left: 20,
+        bottom: 5
+      }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="pv" fill="#8884d8" />
+      <Bar dataKey="uv" fill="#82ca9d" />
+    </BarChart>
+  );
 }
-
-export default Horizontalchart
