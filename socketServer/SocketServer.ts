@@ -1,0 +1,165 @@
+const express = require('express');
+const { createServer } = require('http');
+const { Server } = require('ws');
+const bodyParser = require('body-parser');
+
+const {conManager, EventHandler, sessionManager} = require('./tools');
+const {mongo} = require('./db');
+
+
+
+const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+const server = createServer(app);
+const wsk = new Server({ server });
+
+  
+  app.get('/sendSubReqs', async (req : any,res : any) => {
+    //i must pass this 2 only with query or whatevr
+    let uid = req.query.uid;
+    let data = req.query.data;
+  
+    let sid = sessionManager.getSession(Number(uid));
+    
+    //TODO: wether store in mongo or not
+    //await mongo.storeSubReq(uid, sid, data);
+    //calling the input settings sender
+    let send_pack = {
+      'type': 'data', // here 1) calib - need startup again [model changed or first time]  2) data - normal transmission input output
+      'file_name' : `subreqs_${uid}_${sid}`, 
+      'uid' : uid,
+      'sid' : sid,
+      'content': null,//await mongo.getSubReq(uid, sid),
+    }
+    let socket = conManager.getSocket(Number(uid));
+    socket.send(JSON.stringify(send_pack));
+    //waitng till output gets writtn to mongo
+    await EventHandler.getEvent(uid, String(sid) ).waiting;
+  })
+
+
+  app.get('/getui', async (req : any, res : any) => {
+    console.log("getui called");
+    let uid = req.query.uid;
+    let simID = req.query.simID;
+    let results = await mongo.getUI(Number(uid), Number(simID));
+    res.json({"data": results});
+  });
+
+  app.get('/sendInputs', async (req : any, res : any) => {
+    //i must pass this 2 only with query or whatevr
+    let uid = req.query.uid;
+    let data = req.query.data;
+  
+    
+    let sid = sessionManager.getSession(Number(uid))?.toString();
+    //this has the data entered by user via web interfaec
+    await mongo.storeInput(uid, String(sid) , data);
+    //-- calling the input settings sender
+    let send_pack = {
+      'type': 'data', // here 1) calib - need startup again [model changed or first time]  2) data - normal transmission input output
+      'file_name' : `inputs_${uid}_${sid}`, 
+      'uid' : uid,
+      'sid' : sid,
+      'content': await mongo.getInputs(uid, String(sid)),
+    }
+    let socket = conManager.getSocket(Number(uid));
+    socket.send(JSON.stringify(send_pack));
+    //waitng till output gets writtn to mongo
+    await EventHandler.getEvent(uid, String(sid)).waiting;
+  
+    //TODO: this will load the output ui with recieved outputs -- uncomment this after TEST
+  
+    // const response = await axios.post('http://another-api-endpoint.com/profile', {
+    //     // Your JSON data here
+    //     uid: uid,
+    //     sid: sid,
+    //     content : await mongo.getOutput(uid, sid)
+    //   });
+      sessionManager.nextSession(Number(uid)); // this will increment the session number
+      //--here i must update the sid in event manager cevent
+      res.json({"status": "successFully event demolished"});
+  
+    
+  })
+
+
+  app.post('/handshake', (req : any, res : any) => {
+
+    //TODO: implement code to read startup json file and create tehe ui componenets
+    const websocketUrl = `ws://${req.headers.host}`;
+    let rec_data = req.body;
+    let sockID = 1 //conManager.connectionPool.size
+  
+    //--Creating an event for the user
+    
+    //TODO: DB Process - save socketID in respective user doc 
+    res.json({ webUri: websocketUrl, socketid : sockID });
+  
+  });
+  
+  // WebSocket setup here, similar to what you have in your route.ts
+  wsk.on('connection', (socket : any) => {
+    // Your connection logic
+    console.log('WebSocket connected');
+    //object to be sent to the socket
+    let send_pack = {
+      'type': NaN, // here 1) calib - need startup again [model changed or first time]  2) data - normal transmission input output
+      'content': NaN, 
+    }
+  
+    socket.on('message', async (message : any) => {
+        
+      message = JSON.parse(message);
+        if (message['type'] == 'calib') {
+          console.log(`calib message received with uid: ${message['uid']}`);
+          conManager.addConnection(Number(message['uid']) , socket);
+          sessionManager.setSession(Number(message['uid']))
+
+          //-------- temp ----------
+          await mongo.storeUI(Number(message['uid']), 1, 1, message['content']);
+          
+          let sock = conManager.getSocket(Number(message['uid']));
+          sock.send(JSON.stringify({"type": "calib","msg" : "so here the wave from socket"}));
+
+          
+          //TODO: here i have to store message['content'] in mongoDB, this is startup.json
+          //register my custom event
+          
+          EventHandler.on(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
+        }
+        else if (message['type'] == 'data') {
+            if (sessionManager.getSession(Number(message['uid'])) != 1) {
+              EventHandler.on(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
+            }
+          
+  
+            await mongo.storeOutput(message['uid'], String(sessionManager.getSession(Number(message['uid']))), message['content']);
+            //TODO: here i will have to call a custom event that will resolve await in SendInput endpoiint hold and send the response
+  
+            //now releasing the response thread
+            EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
+          }
+  
+  
+        // //TODO: just to test the connection
+        // console.log(`received: ${typeof(message)}`);
+        // console.log(`comManager: ${conManager.getSocketId(Number(message['uid']))}`);
+        // send_pack['type'] = 'calib';
+        // socket.send(JSON.stringify(send_pack));
+    });
+  
+    
+  });
+
+  let port = 3005;
+  server.listen(port, ( err : any ) => {
+    if (err) throw err;
+    console.log(`> Ready on http://localhost:${port}`);
+  });
+
+
+
+
+

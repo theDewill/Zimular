@@ -233,38 +233,6 @@ class MongoTools {
 
 }
 
-
-//module.exports = { MongoTools, connectManager, EventManager, SessionManager};
-
-
-
-//---------- Manog Template
-/*
-"uid": 1,
-  "uname":'Sanath Jayasuriya',
-  "data":{
-    "session_1":{
-      "input":{},
-    	"output":{}
-    },
-    "session_2":{
-    	"input":{},
-    	"output":{}
-    },
-  },
-  */
-
-
-
-
-//export { connectionManager};
-
-
-//TODO: code source -------
-
-//------------------------------------
-
-
 const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
@@ -360,7 +328,7 @@ let sessionManager = new SessionManager();
     //TODO: implement code to read startup json file and create tehe ui componenets
     const websocketUrl = `ws://${req.headers.host}`;
     let rec_data = req.body;
-    let sockID = 12 //conManager.connectionPool.size
+    let sockID = 1 //conManager.connectionPool.size
   
     //--Creating an event for the user
     
@@ -389,6 +357,9 @@ let sessionManager = new SessionManager();
 
           //-------- temp ----------
           await mongo.storeUI(Number(message['uid']), 1, 1, message['content']);
+          
+          let sock = conManager.getSocket(Number(message['uid']));
+          sock.send(JSON.stringify({"type": "calib","msg" : "so here the wave from socket"}));
 
           
           //TODO: here i have to store message['content'] in mongoDB, this is startup.json

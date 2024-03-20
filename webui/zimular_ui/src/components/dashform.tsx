@@ -37,10 +37,10 @@ const Dashform = (attr : any) => {
 
     useEffect(() => {
         async function fetchData() {
-          const response = await fetch('/getui');
+          const response = await fetch('http://localhost:3005/getui?uid=1&simID=1');
           const result = await response.json();
-          console.log("result ek recieved : " + result.data);
           inputs.push(result.data);
+          console.log("result ek recieved : " , inputs);
         }
       
         fetchData();
@@ -87,7 +87,7 @@ const Dashform = (attr : any) => {
         <div className={test}>
                 <form onSubmit={handleSubmit}>
                     <div className="flex justify-between mt-3">
-                        <p className="text-5xl font-bold">Input <span className="text-lg">[ {inputs[0]} ]</span></p>
+                        <p className="text-5xl font-bold">Input <span className="text-lg">[ {inputs} ]</span></p>
                         <Dialog>
                             <DialogTrigger asChild>
                                 <Button variant="default" type="submit">

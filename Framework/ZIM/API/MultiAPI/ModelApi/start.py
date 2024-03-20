@@ -28,8 +28,12 @@ async def socket_connect(url,u_id):
                     #response = await websocket.send(json.dumps(data))
                     #return response.text
                     await websocket.send(json.dumps({"type": "calib" ,"uid" : u_id, "content" : data}))
+
+        
         while True:
+            
             response = await websocket.recv()
+            
             json_reponse = json.loads(response)
             #TODO: Temp testngs-- Remoce this once tested
             print(json_reponse)
@@ -100,7 +104,7 @@ def ignite():
 
 #TODO: check ignite command
 #argument must be the url path in node server which return sokcet ur and process the sent json 
-asyncio.get_event_loop().run_until_complete(socket_connect('http://localhost:3004/handshake',12))
+asyncio.get_event_loop().run_until_complete(socket_connect('http://localhost:3004/handshake',1))
 
 
 
