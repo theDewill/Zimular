@@ -2,6 +2,7 @@ const express = require('express');
 const { createServer } = require('http');
 const { Server } = require('ws');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const {conManager, EventHandler, sessionManager} = require('./tools');
 const {mongo} = require('./db');
@@ -10,6 +11,7 @@ const {mongo} = require('./db');
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 const server = createServer(app);
 const wsk = new Server({ server });
@@ -40,7 +42,6 @@ const wsk = new Server({ server });
 
 
   app.get('/getui', async (req : any, res : any) => {
-    console.log("getui called");
     let uid = req.query.uid;
     let simID = req.query.simID;
     let results = await mongo.getUI(Number(uid), Number(simID));
@@ -67,7 +68,7 @@ const wsk = new Server({ server });
     let socket = conManager.getSocket(Number(uid));
     socket.send(JSON.stringify(send_pack));
     //waitng till output gets writtn to mongo
-    await EventHandler.getEvent(uid, String(sid)).waiting;
+    await EventHandler.getEvent(uid, String(sid)).get('input').waiting;
   
     //TODO: this will load the output ui with recieved outputs -- uncomment this after TEST
   
@@ -83,6 +84,32 @@ const wsk = new Server({ server });
   
     
   })
+
+  app.get('/createSim', async (req : any, res : any) => {
+    let uid = req.query.uid;
+    
+    sessionManager.setSession(Number(uid));
+    EventHandler.on(uid, String(sessionManager.getSession(Number(uid))));
+    
+    let ifActiveSim = await mongo.findSim(Number(uid));
+    if (ifActiveSim != null) {
+        res.json({"status": "sim already exists"});
+        return;
+        //redirect to the input page as there is hte new simulation already
+    } else {
+      await mongo.createEmptySim(Number(uid));
+        //here it create an empty simulation block 
+    //let results = await mongo.createSim(Number(uid), Number(simID));
+    
+    // NOW SHOWING a loading icon on the webui
+    await EventHandler.getEvent(uid, String(sessionManager.getSession(Number(uid)))).get('ui').waiting;
+    //[ then ]send the ui to the webui , redirect to the input ui
+    }
+ 
+    
+
+    res.json({"status": "good"});
+  });
 
 
   app.post('/handshake', (req : any, res : any) => {
@@ -115,19 +142,22 @@ const wsk = new Server({ server });
         if (message['type'] == 'calib') {
           console.log(`calib message received with uid: ${message['uid']}`);
           conManager.addConnection(Number(message['uid']) , socket);
-          sessionManager.setSession(Number(message['uid']))
 
-          //-------- temp ----------
-          await mongo.storeUI(Number(message['uid']), 1, 1, message['content']);
+          //TODO: here i have moved these to /createSim endpoint
+        //   sessionManager.setSession(Number(message['uid']));
+        //   EventHandler.on(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
+
+         
+
+          await mongo.storeUI(Number(message['uid']), 1, message['content']);
+          EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(message['uid']))), "ui");
           
-          let sock = conManager.getSocket(Number(message['uid']));
-          sock.send(JSON.stringify({"type": "calib","msg" : "so here the wave from socket"}));
+        //   let sock = conManager.getSocket(Number(message['uid']));
+        //   sock.send(JSON.stringify({"type": "calib","msg" : "so here the wave from socket"}));
+
 
           
-          //TODO: here i have to store message['content'] in mongoDB, this is startup.json
-          //register my custom event
           
-          EventHandler.on(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
         }
         else if (message['type'] == 'data') {
             if (sessionManager.getSession(Number(message['uid'])) != 1) {
@@ -139,7 +169,7 @@ const wsk = new Server({ server });
             //TODO: here i will have to call a custom event that will resolve await in SendInput endpoiint hold and send the response
   
             //now releasing the response thread
-            EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
+            EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(message['uid']))), "input");
           }
   
   

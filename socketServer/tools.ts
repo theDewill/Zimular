@@ -48,14 +48,14 @@ class SessionManager {
 }
 
 class CEvent {
-    uid : string;
-    sid : string;
+    Etype : string;
+    
     changeState: ((value: string) => void) | undefined;
     rejectPromise: ((reason?: any) => void) | undefined;
     waiting: Promise<any>;
-    constructor(uid : string, sid : string) {
-        this.uid = uid;
-        this.sid = sid;
+    constructor(etype : string) {
+        this.Etype = etype;
+        
         this.waiting = new Promise((res,rej)=> {
             this.changeState = res;
             this.rejectPromise = rej;
@@ -93,10 +93,19 @@ class EventManager {
         tempEvnt.delete(Number(sid));
     }
 
-    on(uid : string , sid : string,) {
-        let event = new CEvent(uid, sid);
+
+    // there are 2 types of events for a user under a specific session
+    // 1) ui event
+    // 2) input event
+    on(uid : string , sid : string) {
+
+        let State : Map<any,any> = new Map();
+        State.set("ui", new CEvent("ui"));
+        State.set("input", new CEvent("input"));
+        //so on ....
+
         let Event : Map<any,any> = new Map(); 
-        Event.set(Number(sid), event);
+        Event.set(Number(sid), State);
         this.eventPool.set(Number(uid) , Event);
     }
 
@@ -106,8 +115,8 @@ class EventManager {
 
 
 
-    emit (uid : string , sid : string) {
-        let event = this.eventPool.get(Number(uid)).get(Number(sid));
+    emit (uid : string , sid : string , state : string) {
+        let event = this.eventPool.get(Number(uid)).get(Number(sid)).get(state);
         event.done();
     }
 
