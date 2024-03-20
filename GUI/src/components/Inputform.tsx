@@ -65,6 +65,8 @@ const inputs = [
               "defult_value": "test_07",
               "data_type": "number",
             },
+            
+            
             {
               "id" : "in_08",
               "name" : "Input 08",
@@ -87,33 +89,37 @@ export default function Inputform(){
     return (
         <div>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <button type="submit">Run</button>
+                <div className="grid grid-cols-10 mt-3">
+                    <button type="submit" className="col-start-10 w-[100px] col-span-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Run</button>
                 </div>
                 {inputs.map((input) => {
                     return(
                         input.group.map((group) => {
                             return(
                                 <>
-                                    <div key={group.group_id} className="text-lg">{group.name}</div>
-                                    <div>
+                                    <div key={group.group_id} className="text-lg  ml-3 font-extrabold">{group.name}</div>
+                                    <div className="flex flex-wrap gap-1">
                                         {group.fields.map((field)=>{
                                             return(
+                                              
                                                 <>
-                                                    <label>{field.name}</label>
+                                                  <div>
+                                                    <label className="ml-4 mt-7">{field.name}</label>
                                                     {field.type === "text" ? (
-                                                        <input
+                                                        <input className="border-2 border-black p-2 rounded-lg ml-3 mt-3"
                                                             type="text"
                                                             name={field.id}
                                                             defaultValue={field.defult_value}
                                                          />
                                                     ):(
-                                                        <input 
+                                                        <input className="ml-3 mt-6"
                                                             type="checkbox"
                                                             defaultChecked={field.defult_value === "true"}
                                                         />
                                                     )}
+                                                  </div>
                                                 </>
+                                              
                                             )
                                         })}
                                     </div>
