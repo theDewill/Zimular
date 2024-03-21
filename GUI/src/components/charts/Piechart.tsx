@@ -11,18 +11,11 @@ const data01 = [
   {name:"store",Value:16.66},
   {name:"filterstore",Value:0.0},
   {name:"prioritystore",Value:0.0},
-  {name:"custom",Value:0.0}]
+  {name:"custom",Value:0.0}
+]
 
-const data02 = [
-  { name: 'Group A', value: 2400 },
-  { name: 'Group B', value: 4567 },
-  { name: 'Group C', value: 1398 },
-  { name: 'Group D', value: 9800 },
-  { name: 'Group E', value: 3908 },
-  { name: 'Group F', value: 4800 },
-];
 
-const PieChartcomponent = () => {
+const PieChartcomponent = ({data}:{data:any}) => {
   return (
     <PieChart width={400} height={400}>
           <Pie
@@ -35,7 +28,7 @@ const PieChartcomponent = () => {
             fill="#8884d8"
             label
           />
-          <Pie dataKey="Value" data={data02} cx={500} cy={200} innerRadius={40} outerRadius={80} fill="#82ca9d" />
+          
           <Tooltip />
         </PieChart>
   )
