@@ -16,6 +16,7 @@ mod qeng;
 #[pymodule]
 fn zimdb(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<ZimDB>()?;
+    m.add_class::<qeng::QueryDB>()?;
     Ok(())
 }
 
@@ -80,14 +81,19 @@ impl ZimDB {
 
     fn addcomp_toworkflow(
         &mut self,
-        workflow_name: &str,
-        comp_name: &str,
-        comp_cat: &str,
+        workflow_name: String,
+        comp_name: String,
+        comp_cat: String,
     ) -> PyResult<()> {
-        let comp_cat = str_to_catcomp(comp_cat);
+        let comp_cat = str_to_catcomp(&comp_cat);
         self.db
-            .add_com_to_workflow(workflow_name, comp_cat, comp_name)
+            .add_com_to_workflow(&workflow_name, comp_cat, &comp_name)
             .unwrap();
+        Ok(())
+    }
+
+    fn add_entity_to_db(&mut self, entity: &str, value: f64) -> PyResult<()> {
+        self.db.add_entity(entity, value).unwrap();
         Ok(())
     }
 
@@ -163,13 +169,12 @@ impl ZimDB {
         //let input = coll.find(filter, None).unwrap();
 
         if let Ok(cursor) = coll.find(filter, opt) {
+            println!("{:?}", cursor);
             for result in cursor {
                 if let Ok(document) = result {
-                    if let Ok(time_doc) = document.get_document("time") {
-                        if let Ok(time_float) = time_doc.get_f64("Float") {
-                            if let Ok(entity) = document.get_str("entity") {
-                                res.push((time_float, entity.to_string()));
-                            }
+                    if let Ok(time_float) = document.get_f64("time") {
+                        if let Ok(entity) = document.get_str("entity") {
+                            res.push((time_float, entity.to_string()));
                         }
                     }
                 } else {

@@ -2,7 +2,8 @@ from ZIM.output_table import System_Output
 import simpy
 from Genarator import customer_generator
 from manage import runReady
-
+from ZIM.ZComponets import componet_handler
+from ZIM.ZDB import ZIMDB
 
 env = simpy.Environment()
 
@@ -21,8 +22,11 @@ if __name__ == "__main__":
     runReady()
     run_simulation()
     #System_Output.show_table()
-    #ZIMDB.uptable()
-    #ZIMDB.data.print_table_col()
+    ZIMDB.uptable()
+    ZIMDB.send_db()
+    print("+++++++++++++++++++++++++++++++++++++")
+    #ZIMDB.testroute()
+    componet_handler.show_data()
 
     print("----------------END-----------------")
     

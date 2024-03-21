@@ -1940,4 +1940,5 @@ dependencies = [
  "prettytable-rs",
  "pyo3",
  "serde",
+ "serde_json",
 ]
