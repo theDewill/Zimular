@@ -1,7 +1,8 @@
 "use client"
-import React from "react";
+import { useSession } from "next-auth/react";
+import React, { useEffect } from "react";
 
-const inputs = [
+const inputs_test = [
     {
       "user_id": "test_user_id",
       "input":"Input_01",
@@ -80,11 +81,56 @@ const inputs = [
     }
   ]
 
+
+let inputs : any = [];
+
 export default function Inputform(){
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
+        let toSendData = JSON.parse(JSON.stringify(inputs));
+
+        toSendData.map((input : any) => {
+            input.group.map((group : any) => {
+                group.fields.map((field : any) => {
+                    if(field.type === "text"){
+                        field.value= e.target[field.id].value;
+                    }else{
+                        field.value = e.target[field.id].checked;
+                    }
+                })
+            })
+        })
+
+      const queryString = `data=${encodeURIComponent(JSON.stringify(toSendData))}`;    
+      const apiUrl = `http://localhost:3005/sendInputs?${queryString}`;
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const responseData = await response.json();
+        console.log(responseData);
+        
+    } catch (error) {
+        console.error('Fetching error:', error);
+        
     }
+    }
+    const { data: session } = useSession();
+
+    useEffect(() => {
+      async function fetchData() {
+        const response = await fetch(`http://localhost:3005/getui?uid=1&simID=1`);
+        const result = await response.json();
+        inputs.push(result.data);
+        console.log("result ek recieved : " , inputs);
+      }
+    
+      fetchData();
+    }, []);
+
+    
 
     return (
         <div>
@@ -92,14 +138,14 @@ export default function Inputform(){
                 <div className="grid grid-cols-10 mt-3">
                     <button type="submit" className="col-start-10 w-[100px] col-span-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Run</button>
                 </div>
-                {inputs.map((input) => {
+                {inputs.map((input : any) => {
                     return(
-                        input.group.map((group) => {
+                        input.group.map((group : any) => {
                             return(
                                 <>
                                     <div key={group.group_id} className="text-lg  ml-3 font-extrabold">{group.name}</div>
                                     <div className="flex flex-wrap gap-1">
-                                        {group.fields.map((field)=>{
+                                        {group.fields.map((field : any)=>{
                                             return(
                                               
                                                 <>
