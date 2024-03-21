@@ -1,0 +1,14 @@
+version: '3.5'
+
+services:
+  app:
+    image: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gui
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - /app/node_modules

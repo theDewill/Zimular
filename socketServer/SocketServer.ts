@@ -86,6 +86,7 @@ const wsk = new Server({ server });
     
   })
 
+  
   app.get('/createSim', async (req : any, res : any) => {
     let uid = req.query.uid;
     
@@ -98,7 +99,7 @@ const wsk = new Server({ server });
         return;
         //redirect to the input page as there is hte new simulation already
     } else {
-      await mongo.createEmptySim(Number(uid));
+      ifActiveSim = await mongo.createEmptySim(Number(uid));
         //here it create an empty simulation block 
     //let results = await mongo.createSim(Number(uid), Number(simID));
     
@@ -106,11 +107,17 @@ const wsk = new Server({ server });
     await EventHandler.getEvent(uid, String(sessionManager.getSession(Number(uid)))).get('ui').waiting;
     //[ then ]send the ui to the webui , redirect to the input ui
     }
+
+
  
     
 
-    res.json({"status": "good"});
+    res.json({"status": "good", "simID" : ifActiveSim});
+    //TODO: here this sim must be stored in the session
   });
+
+
+
 
 
   app.post('/handshake', (req : any, res : any) => {

@@ -86,6 +86,10 @@ class InputHandler:
         self.input_structure = input_struct
 
         return self.input_structure
+    
+    def setdefaultstruct(self, struct):
+
+        self.input_structure = struct
 
     def getInput(self, input_group: str, input_name: str):
 
@@ -98,6 +102,11 @@ class InputHandler:
         '''
 
         Data = self.input_structure[input_group][input_name]
+        
+        if Data == None:
+            print("Input not found.")
+            return None
+
         if Data["value"] == "":
             return Data["default"]
         else:

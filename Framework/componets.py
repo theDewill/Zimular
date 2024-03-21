@@ -1,77 +1,62 @@
 import simpy
-from ZIM.ZResource import IRes, IPiroRes
-from ZIM.ZContainer import IContainer
-from ZIM.ZStore import ZStore, ZFilterStore
+from ZIM.ZComponets import IRes, ZStore
+import random
 
 
-class Counter(IRes):
-    def __init__(self, env):
+class Modeling_Machien(IRes):
+    def __init__(self, env, name, workflow_name):
         super().__init__(
-            env,
-            simpy.Resource(env=env, capacity=1),
-            "counter"
-        )
-        
-        
-
-    @IRes.run
-    def run_counter(self, t1, entity):
-        print(t1)
-        yield self.env.timeout(t1)
-        
-
-
-    def output_customer_otime(self):
-        arr = []
-        for i in range(len(self.user_time)):
-            time = self.leave_time[i][1] - self.user_time[i][1]
-            arr.append([self.user_time[i][0], time])
-
-        return arr
-
-
-class Counter1(IPiroRes):
-    def __init__(self, env):
-        super().__init__(
-            env,
-            simpy.PriorityResource(env=env, capacity=1),
-            "counter1"
+            env, simpy.Resource(env, capacity=1), name, workflow_name=workflow_name
         )
 
     @IRes.run
-    def run_counter(self, t1):
-        print(t1)
-        yield self.env.timeout(t1)
+    def run(self, entity):
+        # print(f"Modeling_Machien12 -> {entity}")
 
-    def output_customer_otime(self):
-        arr = []
-        for i in range(len(self.user_time)):
-            time = self.user_time[i][1] - self.leave_time[i][1]
-            arr.append([self.user_time[i][0], time])
+        yield self.env.timeout(random.randint(18, 20))
 
-        return arr
-        
+    def check(self):
+        print("Modeling_Machien is working")
 
-class Item_container(IContainer):
-    def __init__(self, env):
+
+class Inspection_Machien(IRes):
+    def __init__(self, env, name, workflow_name):
         super().__init__(
-            env=env,
-            capacity=5,
-            init=0,
-            name="item_container"
+            env, simpy.Resource(env, capacity=1), name, workflow_name=workflow_name
         )
 
-    def output_data(self):
-        return self.put_output, self.get_output
-    
+    @IRes.run
+    def run(self, entity):
+        yield self.env.timeout(random.randint(1, 3))
 
-class Item_store(ZFilterStore):
-    def __init__(self, env):
+
+class Packing_Machien(IRes):
+    def __init__(self, env, name, workflow_name):
+        super().__init__(
+            env, simpy.Resource(env, capacity=1), name, workflow_name=workflow_name
+        )
+
+    @IRes.run
+    def run(self, entity):
+        yield self.env.timeout(random.randint(10, 15))
+
+
+class Modeling_Store(ZStore):
+    def __init__(self, env, workflow_name):
         super().__init__(
             env,
-            simpy.FilterStore(env=env, capacity=5),
-            "item_store"
+            simpy.Store(env, capacity=10),
+            "Modeling_Store",
+            workflow_name=workflow_name,
         )
 
-    def output_data(self):
-        return self.put_output, self.get_output
+
+# -------------template----------------
+
+# class <Componet_Name>(componet_type_class):
+#     def __init__(self) -> None:
+#         super.__init__(env, simpyInit, name)
+#         // other init likes outputs
+
+#     def method(self, args):
+#         pass
