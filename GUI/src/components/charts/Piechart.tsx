@@ -1,39 +1,44 @@
-import React from 'react'
+"use client"
 
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import React from 'react';
+import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+const data01 = [
+  {name:"resource",Value:83.33},
+  {name:"piorityresource",Value:0.0},
+  {name:"peemptiveresource",Value:0.0},
+  {name:"container",Value:0.0},
+  {name:"store",Value:16.66},
+  {name:"filterstore",Value:0.0},
+  {name:"prioritystore",Value:0.0},
+  {name:"custom",Value:0.0}]
 
-export const data = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [
-      {
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+const data02 = [
+  { name: 'Group A', value: 2400 },
+  { name: 'Group B', value: 4567 },
+  { name: 'Group C', value: 1398 },
+  { name: 'Group D', value: 9800 },
+  { name: 'Group E', value: 3908 },
+  { name: 'Group F', value: 4800 },
+];
 
-const Piechart = () => {
-  return <Pie data={data} />;
+const PieChartcomponent = () => {
+  return (
+    <PieChart width={400} height={400}>
+          <Pie
+            dataKey="Value"
+            isAnimationActive={true}
+            data={data01}
+            cx="50%"
+            cy="50%"
+            outerRadius={80}
+            fill="#8884d8"
+            label
+          />
+          <Pie dataKey="Value" data={data02} cx={500} cy={200} innerRadius={40} outerRadius={80} fill="#82ca9d" />
+          <Tooltip />
+        </PieChart>
+  )
 }
 
-export default Piechart
+export default PieChartcomponent;
