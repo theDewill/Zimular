@@ -7,9 +7,9 @@ interface DynamicTableProps {
 
 const DynamicTable: React.FC<DynamicTableProps> = ({ headers, data }) => {
   return (
-    <table className="border-collapse">
+    <table className="border-collapse w-full">
       <thead>
-        <tr className="bg-gray-200">
+        <tr className="bg-gray-200 ">
           {headers.map((header, index) => (
             <th key={index} className="px-4 py-2">{header}</th>
           ))}

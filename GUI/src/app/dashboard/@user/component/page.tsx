@@ -85,9 +85,13 @@ const Componentpg = () => {
         <div className='m-4'>
           <DetailsTable data={tableData}/>
         </div>
-        <div className='flex my-8'>
+        <div className='flex my-8 gap-[120px]'>
+          <Card>
           <MultiLineChartComponent data={chartdata} />
+          </Card>
+          <Card>
           <LineChartComponent data={chartdata} />
+          </Card>
         </div>
         <div>
           <FilterComponentTable />

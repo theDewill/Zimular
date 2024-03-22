@@ -76,7 +76,7 @@ const FilterComponentTable: React.FC = () => {
           Apply Filters
         </button>
       </div>
-      <table className="border-collapse border border-gray-300">
+      <table className="border-collapse border border-gray-300 w-full">
         {/* Table headers */}
         <thead>
           <tr className="bg-gray-200">

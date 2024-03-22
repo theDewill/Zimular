@@ -56,6 +56,7 @@ const FilterdbTable: React.FC = () => {
   return (
     <div>
       <div className="mb-4">
+        <div className="flex gap-3">
         <input
           type="text"
           name="time"
@@ -96,14 +97,15 @@ const FilterdbTable: React.FC = () => {
           className="p-2 rounded border border-gray-300"
           placeholder="Entity"
         />
+        </div>
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2"
           onClick={fetchData}
         >
           Fetch Data
         </button>
       </div>
-      <table className="border-collapse border border-gray-300">
+      <table className="border-collapse border border-gray-300 w-full">
         <thead>
           <tr className="bg-gray-200">
             <th className="px-4 py-2">Time</th>
