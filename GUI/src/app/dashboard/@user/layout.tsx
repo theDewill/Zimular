@@ -14,16 +14,16 @@ export default function dashLayout ({ children }: { children: React.ReactNode}) 
             <div className="flex flex-col gap-2">
                 <div className=" grow-0 shrink-0 flex justify-between">
                         <div className=" grow-0 shrink-0 flex gap-2">
-                            <Link href="/dashboard/input" className="block py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-tl-md hover:bg-gray-300">
+                            <Link href="/dashboard/input" className="block py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-tl-md hover:bg-gray-300 focus:bg-gray-800  focus:text-white">
                                 Input
                             </Link>
-                            <Link href="/dashboard/overview" className="block py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-tl-md hover:bg-gray-300">
+                            <Link href="/dashboard/overview" className="block py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-tl-md hover:bg-gray-300 focus:bg-gray-800  focus:text-white">
                                 Overview
                             </Link>
-                            <Link href="/dashboard/component" className="block py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-tl-md hover:bg-gray-300">
+                            <Link href="/dashboard/component" className="block py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-tl-md hover:bg-gray-300 focus:bg-gray-800  focus:text-white">
                                 Component
                             </Link>
-                            <Link href="/dashboard/table" className="block py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-tl-md hover:bg-gray-300">
+                            <Link href="/dashboard/table" className="block py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-tl-md hover:bg-gray-300 focus:bg-gray-800  focus:text-white">
                                 Table
                             </Link>
                         </div>

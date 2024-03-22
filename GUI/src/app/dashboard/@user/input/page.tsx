@@ -4,12 +4,12 @@ import { redirect } from 'next/navigation';
 import Inputform from '@/components/Inputform';
 
 async function In() {
-  const session = await getServerSession();
-    if (!session) {
-        redirect('/');
-    }
+  // const session = await getServerSession();
+  //   if (!session) {
+  //       redirect('/');
+  //   }
   return (
-    <div>
+    <div className='outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-0.5  rounded-lg'>
       <Inputform />
     </div>
   )

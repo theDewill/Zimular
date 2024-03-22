@@ -18,17 +18,19 @@ const DynamicColumnFilterTable = ({ headers, data }: { headers: string[]; data: 
 
   return (
     <div>
-      {headers.map((header, index) => (
-        <div key={index} className="mb-4">
-          <input
-            type="text"
-            placeholder={`Filter ${header}...`}
-            value={filters[index]}
-            onChange={(e) => handleFilterChange(index, e.target.value)}
-            className="p-2 rounded border border-gray-300"
-          />
-        </div>
-      ))}
+      <div className='flex gap-4'>
+        {headers.map((header, index) => (
+          <div key={index} className="mb-4">
+            <input
+              type="text"
+              placeholder={`Filter ${header}...`}
+              value={filters[index]}
+              onChange={(e) => handleFilterChange(index, e.target.value)}
+              className="p-2 rounded border border-gray-300"
+            />
+          </div>
+        ))}
+      </div>
       <table className="border-collapse">
         <thead>
           <tr className="bg-gray-200">
