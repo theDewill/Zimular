@@ -13,11 +13,6 @@ const userSchema = new Schema(
             type: String,
             required: true,
         },
-        output: {
-            type: String,
-            required: false,
-        },
-        
     },
     { timestamps: true }
 )
