@@ -3,12 +3,20 @@ import random
 from typing import List, Union
 import pprint
 import json
+from ZIM.config import CONFIG
 
-DBNAME = "SimulationDB"
-SETNAME = "SimulationSet"
-TABLENAME = "SimulationTable2"
-MONGO_URI = "mongodb://localhost:27017"
-BUFFER_SIZE = 1000
+DBNAME = CONFIG.get_db_name()
+SETNAME = CONFIG.get_db_set_name()
+TABLENAME = CONFIG.get_sim_table_name()
+MONGO_URI = CONFIG.get_mongo_uri()
+BUFFER_SIZE = CONFIG.get_buffer_size()
+
+
+# DBNAME = "SimulationDB"
+# SETNAME = "SimulationSet"
+# TABLENAME = "SimulationTable2"
+# MONGO_URI = "mongodb://localhost:27017"
+# BUFFER_SIZE = 1000
 # "mongodb+srv://antiloger:077antiloger@cluster0.i9knr5x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 
@@ -102,6 +110,9 @@ class DataManager:
     def save_entity(self, entity: str, count: int):
         self.data.add_entity_to_db(entity, count)
 
+    def save_input_data(self, data: dict):
+        pass
+
     def testroute(self):
         print(self.data.getcomp("Modeling_Machien_0", "enter"))
 
@@ -133,6 +144,11 @@ class APIQueryManager:
         self.data = zimdb.QueryDB(self.uri, self.setname, self.dbname, self.tablecoll)
 
     def overview_json(self, simulation_name: str) -> dict:
+
+        '''
+            api endpoint for overview
+        '''
+
         total_time = self.data.last_element_time()
         workflow_json = json.loads(self.data.get_workflow_details(simulation_name))
         entity_json = json.loads(self.data.get_entity_info(simulation_name))
@@ -156,6 +172,11 @@ class APIQueryManager:
         return final_json   
 
     def resource_overview(self, resource_name: str) -> dict:
+
+        '''
+            api endpoint for resource overview
+        '''
+
         resource_enter = self.data.get_resource_enter_count(resource_name)
         resource_leave = self.data.get_resource_leave_count(resource_name)
         resource_queued = self.data.get_resource_queued_count(resource_name)
@@ -175,5 +196,28 @@ class APIQueryManager:
 
         return final_json
 
+    def table_filter(
+        self, 
+        simulation_name: str, 
+        component_name: str, 
+        action: str, 
+        entity: str, 
+        info: int, 
+    ) -> dict:
+        
+        '''
+            api endpoint for table filter
+        '''
+
+        data = self.data.get_full_data(
+            simulation_name,
+            component_name,
+            action,
+            entity,
+            info,
+        )
+
+        return json.loads(data)
+    
 
 ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI, BUFFER_SIZE)

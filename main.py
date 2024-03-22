@@ -1,7 +1,17 @@
-from ZIM.output_table import System_Output
+from settings import INPUT, SAVE_FOLDER, DBNAME, MONGO_URI, SETNAME, TABLENAME, BUFFER_SIZE
+from ZIM.config import CONFIG
+
+CONFIG.set_config(
+    DBNAME,
+    MONGO_URI,
+    SETNAME,
+    TABLENAME,
+    SAVE_FOLDER,
+    BUFFER_SIZE,
+    INPUT
+)
 import simpy
 from Genarator import customer_generator
-from settings import runReady
 from ZIM.ZComponets import componet_handler
 from ZIM.ZDB import ZIMDB
 
@@ -19,7 +29,8 @@ def run_simulation():
 if __name__ == "__main__":
     print("----------------START-----------------")
     
-    runReady()
+
+    #run_ready()
     run_simulation()
     #System_Output.show_table()
     ZIMDB.uptable()

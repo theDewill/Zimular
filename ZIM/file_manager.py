@@ -65,7 +65,7 @@ class InputHandler:
         '''
 
         self.input_structure = None #input structure
-        self.input_data_path = None #api input
+        self.api_input= None #api input
 
     def setInput(self, input_struct_path):
 
@@ -73,19 +73,7 @@ class InputHandler:
         Set the input structure and input data path
         '''
 
-        self.input_data_path = input_struct_path
-        try:
-
-            with open(self.input_data_path, "r") as file:
-                input_struct = json.load(file)
-
-        except FileNotFoundError:
-            print(f"File {input_struct_path} not found.")
-            return False
-
-        self.input_structure = input_struct
-
-        return self.input_structure
+        self.api_input = input_struct_path
     
     def setdefaultstruct(self, struct):
 
@@ -101,7 +89,7 @@ class InputHandler:
         )
         '''
 
-        Data = self.input_structure[input_group][input_name]
+        Data = self.api_input[input_group][input_name]
         if Data == None:
             print("Input not found.")
             return None
@@ -111,16 +99,3 @@ class InputHandler:
         else:
             return Data["value"]
 
-        
-    def checkInput(self):
-
-        '''
-        Check if the input structure and input data path are set
-        '''
-
-        if self.input_structure is None:
-            if self.input_data_path is None:
-                print("No input data path set.")
-            return False
-        
-    
