@@ -1,11 +1,15 @@
 import React from 'react';
-import { useSession } from "next-auth/react"
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
 
-export default function DashLayout({ 
+export default async function DashLayout({ 
     user}:{
     user: React.ReactNode
 }) {
-    
+    const session = await getServerSession();
+    if (!session) {
+        redirect('/');
+    }
     return (
         <div className='m-4'>
             { user }
