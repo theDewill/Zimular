@@ -1,6 +1,5 @@
 
 import DynamicSelect from '@/components/DynamicSelection'
-import Card from '@/components/card';
 import LineChartComponent from '@/components/charts/Linechrt';
 import MultiLineChartComponent from '@/components/charts/MultiLineBarAreachrt';
 import DetailsTable from '@/components/tables/DetailsTable';
