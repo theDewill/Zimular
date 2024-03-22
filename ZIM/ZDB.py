@@ -195,6 +195,58 @@ class APIQueryManager:
         }
 
         return final_json
+    
+    def container_overview(self, container_name: str) -> dict:
+            
+            '''
+                api endpoint for container overview
+            '''
+    
+            container_put = self.data.get_container_put_count(container_name)
+            container_get = self.data.get_container_get_count(container_name)
+            container_put_chart = self.data.container_put_time_chart(container_name)
+            container_get_chart = self.data.container_get_time_chart(container_name)
+    
+            final_json = {
+                "container_name": container_name,
+                "container_enter_count": container_put,
+                "container_leave_count": container_get,
+                "container_put_time_chart": container_put_chart,
+                "container_get_time_chart": container_get_chart
+            }
+    
+            return final_json
+    
+
+    def store_overview(self, store_name: str) -> dict:
+            
+            '''
+                api endpoint for store overview
+            '''
+    
+            store_put = self.data.get_store_put_count(store_name)
+            store_get = self.data.get_store_get_count(store_name)
+            store_put_chart = self.data.store_put_time_chart(store_name)
+            store_get_chart = self.data.store_get_time_chart(store_name)
+    
+            final_json = {
+                "store_name": store_name,
+                "store_enter_count": store_put,
+                "store_leave_count": store_get,
+                "store_put_time_chart": store_put_chart,
+                "store_get_time_chart": store_get_chart
+            }
+    
+            return final_json
+
+    def get_all_component(self, sim_name: str) -> dict:
+
+        '''
+            api endpoint for all component
+        '''
+
+        data = self.data.get_comp_name_cat_workflow(sim_name)
+        return json.loads(data)
 
     def table_filter(
         self, 
