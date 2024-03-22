@@ -1,3 +1,4 @@
+"use client";
 import DynamicSelect from '@/components/DynamicSelection';
 import Link from 'next/link';
 import React from 'react';
@@ -27,7 +28,13 @@ export default function dashLayout ({ children }: { children: React.ReactNode}) 
                                 Table
                             </Link>
                         </div>
-                        <div>
+                        <div className='flex gap-2'>
+                            <button
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={() => {console.log("Hukpn")}}
+                            >
+                                Hukpn
+                            </button>
                             <DynamicSelect options={options}/>
                         </div>
                         

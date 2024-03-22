@@ -35,9 +35,6 @@ const Navbar = () => {
               <Link href="/dashboard" legacyBehavior passHref>
                 <a className="text-white hover:bg-gray-700 px-3 py-2 rounded">Dashboard</a>
               </Link>
-              <div className='text-white'>
-                {session.user?.email}
-              </div>
               <button onClick={()=> {
                 signOut();
               }} className="text-white hover:bg-gray-700 px-3 py-2 rounded ">
