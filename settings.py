@@ -1,11 +1,14 @@
 import os
 from ZIM.file_manager import FileHandler, InputHandler
+from ZIM.config import CONFIG
+
 
 # database
 DBNAME = "SimulationDB"
 SETNAME = "SimulationSet"
 TABLENAME = "SimulationTable1"
 MONGO_URI = "mongodb://localhost:27017"
+BUFFER_SIZE = 1000
 # "mongodb+srv://antiloger:077antiloger@cluster0.i9knr5x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 
@@ -54,3 +57,13 @@ def runReady():
     # inputHandler.setInput(inputfilepath)
     SIMINPUT.setdefaultstruct(DUMMY_INPUT)
     print(SIMINPUT.input_structure)
+
+CONFIG.set_config(
+    DBNAME,
+    MONGO_URI,
+    SETNAME,
+    TABLENAME,
+    SAVE_FOLDER,
+    BUFFER_SIZE,
+    SIMINPUT.input_structure,
+)

@@ -410,6 +410,374 @@ impl QueryDB {
 
         Ok(json!(top).to_string())
     }
+
+    fn get_resource_enter_count(&self, res_name: &str) -> PyResult<i64> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut count:i64 = 0;
+
+        let filter = doc! {"component_name": res_name, "action": "enter"};
+
+        if let Ok(cursor) = coll.find(filter, None) {
+            for result in cursor {
+                if let Ok(_) = result {
+                    count += 1;
+                }
+            }
+        }
+
+        Ok(count)
+
+    }
+
+    fn get_resource_leave_count(&self, res_name: &str) -> PyResult<i64> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut count:i64 = 0;
+
+        let filter = doc! {"component_name": res_name, "action": "leave"};
+
+        if let Ok(cursor) = coll.find(filter, None) {
+            for result in cursor {
+                if let Ok(_) = result {
+                    count += 1;
+                }
+            }
+        }
+
+        Ok(count)
+
+    }
+
+    fn get_resource_queued_count(&self, res_name: &str) -> PyResult<i64> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut count:i64 = 0;
+
+        let filter = doc! {"component_name": res_name, "action": "queued"};
+
+        if let Ok(cursor) = coll.find(filter, None) {
+            for result in cursor {
+                if let Ok(_) = result {
+                    count += 1;
+                }
+            }
+        }
+
+        Ok(count)
+
+    }
+
+    fn get_containter_put_count(&self, cont_name: &str) -> PyResult<i64> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut count:i64 = 0;
+
+        let filter = doc! {"component_name": cont_name, "action": "put"};
+
+        if let Ok(cursor) = coll.find(filter, None) {
+            for result in cursor {
+                if let Ok(_) = result {
+                    count += 1;
+                }
+            }
+        }
+
+        Ok(count)
+
+    }
+
+    fn get_containter_get_count(&self, cont_name: &str) -> PyResult<i64> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut count:i64 = 0;
+
+        let filter = doc! {"component_name": cont_name, "action": "get"};
+
+        if let Ok(cursor) = coll.find(filter, None) {
+            for result in cursor {
+                if let Ok(_) = result {
+                    count += 1;
+                }
+            }
+        }
+
+        Ok(count)
+
+    }
+
+    fn get_store_put_count(&self, store_name: &str) -> PyResult<i64> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut count:i64 = 0;
+
+        let filter = doc! {"component_name": store_name, "action": "put"};
+
+        if let Ok(cursor) = coll.find(filter, None) {
+            for result in cursor {
+                if let Ok(_) = result {
+                    count += 1;
+                }
+            }
+        }
+
+        Ok(count)
+
+    }
+
+    fn get_store_get_count(&self, store_name: &str) -> PyResult<i64> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut count:i64 = 0;
+
+        let filter = doc! {"component_name": store_name, "action": "get"};
+
+        if let Ok(cursor) = coll.find(filter, None) {
+            for result in cursor {
+                if let Ok(_) = result {
+                    count += 1;
+                }
+            }
+        }
+
+        Ok(count)
+
+    }
+
+    // this fn is used to create enter time chart for that we need each time and each time how much entity count (time, entity_count)
+    fn resource_enter_time_chart(&self, res_name: &str) -> PyResult<String> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res: Vec<(f64, f64)> = Vec::new();
+
+        let filter = doc! {"component_name": res_name, "action": "enter"};
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_float) = document.get_f64("time") {
+
+                            // If the Vec is empty or the time is greater than the last time in the Vec,
+                            // push a new tuple with the time and entity value
+                            if res.is_empty() || time_float > res.last().unwrap().0 {
+                                res.push((time_float, 1.0));
+                            } else {
+                                // Otherwise, add the entity value to the last tuple's entity count
+                                res.last_mut().unwrap().1 += 1.0;
+                            }
+                    }
+                }
+            }
+        }
+        //println!("{:?}", res);
+        Ok(json!(res).to_string())
+    }
+
+    fn resource_leave_time_chart(&self, res_name: &str) -> PyResult<String> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res: Vec<(f64, f64)> = Vec::new();
+
+        let filter = doc! {"component_name": res_name, "action": "leave"};
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_float) = document.get_f64("time") {
+
+                            // If the Vec is empty or the time is greater than the last time in the Vec,
+                            // push a new tuple with the time and entity value
+                            if res.is_empty() || time_float > res.last().unwrap().0 {
+                                res.push((time_float, 1.0));
+                            } else {
+                                // Otherwise, add the entity value to the last tuple's entity count
+                                res.last_mut().unwrap().1 += 1.0;
+                            }
+                    }
+                }
+            }
+        }
+        //println!("{:?}", res);
+        Ok(json!(res).to_string())
+    }
+
+    fn resource_queued_time_chart(&self, res_name: &str) -> PyResult<String> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res: Vec<(f64, f64)> = Vec::new();
+
+        let filter = doc! {"component_name": res_name, "action": "queued"};
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_float) = document.get_f64("time") {
+                         if let Ok(entity) = document.get_f64("info") {
+                            if res.is_empty() || time_float != res.last().unwrap().0 {
+                                res.push((time_float, entity));
+                            } else{
+                                res.last_mut().unwrap().1 = entity;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        //println!("{:?}", res);
+        Ok(json!(res).to_string())
+    }
+
+    fn container_put_time_chart(&self, cont_name: &str) -> PyResult<String> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res: Vec<(f64, f64)> = Vec::new();
+
+        let filter = doc! {"component_name": cont_name, "action": "put"};
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_float) = document.get_f64("time") {
+                         if let Ok(entity) = document.get_f64("info") {
+                            if res.is_empty() || time_float != res.last().unwrap().0 {
+                                res.push((time_float, entity));
+                            } else{
+                                res.last_mut().unwrap().1 = entity;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        //println!("{:?}", res);
+        Ok(json!(res).to_string())
+    }
+
+    fn container_get_time_chart(&self, cont_name: &str) -> PyResult<String> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res: Vec<(f64, f64)> = Vec::new();
+
+        let filter = doc! {"component_name": cont_name, "action": "get"};
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_float) = document.get_f64("time") {
+                         if let Ok(entity) = document.get_f64("info") {
+                            if res.is_empty() || time_float != res.last().unwrap().0 {
+                                res.push((time_float, entity));
+                            } else{
+                                res.last_mut().unwrap().1 = entity;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        //println!("{:?}", res);
+        Ok(json!(res).to_string())
+    }
+
+    fn store_put_time_chart(&self, store_name: &str) -> PyResult<String> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res: Vec<(f64, f64)> = Vec::new();
+
+        let filter = doc! {"component_name": store_name, "action": "put"};
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_float) = document.get_f64("time") {
+                         if let Ok(entity) = document.get_f64("info") {
+                            if res.is_empty() || time_float != res.last().unwrap().0 {
+                                res.push((time_float, entity));
+                            } else{
+                                res.last_mut().unwrap().1 = entity;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        //println!("{:?}", res);
+        Ok(json!(res).to_string())
+    }
+
+    fn store_get_time_chart(&self, store_name: &str) -> PyResult<String> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res: Vec<(f64, f64)> = Vec::new();
+
+        let filter = doc! {"component_name": store_name, "action": "get"};
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_float) = document.get_f64("time") {
+                         if let Ok(entity) = document.get_f64("info") {
+                            if res.is_empty() || time_float != res.last().unwrap().0 {
+                                res.push((time_float, entity));
+                            } else{
+                                res.last_mut().unwrap().1 = entity;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        //println!("{:?}", res);
+        Ok(json!(res).to_string())
+    }
+
 }
 
 // fn vec_sum(v1: Vec<f64, String>, v2: Vec<f64, String>) -> Vec<(f64, String)> {

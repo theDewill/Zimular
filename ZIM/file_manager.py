@@ -64,8 +64,8 @@ class InputHandler:
             Handles input data from API
         '''
 
-        self.input_structure = None
-        self.input_data_path = None
+        self.input_structure = None #input structure
+        self.input_data_path = None #api input
 
     def setInput(self, input_struct_path):
 

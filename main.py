@@ -1,7 +1,7 @@
 from ZIM.output_table import System_Output
 import simpy
 from Genarator import customer_generator
-from manage import runReady
+from settings import runReady
 from ZIM.ZComponets import componet_handler
 from ZIM.ZDB import ZIMDB
 

@@ -153,6 +153,27 @@ class APIQueryManager:
             "overview_table": overview_table
         }
 
-        return final_json        
+        return final_json   
+
+    def resource_overview(self, resource_name: str) -> dict:
+        resource_enter = self.data.get_resource_enter_count(resource_name)
+        resource_leave = self.data.get_resource_leave_count(resource_name)
+        resource_queued = self.data.get_resource_queued_count(resource_name)
+        resource_enter_time_chart = self.data.resource_enter_time_chart(resource_name)
+        resource_leave_time_chart = self.data.resource_leave_time_chart(resource_name)
+        resource_queued_time_chart = self.data.resource_queued_time_chart(resource_name)
+
+        final_json = {
+            "resource_name": resource_name,
+            "resource_enter_count": resource_enter,
+            "resource_leave_count": resource_leave,
+            "resource_queued_count": resource_queued,
+            "resource_enter_time_chart": resource_enter_time_chart,
+            "resource_leave_time_chart": resource_leave_time_chart,
+            "resource_queued_time_chart": resource_queued_time_chart
+        }
+
+        return final_json
+
 
 ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI, BUFFER_SIZE)
