@@ -4,7 +4,7 @@ import Card from '@/components/card';
 import LineChartComponent from '@/components/charts/Linechrt';
 import MultiLineChartComponent from '@/components/charts/MultiLineBarAreachrt';
 import DetailsTable from '@/components/tables/DetailsTable';
-import DynamicFilterTable from '@/components/tables/DynamicFiltertable';
+import FilterComponentTable from '@/components/tables/DynamicFiltertable';
 import React from 'react'
 
 const options = [
@@ -90,7 +90,7 @@ const Componentpg = () => {
           <LineChartComponent data={chartdata} />
         </div>
         <div>
-          <DynamicFilterTable headers={headers} data={data}/>
+          <FilterComponentTable />
         </div>
       </div>
     </>
