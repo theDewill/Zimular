@@ -34,7 +34,7 @@ export default function dashLayout ({ children }: { children: React.ReactNode}) 
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                 onClick={() => {console.log("Hukpn")}}
                             >
-                                Hukpn
+                                Nomin Hukpn
                             </button>
                             <DynamicSelect options={options}/>
                         </div>

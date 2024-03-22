@@ -33,7 +33,7 @@ const DynamicColumnFilterTable = ({ headers, data }: { headers: string[]; data: 
       </div>
       <table className="border-collapse">
         <thead>
-          <tr className="bg-gray-200">
+          <tr className="bg-gray-200 ">
             {headers.map((header, index) => (
               <th key={index} className="px-4 py-2">{header}</th>
             ))}
@@ -41,9 +41,9 @@ const DynamicColumnFilterTable = ({ headers, data }: { headers: string[]; data: 
         </thead>
         <tbody>
           {filteredData.map((row, rowIndex) => (
-            <tr key={rowIndex}>
+            <tr key={rowIndex} >
               {row.map((cell, cellIndex) => (
-                <td key={cellIndex} className="px-4 py-2">{cell}</td>
+                <td key={cellIndex} className="px-4 py-2 odd:bg-white even:bg-gray-100">{cell}</td>
               ))}
             </tr>
           ))}

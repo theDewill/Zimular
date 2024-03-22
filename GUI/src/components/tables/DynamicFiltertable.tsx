@@ -90,8 +90,8 @@ const FilterComponentTable: React.FC = () => {
         <tbody>
           {/* Rows for current page */}
           {currentRows.map((dataItem: any, index: number) => (
-            <tr key={index}>
-              <td className="border px-4 py-2">{dataItem.time}</td>
+            <tr key={index} >
+              <td className="border px-4 py-2 ">{dataItem.time}</td>
               <td className="border px-4 py-2">{dataItem.componentCategory}</td>
               <td className="border px-4 py-2">{dataItem.componentName}</td>
               <td className="border px-4 py-2">{dataItem.action}</td>
