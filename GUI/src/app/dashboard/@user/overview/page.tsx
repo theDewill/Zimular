@@ -80,7 +80,7 @@ let pieLiterel = {
   "custom": 0.0
 }
 
-let piedata = Object.entries(pieLiterel).map(([vame, value]) => ({ name: name.toString(), value: Math.round(value * 100) / 100 }));
+let piedata = Object.entries(pieLiterel).map(([name, value]) => ({ name: name.toString(), value: Math.round(value * 100) / 100 }));
 
 const Overviewpg = () => {
   return (

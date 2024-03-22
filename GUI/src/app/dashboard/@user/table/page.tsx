@@ -1,4 +1,5 @@
 import DynamicColumnFilterTable from '@/components/tables/DynamicColumnFiltertable'
+import FilterdbTable from '@/components/tables/FilterTable';
 import React from 'react'
 
 const headers = ['Time', 'Component Cat.', 'Component Name', 'Action', 'Entity'];
@@ -11,7 +12,7 @@ const data = [
 const Tablepg = () => {
   return (
     <div>
-      <DynamicColumnFilterTable headers={headers} data={data} />
+      <FilterdbTable />
     </div>
   )
 }
