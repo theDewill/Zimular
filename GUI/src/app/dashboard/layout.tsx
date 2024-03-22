@@ -8,6 +8,7 @@ export default function DashLayout({
     
     return (
         <div className='m-4'>
+            
             { user }
         </div>
     )

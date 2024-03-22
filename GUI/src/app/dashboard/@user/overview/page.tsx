@@ -85,7 +85,7 @@ let piedata = Object.entries(pieLiterel).map(([vame, value]) => ({ name: vame.to
 
 const Overviewpg = () => {
   return (
-    <div className='mx-12 flex flex-col items-center gap-4 outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-0.5  rounded-lg'>
+    <div className='flex flex-col items-center gap-4 outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-1  rounded-lg'>
         <div>
             <div className='text-lg mb-2 font-semibold'>
                 Details

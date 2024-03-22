@@ -54,8 +54,9 @@ const SignupPage = () => {
   
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-400 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
+      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div>
           <h2 className="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">Create an ZIMULAR account</h2>
         </div>
@@ -95,6 +96,7 @@ const SignupPage = () => {
         <Link href='/login'>
           Login with an existing account
         </Link>
+        </div>
       </div>
     </div>
   );

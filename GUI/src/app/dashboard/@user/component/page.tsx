@@ -28,7 +28,7 @@ const data = [
 const Componentpg = () => {
   return (
     <>
-      <div className=' mx-12 outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-0.5  rounded-lg'>
+      <div className='  outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-1  rounded-lg'>
         <div className='flex justify-between'>
           <div className='text-3xl font-semibold'>
             Component Name: {"Replace with Component Name"}

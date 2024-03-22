@@ -54,13 +54,15 @@ const LoginPage = () => {
 
   return (
     // sessionStatus !== "authenticated" && (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-gray-400 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
+      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div>
           <h2 className="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">Sign in to your account</h2>
         </div>
+        
         <form className="mt-8" onSubmit={handleLogin}>
-          <div className="rounded-md shadow-sm">
+          <div className="rounded-md shadow-lg">
             <div>
               <input 
                 type="email" 
@@ -95,8 +97,9 @@ const LoginPage = () => {
             <p className="text-red-600 text-[16px] mb-4">{error && error}</p>
           </div>
         </form>
+        </div>
+        </div>
       </div>
-    </div>
     )
     
   // );

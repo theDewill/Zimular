@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 
 import { getServerSession } from 'next-auth';
 import  SessionProvider  from "@/utils/SessionProvider"
+import Hero from './home/Hero';
 
 const inter = Inter({ subsets: ['latin'] })
 
