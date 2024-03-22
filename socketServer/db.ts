@@ -26,7 +26,7 @@ class MongoTools {
             // Fetch the document based on user ID
             const doc = await collection.findOne({ "uid": userId });
 
-            console.log("Doc retrived: " , doc);
+            //console.log("Doc retrived: " , doc);
             
             if (doc && doc.simulations) {
                 // Iterate over the simulations to find the one with "active" status
@@ -92,7 +92,10 @@ class MongoTools {
                 [`simulations.${simId}`]: {
                     status: "active",
                     sessions: {
-                        "1": {} // Initializing the first session as an empty object
+                        "1": {
+                            inputs: {},
+                            outputOV: {}
+                        } // Initializing the first session as an empty object
                     },
                     ui: {} // Initializing ui as an empty object
                 }
@@ -210,7 +213,7 @@ class MongoTools {
         const query = { uid: u_id };
         const options = { upsert: true };
         let updateDoc :any = { $set: {} };
-        updateDoc.$set[`simulations.${sim_id}.sessions.${ses_id}.input`] = data;
+        updateDoc.$set[`simulations.${sim_id}.sessions.${ses_id}.inputs`] = data;
         await col.updateOne(query, updateDoc, options);
         console.log(`upated input data for session - ${ses_id} to mongo`);
     }

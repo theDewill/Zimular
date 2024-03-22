@@ -12,10 +12,15 @@ class connectManager {
             'socket' : socket
         }
         this.connectionPool.set(uid, socketData);
+
+        console.log("Socket added to pool and this is the socket : " , this.getSocket(uid))
+        
     }
 
     getSocket(uid : number) {
-        return this.connectionPool.get(uid)['socket'];
+        console.log("uid for socket getting : " , uid);
+        let socketdata = this.connectionPool.get(uid);
+        return socketdata.socket;
     }
 
     getSocketId(uid : number) {
@@ -107,6 +112,14 @@ class EventManager {
         let Event : Map<any,any> = new Map(); 
         Event.set(Number(sid), State);
         this.eventPool.set(Number(uid) , Event);
+    }
+
+    checkEvent(uid : number , sesid : number) {
+        if (this.eventPool.get(uid)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     getEvent(uid : string, sid : string) {

@@ -9,6 +9,7 @@ from simpy import (
     PriorityStore,
     Store,
 )
+from pprint import pprint
 
 
 @dataclass
@@ -31,6 +32,7 @@ class ComponetHandler:
         obj = Workflow()
         obj.name = workflow_name
         self.workflows[workflow_name] = obj
+        ZIMDB.add_workflow(workflow_name)
 
     def get_workflow(self, workflow_name):
         return self.workflows[workflow_name]
@@ -40,44 +42,54 @@ class ComponetHandler:
             self.add_workflow(workflow_name)
 
         self.workflows[workflow_name].resource[resource_name] = resource_obj
+        ZIMDB.add_com_to_workflow(workflow_name, "resource", resource_name)
 
-    def add_priotityresouce(self, workflow_name, resource_obj, resource_name):
+    def add_priotityresouce(self, workflow_name: str, resource_obj, resource_name: str):
         if workflow_name not in self.workflows:
             self.add_workflow(workflow_name)
 
         self.workflows[workflow_name].priotityresouce[resource_name] = resource_obj
+        ZIMDB.add_com_to_workflow(workflow_name, "piorityresource", resource_name)
 
-    def add_container(self, workflow_name, container_obj, container_name):
+    def add_container(self, workflow_name: str, container_obj, container_name: str):
         if workflow_name not in self.workflows:
             self.add_workflow(workflow_name)
 
         self.workflows[workflow_name].container[container_name] = container_obj
+        ZIMDB.add_com_to_workflow(workflow_name, "container", container_name)
 
-    def add_store(self, workflow_name, store_obj, store_name):
+    def add_store(self, workflow_name: str, store_obj, store_name: str):
         if workflow_name not in self.workflows:
             self.add_workflow(workflow_name)
 
         self.workflows[workflow_name].store[store_name] = store_obj
+        ZIMDB.add_com_to_workflow(workflow_name, "store", store_name)
 
-    def add_filterstore(self, workflow_name, filterstore_obj, filterstore_name):
+    def add_filterstore(self, workflow_name: str, filterstore_obj, filterstore_name: str):
         if workflow_name not in self.workflows:
             self.add_workflow(workflow_name)
 
         self.workflows[workflow_name].filterstore[filterstore_name] = filterstore_obj
+        ZIMDB.add_com_to_workflow(workflow_name, "filterstore", filterstore_name)
 
-    def add_priotitystore(self, workflow_name, priotitystore_obj, priotitystore_name):
+    def add_priotitystore(self, workflow_name: str, priotitystore_obj, priotitystore_name: str):
         if workflow_name not in self.workflows:
             self.add_workflow(workflow_name)
 
         self.workflows[workflow_name].priotitystore[
             priotitystore_name
         ] = priotitystore_obj
+        ZIMDB.add_com_to_workflow(workflow_name, "prioritystore", priotitystore_name)
 
-    def add_custom(self, workflow_name, custom_obj, custom_name):
+    def add_custom(self, workflow_name: str, custom_obj, custom_name: str):
         if workflow_name not in self.workflows:
             self.add_workflow(workflow_name)
 
         self.workflows[workflow_name].custom[custom_name] = custom_obj
+        ZIMDB.add_com_to_workflow(workflow_name, "custom", custom_name) 
+
+    def show_data(self):
+        pprint(self.workflows)
 
 
 componet_handler = ComponetHandler()
@@ -173,7 +185,7 @@ class IRes(IResource):
             self.update_user_time(
                 category="resource",
                 entity=f'{entity["type"]}_{entity["id"]}',
-                prio=str(ttes(entity["priority"])),
+                prio=str(ttes(entity)),
             )
             # self.queue_time.append([self.env.now, len(self.res.queue)])
 
@@ -182,7 +194,7 @@ class IRes(IResource):
             self.enter_time(
                 category="resource",
                 entity=f'{entity["type"]}_{entity["id"]}',
-                prio=str(ttes(entity["priority"])),
+                prio=str(ttes(entity)),
             )
             # self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter")
 
@@ -191,7 +203,7 @@ class IRes(IResource):
         self.update_leave_time(
             category="resource",
             entity=f'{entity["type"]}_{entity["id"]}',
-            prio=str(ttes(entity["priority"])),
+            prio=str(ttes(entity)),
         )
 
         # self.system_table_append(f'{entity["type"]}_{entity["id"]}', "leave")
@@ -216,7 +228,7 @@ class IPiroRes(IResource):
             self.update_user_time(
                 category="piorityresource",
                 entity=f'{entity["type"]}_{entity["id"]}',
-                prio=str(ttes(entity["priority"])),
+                prio=str(ttes(entity)),
             )
             # self.queue_time.append([self.env.now, len(self.res.queue)])
 
@@ -224,7 +236,7 @@ class IPiroRes(IResource):
             self.enter_time(
                 category="piorityresource",
                 entity=f'{entity["type"]}_{entity["id"]}',
-                prio=str(ttes(entity["priority"])),
+                prio=str(ttes(entity)),
             )
 
             # self.system_table_append(f'{entity["type"]}_{entity["id"]}', "enter", priority=ttes(entity["priority"]))
@@ -234,7 +246,7 @@ class IPiroRes(IResource):
         self.update_leave_time(
             category="piorityresource",
             entity=f'{entity["type"]}_{entity["id"]}',
-            prio=str(ttes(entity["priority"])),
+            prio=str(ttes(entity)),
         )
 
         # self.system_table_append(f'{entity["type"]}_{entity["id"]}', "leave", priority=ttes(entity["priority"]))
@@ -444,7 +456,13 @@ class ZPriorityStore(IStore):
 
 
 def ttes(item):
-    if callable(item):
+
+    priority_value = item.get("priority")
+
+    if priority_value == None:
+        return 0
+
+    if callable(priority_value):
         return item()
     else:
         return item

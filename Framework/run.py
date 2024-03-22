@@ -38,7 +38,9 @@ class Modeling_workspace:
             Packing_Machien(env, f"Packing_Machien_{i}", self.workflow)
             for i in range(5)
         ]
-        self.Packing_Store = ZStore(env, simpy.Store(env, capacity=10), "Packing_Store")
+        self.Packing_Store = ZStore(
+            env, simpy.Store(env, capacity=10), "packing_store", self.workflow
+        )
 
     def run(self, entity):
         machien = self.choose_machien(self.Modeling_Machien_Pool)
@@ -47,14 +49,14 @@ class Modeling_workspace:
         # yield self.env.timeout(2)
 
         if self.Modeling_Store.level() > 2:
-            print("Inception_Store is full")
+            #print("Inception_Store is full")
             b = yield self.Modeling_Store.get()
             machien2 = self.choose_machien(self.Inception_Machien_Pool)
             yield from machien2.run(entity=b)
             yield self.Inception_Store.put(b)
 
             if self.Inception_Store.level() > 2:
-                print("Packing_Store is full")
+                #print("Packing_Store is full")
                 c = yield self.Inception_Store.get()
                 machien3 = self.choose_machien(self.Packing_Machien_Pool)
                 yield from machien3.run(entity=c)

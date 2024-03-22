@@ -1,4 +1,5 @@
 # Path: zimular/ZIM/ZResource.py
+from ZIM.ZDB import ZIMDB
 
 class EntityGenerator:
     def __init__(self, env, workflow, entity_format, init_count=0):
@@ -35,6 +36,14 @@ class EntityGenerator:
                 entity_list[key] = value()
 
             return entity_list
+
+    def save_entity(self):
+
+        '''
+            save the entity to the database
+        '''
+
+        ZIMDB.save_entity(self.entity_format["type"], self.entity_count)
 
     def enter_format(self, priority):
         ent = self.entity_format.copy()

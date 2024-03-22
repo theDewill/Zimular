@@ -9,7 +9,9 @@ import websockets as wb
 import sys
 import os
 import subprocess as sb
-import zimdb.ts as ZIMDB
+#from zimdb.ts import ZIMDB
+from ZIM.ZComponets import componet_handler
+from ZIM.ZDB import ZIMDB
 
 
 env = simpy.Environment()
@@ -26,8 +28,11 @@ def initiate():
     runReady()
     run_simulation()
     #System_Output.show_table()
-    #ZIMDB.uptable()
-    #ZIMDB.data.print_table_col()
+    ZIMDB.uptable()
+    ZIMDB.send_db()
+    print("+++++++++++++++++++++++++++++++++++++")
+    #ZIMDB.testroute()
+    componet_handler.show_data()
 
 async def send_handshake(url,user_id):
     async with httpx.AsyncClient() as client:
@@ -42,11 +47,12 @@ async def socket_connect(url,u_id):
     WBdata = json.loads(WBjson)
     
     async with wb.connect(WBdata['webUri'].strip()) as websocket:
-        with open("/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/Framework/ZIM/API/MultiAPI/ModelApi/JSON/startup.json", "r") as file:
-                    data = json.load(file)
-                    #response = await websocket.send(json.dumps(data))
-                    #return response.text
-                    await websocket.send(json.dumps({"type": "calib" ,"uid" : u_id, "content" : data}))
+        # with open("/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/Framework/ZIM/API/MultiAPI/ModelApi/JSON/startup.json", "r") as file:
+        #             data = json.load(file)
+        #             #response = await websocket.send(json.dumps(data))
+        #             #return response.text
+        #             await websocket.send(json.dumps({"type": "calib" ,"uid" : u_id, "content" : data}))
+        await websocket.send(json.dumps({"type": "calib" ,"uid" : u_id, "content" : SIMINPUT.input_structure}))
 
         while True:
             
@@ -71,13 +77,15 @@ async def socket_connect(url,u_id):
                 #     json.dump(json_reponse, file)
                 #     print("Got the input file and saved")
 
-                SIMINPUT.input_structure = json_reponse["content"]
+                SIMINPUT.input_data_path = json_reponse["content"]
                 
                 #TODO: replace this with the actual engine from appa
                 #os.system("python3 /Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/engineClone.py")
                 initiate()
 
                 # #zim engine starts and aftr generating output json in outputs
+
+                #TODO: complete from here ..............
                
                 send_package = {
                         "type" : "data",

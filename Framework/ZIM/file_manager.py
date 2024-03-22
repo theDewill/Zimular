@@ -102,7 +102,6 @@ class InputHandler:
         '''
 
         Data = self.input_structure[input_group][input_name]
-        
         if Data == None:
             print("Input not found.")
             return None

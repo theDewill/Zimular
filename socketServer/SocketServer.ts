@@ -51,12 +51,14 @@ const wsk = new Server({ server });
   app.get('/sendInputs', async (req : any, res : any) => {
     //i must pass this 2 only with query or whatevr
     let uid = req.query.uid;
+    console.log("user here is" , uid);
     let data = req.query.data;
     let ifActiveSim = await mongo.findActiveSim(Number(uid));
     
     let sid = sessionManager.getSession(Number(uid))?.toString();
     //this has the data entered by user via web interfaec
     await mongo.storeInput(Number(uid), Number(ifActiveSim), Number(sid) , data);
+
     //-- calling the input settings sender
     let send_pack = {
       'type': 'data', // here 1) calib - need startup again [model changed or first time]  2) data - normal transmission input output
@@ -67,6 +69,7 @@ const wsk = new Server({ server });
     }
     let socket = conManager.getSocket(Number(uid));
     socket.send(JSON.stringify(send_pack));
+    console.log("sent the inputs via socket and next toggle event waiting....")
     //waitng till output gets writtn to mongo
     await EventHandler.getEvent(uid, String(sid)).get('input').waiting;
   
@@ -90,8 +93,17 @@ const wsk = new Server({ server });
   app.get('/createSim', async (req : any, res : any) => {
     let uid = req.query.uid;
     
-    sessionManager.setSession(Number(uid));
-    EventHandler.on(uid, String(sessionManager.getSession(Number(uid))));
+    if(!sessionManager.getSession(Number(uid))) {
+      sessionManager.setSession(Number(uid));
+      console.log("session set via create Sim")
+    }
+    
+    if (!EventHandler.checkEvent(Number(uid) , Number(sessionManager.getSession(Number(uid))))) {
+      EventHandler.on(uid, String(sessionManager.getSession(Number(uid))));
+      console.log("Event set via create sim")
+    }
+
+    
     
     let ifActiveSim = await mongo.findActiveSim(Number(uid));
     if (ifActiveSim != null) {
@@ -147,41 +159,51 @@ const wsk = new Server({ server });
     socket.on('message', async (message : any) => {
         
         message = JSON.parse(message);
-
+        let user_id = message['uid'];
         //Message Type : Calib
         if (message['type'] == 'calib') {
-          console.log(`calib message received with uid: ${message['uid']}`);
-          conManager.addConnection(Number(message['uid']) , socket);
+          console.log(`calib message received with uid: ${user_id}`);
+          conManager.addConnection(Number(user_id) , socket);
 
           //TODO: here i have moved these to /createSim endpoint
         //   sessionManager.setSession(Number(message['uid']));
         //   EventHandler.on(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
 
-        let ifActSim = await mongo.findActiveSim(Number(message['uid']));
+        if(!sessionManager.getSession(Number(user_id))) {
+          sessionManager.setSession(Number(user_id));
+          console.log("session set via initial socket")
+        }
+
+        if (!EventHandler.checkEvent(Number(user_id) , Number(sessionManager.getSession(Number(user_id))))) {
+          EventHandler.on(user_id, String(sessionManager.getSession(Number(user_id))));
+          console.log("event set via initial socket")
+        }
+
+        let ifActSim = await mongo.findActiveSim(Number(user_id));
         if (ifActSim != null) {
-          await mongo.storeUI(Number(message['uid']), Number(ifActSim), message['content']);
-          EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(message['uid']))), "ui");
+          await mongo.storeUI(Number(user_id), Number(ifActSim), message['content']);
+          EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(user_id))), "ui");
         } else {
-          let createdSim = await mongo.createEmptySim(Number(message['uid']));
-          await mongo.storeUI(Number(message['uid']), Number(createdSim), message['content']);
-          EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(message['uid']))), "ui");
+          let createdSim = await mongo.createEmptySim(Number(user_id));
+          await mongo.storeUI(Number(user_id), Number(createdSim), message['content']);
+          EventHandler.emit(user_id, String(sessionManager.getSession(Number(user_id))), "ui");
           
         }
           
         }
         //Message Type : Data
         else if (message['type'] == 'data') {
-          console.log(`data message received with uid: ${message['uid']}`);
-            if (sessionManager.getSession(Number(message['uid'])) != 1) {
-              EventHandler.on(message['uid'], String(sessionManager.getSession(Number(message['uid']))));
+          console.log(`data message received with uid: ${user_id}`);
+            if (sessionManager.getSession(Number(user_id)) != 1) {
+              EventHandler.on(user_id, String(sessionManager.getSession(Number(user_id))));
             }
-            let ifActSim = await mongo.findActiveSim(Number(message['uid']));
+            let ifActSim = await mongo.findActiveSim(Number(user_id));
             // This is the Overview
-            await mongo.storeOutput(message['uid'], String(ifActSim), String(sessionManager.getSession(Number(message['uid']))), message['content']);
+            await mongo.storeOutput(user_id, String(ifActSim), String(sessionManager.getSession(Number(user_id))), message['content']);
             //TODO: here i will have to call a custom event that will resolve await in SendInput endpoiint hold and send the response
   
             //now releasing the response thread
-            EventHandler.emit(message['uid'], String(sessionManager.getSession(Number(message['uid']))), "input");
+            EventHandler.emit(user_id, String(sessionManager.getSession(Number(user_id))), "input");
           }
   
   
