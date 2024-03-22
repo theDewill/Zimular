@@ -37,6 +37,7 @@ pub struct DB {
     dblen: usize,
     inputtable: Vec<InputDataGroup>,
     component_info: ComponentInfo,
+    entity: HashMap<String, f64>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -93,6 +94,7 @@ impl DB {
             component_info: ComponentInfo {
                 workflow: HashMap::new(),
             },
+            entity: HashMap::new(),
         })
     }
 
@@ -147,6 +149,11 @@ impl DB {
             CatComp::Container => comp.containers.push(name.to_string()),
             CatComp::Custom => comp.custom.push(name.to_string()),
         }
+        Ok(())
+    }
+
+    pub fn add_entity(&mut self, name: &str, value: f64) -> DBResult<()> {
+        self.entity.insert(name.to_string(), value);
         Ok(())
     }
 

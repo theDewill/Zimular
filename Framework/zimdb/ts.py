@@ -84,15 +84,16 @@ class DataManager:
         comp.get_data = self.data.getcomp(component, "get")
         comp.put_data = self.data.getcomp(component, "put")
         comp.post_data = self.data.getcomp(component, "post")
+
         return comp
 
 
-ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI)
+# ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI)
 
-ZIMDB.test1()
-#ZIMDB.test2()
-#ZIMDB.data.printtable()
-# ZIMDB.send_db()
-ZIMDB.data.sendtablecollection()
-#ZIMDB.get_comp_data("A").show_table()
-ZIMDB.data.print_table_col()
+# ZIMDB.test1()
+# #ZIMDB.test2()
+# #ZIMDB.data.printtable()
+# # ZIMDB.send_db()
+# ZIMDB.data.sendtablecollection()
+# #ZIMDB.get_comp_data("A").show_table()
+# ZIMDB.data.print_table_col()
