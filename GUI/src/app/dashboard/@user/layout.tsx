@@ -11,6 +11,7 @@ export default function dashLayout ({ children }: { children: React.ReactNode}) 
 
     return (
         <>
+        <div className='m-4'>
             <div className="flex flex-col gap-2">
                 <div className=" grow-0 shrink-0 flex justify-between">
                         <div className=" grow-0 shrink-0 flex gap-2">
@@ -36,6 +37,7 @@ export default function dashLayout ({ children }: { children: React.ReactNode}) 
                     {children}
                 </div>
             </div>
+        </div>
         </>
     )
 }
