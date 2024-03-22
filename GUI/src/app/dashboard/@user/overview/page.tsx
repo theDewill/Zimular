@@ -3,6 +3,7 @@ import DetailsTable from '@/components/tables/DetailsTable';
 import DynamicTable from '@/components/tables/Dynamictable';
 import LineChartComponent from '@/components/charts/Linechrt';
 import PieChartcomponent from '@/components/charts/Piechart';
+import Card from '@/components/card';
 
 const detailtableData = [
     ['Row 1, Column 1', 'Row 1, Column 2'],
@@ -80,11 +81,11 @@ let pieLiterel = {
   "custom": 0.0
 }
 
-let piedata = Object.entries(pieLiterel).map(([vame, value]) => ({ name: name.toString(), value: Math.round(value * 100) / 100 }));
+let piedata = Object.entries(pieLiterel).map(([vame, value]) => ({ name: vame.toString(), value: Math.round(value * 100) / 100 }));
 
 const Overviewpg = () => {
   return (
-    <div className='mx-12 flex flex-col items-center gap-4'>
+    <div className='mx-12 flex flex-col items-center gap-4 outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-0.5  rounded-lg'>
         <div>
             <div className='text-lg mb-2 font-semibold'>
                 Details
@@ -103,9 +104,13 @@ const Overviewpg = () => {
             </div>
             <DynamicTable headers = {entityheaders} data={entitydata}/>
         </div>
-        <div className="flex justify-around gap-3">
-          <PieChartcomponent data={piedata}/>
-          <LineChartComponent data={data} />
+        <div className="flex justify-around gap-[120px]">
+          <Card>
+            <PieChartcomponent data={piedata}/>
+          </Card>
+          <Card>
+            <LineChartComponent data={data} />
+          </Card>
         </div>
 
 

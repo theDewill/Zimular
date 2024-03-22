@@ -1,5 +1,6 @@
 
 import DynamicSelect from '@/components/DynamicSelection'
+import Card from '@/components/card';
 import LineChartComponent from '@/components/charts/Linechrt';
 import MultiLineChartComponent from '@/components/charts/MultiLineBarAreachrt';
 import DetailsTable from '@/components/tables/DetailsTable';
@@ -27,7 +28,7 @@ const data = [
 const Componentpg = () => {
   return (
     <>
-      <div className='mt-8 mx-12'>
+      <div className=' mx-12 outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-0.5  rounded-lg'>
         <div className='flex justify-between'>
           <div className='text-3xl font-semibold'>
             Component Name: {"Replace with Component Name"}
@@ -39,9 +40,13 @@ const Componentpg = () => {
         <div className='m-4'>
           <DetailsTable data={tableData}/>
         </div>
-        <div className='flex my-8'>
-          <MultiLineChartComponent />
-          <LineChartComponent />
+        <div className='flex my-8 gap-[140px]'>
+          <Card>
+            <MultiLineChartComponent />
+          </Card>
+          <Card>
+            <LineChartComponent />
+          </Card>
         </div>
         <div>
           <DynamicFilterTable headers={headers} data={data}/>

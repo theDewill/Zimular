@@ -10,7 +10,7 @@ const data = [
 
 const Tablepg = () => {
   return (
-    <div>
+    <div className='outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-1  rounded-lg'>
       <DynamicColumnFilterTable headers={headers} data={data} />
     </div>
   )
