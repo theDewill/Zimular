@@ -2,6 +2,10 @@ import React from 'react'
 import Link from 'next/link';
 import Hcard from '@/components/hcard';
 import simpy from '@/assests/Simpy.jpg';
+import code from '@/assests/code.jpg';
+import front from '@/assests/front.jpg';
+import NewSection from '@/components/hsection';
+import Footer from '@/components/footer';
 
 const Hero = () => {
   return (
@@ -23,18 +27,29 @@ const Hero = () => {
           </div>
           
         </div>
-        <div className="flex gap-11 p-[100px] justify-center">
+        <NewSection/>
+        <div className="flex gap-[80px] p-[100px] justify-center">
           <Hcard
-            title="Built-in Optimizations"
-            subtitle="Automatic Image, Font, and Script Optimizations for improved UX ..."
+            title="Powered By SimPy"
+            subtitle="Built with SimPy, a Python simulation framework, our application utilizes its capabilities to model and simulate complex systems."
             image={simpy}
+            more='Learn more about SimPy'
           />
           <Hcard
-            title="Built-in Optimizations"
-            subtitle="Automatic Image, Font, and Script Optimizations for improved UX ..."
-            image={simpy}
+            title="Comprehensive Discrete event Simulation Framework"
+            subtitle="Create a comprehensive framework that enables monitoring of the simulation, allowing users to visualize and analyze simulation data"
+            image={code}
+            more=''
           />
+          <Hcard
+            title="Streamlined Development Process"
+            subtitle="Streamline the development process by providing a set of tools and utilities that simplify the creation and modification of simulations."
+            image={front}
+            more=""
+          />
+
         </div>
+        <Footer/>
     </div>
   )
 }

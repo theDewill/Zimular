@@ -7,7 +7,7 @@ interface DynamicTableProps {
 const DetailsTable: React.FC<DynamicTableProps> = ({ data }) => {
   return (
     
-    <table className="border-collapse border-b border-gray-300  ">
+    <table className="border-collapse border-b border-gray-300 w-full ">
       <tbody>
         {data.map((row, index) => (
           <tr key={index}>
