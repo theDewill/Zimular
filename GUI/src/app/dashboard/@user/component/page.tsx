@@ -4,6 +4,7 @@ import LineChartComponent from '@/components/charts/Linechrt';
 import MultiLineChartComponent from '@/components/charts/MultiLineBarAreachrt';
 import DetailsTable from '@/components/tables/DetailsTable';
 import FilterComponentTable from '@/components/tables/DynamicFiltertable';
+import Card from '@/components/card';
 import React from 'react'
 
 const options = [
@@ -86,14 +87,14 @@ const Componentpg = () => {
         </div>
         <div className='flex my-8 gap-[120px]'>
           <Card>
-          <MultiLineChartComponent data={chartdata} />
+            <MultiLineChartComponent data={chartdata} />
           </Card>
           <Card>
-          <LineChartComponent data={chartdata} />
+            <LineChartComponent data={chartdata} />
           </Card>
         </div>
         <div>
-          <FilterComponentTable />
+          <FilterComponentTable data={data}/>
         </div>
       </div>
     </>

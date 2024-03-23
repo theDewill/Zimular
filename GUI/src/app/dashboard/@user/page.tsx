@@ -1,7 +1,13 @@
 import Link from 'next/link';
 import React from 'react';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
 
-export default function Userdash (){
+export default async function Userdash (){
+    const session = await getServerSession();
+    if (!session) {
+        redirect('/');
+    }
     return (
         <div>
             <div className='flex items-center justify-center h-screen  bg-fixed bg-center bg-cover bg-blue-950 overflow-hidden'>
