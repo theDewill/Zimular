@@ -6,7 +6,7 @@ interface FormData {
   action: string;
 }
 
-const FilterComponentTable: React.FC = () => {
+const FilterComponentTable = ({data}:{data:any}) => {
   const [formData, setFormData] = useState<FormData>({
     time: '',
     action: '',
