@@ -17,7 +17,7 @@ def customer_generator(env):
 
     generator = EntityGenerator(env, workinit, entity_format, init_count=1)
 
-    for _ in range(5):
+    for _ in range(100):
         entity = generator.generate_entity()
         env.process(workinit.run(entity))
         yield env.timeout(1)

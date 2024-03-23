@@ -145,7 +145,7 @@ async def socket_connect(url,u_id):
                                 "func" : json_reponse["func"],
                                 "content" : {
                                     #  "rawData" : json.load(outfile),
-                                    "table": apiManager.table_filter(CONFIG.sim_table_name,formData['componentName'],formData['action'],formData['entity'],formData['time'])},
+                                    "table": apiManager.table_filter(formData['time'],formData['componentCategory'],formData['componentName'],formData['action'],formData['entity'],None)},
                             }
 
                 await websocket.send(json.dumps(send_package))

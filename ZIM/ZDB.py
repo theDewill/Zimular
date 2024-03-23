@@ -204,8 +204,8 @@ class APIQueryManager:
     
             container_put = self.data.get_container_put_count(container_name)
             container_get = self.data.get_container_get_count(container_name)
-            container_put_chart = self.data.container_put_time_chart(container_name)
-            container_get_chart = self.data.container_get_time_chart(container_name)
+            container_put_chart = self.data.container_amount_time_chart(container_name)
+            container_get_chart = self.data.container_get_time_chart(container_name) #TODO: remove this after checking
     
             final_json = {
                 "container_name": container_name,
@@ -226,7 +226,7 @@ class APIQueryManager:
     
             store_put = self.data.get_store_put_count(store_name)
             store_get = self.data.get_store_get_count(store_name)
-            store_put_chart = self.data.store_put_time_chart(store_name)
+            store_put_chart = self.data.store_amount_time_chart(store_name)
             store_get_chart = self.data.store_get_time_chart(store_name)
     
             final_json = {
@@ -250,7 +250,8 @@ class APIQueryManager:
 
     def table_filter(
         self, 
-        simulation_name: str, 
+        time : float,
+        component_cat : str, 
         component_name: str, 
         action: str, 
         entity: str, 
@@ -262,7 +263,8 @@ class APIQueryManager:
         '''
 
         data = self.data.get_full_data(
-            simulation_name,
+            time,
+            component_cat,
             component_name,
             action,
             entity,
