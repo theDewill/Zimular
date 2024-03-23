@@ -188,12 +188,25 @@ class MongoTools {
         return result.data[session].input;
     }
 
-    async getUI (u_id : number, simID : number) {
+    async getUI (u_id : number) {
         await this.connect()
+        let simID = await this.findActiveSim(u_id);
         const col = this.Mongo.db("ZimularDB").collection("users");
         const query = { uid: u_id };
         const result = await col.findOne(query);
         return result.simulations[String(simID)].ui;
+    }
+
+    async terminateSim (uid : number) {
+        await this.connect()
+        let simID = await this.findActiveSim(uid);
+        const col = this.Mongo.db("ZimularDB").collection("users");
+        const qry = {uid : uid};
+        const options = { upsert: true };
+        let updateDoc :any = { $set: {} };
+        updateDoc.$set[`simulations.${simID}.status`] = "completed";
+        await col.updateOne(qry, updateDoc, options);
+        console.log(`upated status for the simualtion ${simID}`);
     }
 
     async storeUI (uid : number, simID : number, data : any) {
@@ -218,29 +231,47 @@ class MongoTools {
         console.log(`upated input data for session - ${ses_id} to mongo`);
     }
 
-    async storeOutput (u_id : string, s_id : string, outputData : any) { // here output has the read and recived json from fmk model
+    async storeOutput (u_id : number, sim_id : number, ses_id : number ,outputData : any , func : string) { // here output has the read and recived json from fmk model
         await this.connect()
         const col = this.Mongo.db("ZimularDB").collection("users");
         const query = { uid: Number(u_id) };
         const options = { upsert: true };
-        let session = `session_${s_id}`;
         let updateDoc :any  = { $set: {} };
-        updateDoc.$set[`data.${session}.output`] = outputData;
-        console.log(`upated output data for session - ${s_id} to mongo`)
+
+        const query2 = { uid: Number(u_id) };
+        const result2 = await col.findOne(query);
+        let ovdoc = result2.simulations[sim_id].sessions[ses_id].outputOV;
+        let updatedOvdoc = {
+            ...ovdoc,
+            ...outputData // This will add new properties from outputData and update existing ones
+          };
+        
+        updateDoc.$set[`simulations.${sim_id}.sessions.${ses_id}.outputOV`] = updatedOvdoc;
+        const updated = await col.updateOne(query, updateDoc, options);
+        console.log(`upated output overview data for session - ${ses_id} to mongo`)
+        
 
 
 // Now, use updateDoc in your update operation
 
-        const updated = await col.updateOne(query, updateDoc, options);
     }
 
-    async getOutput (u_id : string, s_id : string) {
+    async getOutput (u_id : number, sim_id : number , ses_id : number) {
+        console.log("getoutput" , u_id , sim_id , ses_id);
         await this.connect()
         const col = this.Mongo.db("ZimularDB").collection("users");
         const query = { uid: Number(u_id) };
         const result = await col.findOne(query);
-        let session = `session_${s_id}`;
-        return result.data[session].output;
+        return result.simulations[sim_id].sessions[ses_id].outputOV.overview;
+    }
+ 
+    async getsuboutputs (uid : number, ses_id : number, option : string) {
+        await this.connect()
+        let sim_id = await this.findActiveSim(uid);
+        const col = this.Mongo.db("ZimularDB").collection("users");
+        const query = { uid: Number(uid) };
+        const result = await col.findOne(query);
+        return result.simulations[sim_id].sessions[ses_id].outputOV[option];
     }
 
 

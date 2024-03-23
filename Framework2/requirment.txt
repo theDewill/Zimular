@@ -1,5 +1,0 @@
-matpotlib
-rich
-simpy
-maturin
-py03

@@ -7,7 +7,7 @@ import json
 DBNAME = "SimulationDB"
 SETNAME = "SimulationSet"
 TABLENAME = "SimulationTable2"
-MONGO_URI = "mongodb://localhost:27017"
+MONGO_URI = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.8.0"
 BUFFER_SIZE = 1000
 # "mongodb+srv://antiloger:077antiloger@cluster0.i9knr5x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
@@ -38,9 +38,9 @@ class DataManager:
         self.table = tablename
         self.uri = uri
         self.buffer_size = buffer_size
-        self.data = zimdb.ZimDB(
-            self.dbname, self.setname, self.uri, self.table, self.buffer_size
-        )
+        # self.data = zimdb.ZimDB(
+        #     self.dbname, self.setname, self.uri, self.table, self.buffer_size
+        # )
         print("DB connected ..............................")
 
     def add_data(

@@ -16,35 +16,77 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const server = createServer(app);
 const wsk = new Server({ server });
 
+
+  app.get('/terminateSim', async (req : any , res : any) => {
+    let uid = req.query.uid;
+    await mongo.terminateSim(Number(uid));
+  })
   
   app.get('/sendSubReqs', async (req : any,res : any) => {
     //i must pass this 2 only with query or whatevr
-    let uid = req.query.uid;
-    let data = req.query.data;
-  
-    let sid = sessionManager.getSession(Number(uid));
     
-    //TODO: wether store in mongo or not
-    //await mongo.storeSubReq(uid, sid, data);
-    //calling the input settings sender
+    let uid = req.query.uid;
+    let option = req.query.option;
+
+    let formData;
+    let category;
+    let compname;
+        
+    if (req.query.formData) {
+            const formDataParam = req.query.formData;
+            formData = JSON.parse(decodeURIComponent(formDataParam));
+    }
+    if (req.query.cat) {
+      category = req.query.cat;
+    }
+    if (req.query.compname) {
+      compname = req.query.compname;
+    }
+
+    let ifActiveSim = await mongo.findActiveSim(Number(uid));
+    let sid = Number(sessionManager.getSession(Number(uid))) - 1;
+  
     let send_pack = {
-      'type': 'data', // here 1) calib - need startup again [model changed or first time]  2) data - normal transmission input output
-      'file_name' : `subreqs_${uid}_${sid}`, 
+      'type': 'subreq', // here 1) calib - need startup again [model changed or first time]  2) data - normal transmission input output
       'uid' : uid,
       'sid' : sid,
-      'content': null,//await mongo.getSubReq(uid, sid),
+      'func': option,//await mongo.getSubReq(uid, sid),
+      'formData' : formData,
+      'category' : category,
+      'compname' : compname,
     }
+
+    if (option == "overview") {
+      //TODO: here the retrieval of mongo
+      let send_data = await mongo.getOutput(Number(uid), Number(ifActiveSim) , Number(sid));
+      console.log(send_data)
+      res.json({"data" : send_data});
+
+    }
+    else {
+
     let socket = conManager.getSocket(Number(uid));
     socket.send(JSON.stringify(send_pack));
     //waitng till output gets writtn to mongo
-    await EventHandler.getEvent(uid, String(sid) ).waiting;
+    await EventHandler.getEvent(uid, String(sid)).get(option).waiting;
+    
+    EventHandler.getEvent(uid, String(sid)).get(option).reset();
+    console.log("event reset")
+
+    let sendData = await mongo.getsuboutputs(Number(uid), Number(sid),option);
+    console.log("subout data: ", sendData);
+    res.json({"data" : sendData});
+
+    }
+
+
   })
 
 
   app.get('/getui', async (req : any, res : any) => {
     let uid = req.query.uid;
-    let simID = req.query.simID;
-    let results = await mongo.getUI(Number(uid), Number(simID));
+    
+    let results = await mongo.getUI(Number(uid));
     res.json({"data": results});
   });
 
@@ -73,7 +115,11 @@ const wsk = new Server({ server });
     //waitng till output gets writtn to mongo
     await EventHandler.getEvent(uid, String(sid)).get('input').waiting;
   
-    //TODO: this will load the output ui with recieved outputs -- uncomment this after TEST
+    await mongo.createNextSession(Number(uid) , Number(ifActiveSim), Number(sessionManager.getSession(Number(uid))));
+    
+    
+    
+    //TODO: refiretc krpn 
   
     // const response = await axios.post('http://another-api-endpoint.com/profile', {
     //     // Your JSON data here
@@ -81,13 +127,18 @@ const wsk = new Server({ server });
     //     sid: sid,
     //     content : await mongo.getOutput(uid, sid)
     //   });
-    sessionManager.nextSession(Number(uid)); // this will increment the session number
-    await mongo.createNextSession(Number(uid) , Number(ifActiveSim), Number(sessionManager.getSession(Number(uid))));
+    // sessionManager.nextSession(Number(uid)); // this will increment the session number
+    // EventHandler.on(uid, String(sessionManager.getSession(Number(uid))));
       //--here i must update the sid in event manager cevent
       res.json({"status": "successFully event demolished"});
   
     
   })
+
+
+
+
+
 
   
   app.get('/createSim', async (req : any, res : any) => {
@@ -194,16 +245,26 @@ const wsk = new Server({ server });
         //Message Type : Data
         else if (message['type'] == 'data') {
           console.log(`data message received with uid: ${user_id}`);
-            if (sessionManager.getSession(Number(user_id)) != 1) {
-              EventHandler.on(user_id, String(sessionManager.getSession(Number(user_id))));
-            }
+            // if (sessionManager.getSession(Number(user_id)) != 1) {
+            //   EventHandler.on(user_id, String(sessionManager.getSession(Number(user_id))));
+            // }
             let ifActSim = await mongo.findActiveSim(Number(user_id));
             // This is the Overview
-            await mongo.storeOutput(user_id, String(ifActSim), String(sessionManager.getSession(Number(user_id))), message['content']);
+            await mongo.storeOutput(Number(user_id), Number(ifActSim), Number(sessionManager.getSession(Number(user_id))), message['content'], "overview");
             //TODO: here i will have to call a custom event that will resolve await in SendInput endpoiint hold and send the response
   
             //now releasing the response thread
             EventHandler.emit(user_id, String(sessionManager.getSession(Number(user_id))), "input");
+            sessionManager.nextSession(Number(user_id)); // this will increment the session number
+            EventHandler.on(user_id, String(sessionManager.getSession(Number(user_id))));
+          } 
+          else if (message['type'] == 'subreq') { 
+            let ifActSim = await mongo.findActiveSim(Number(user_id));
+
+            await mongo.storeOutput(Number(user_id), Number(ifActSim), Number(message['sid']), message['content'], message['func']);
+            console.log("message : ", message['content']);
+
+            EventHandler.emit(user_id, String(message['sid']), message['func']);
           }
   
   

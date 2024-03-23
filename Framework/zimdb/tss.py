@@ -1,4 +1,4 @@
-import zimdb
+#import zimdb
 import json
 from pprint import pprint
 DBNAME = "SimulationDB"
@@ -7,12 +7,15 @@ TABLENAME = "SimulationTable2"
 MONGO_URI = "mongodb://localhost:27017"
 
 
-test = zimdb.QueryDB(
-    MONGO_URI,
-    SETNAME,
-    DBNAME,
-    TABLENAME
-)
+# test = zimdb.QueryDB(
+#     MONGO_URI,
+#     SETNAME,
+#     DBNAME,
+#     TABLENAME
+# )
+
+
+
 # t3 = test.getcomp(
 #     "Modeling_Machien_0",
 #     "enter"
@@ -43,12 +46,12 @@ test = zimdb.QueryDB(
 # print(teee)
 
 def overview(simulation_name):
-    total_time = test.last_element_time()
-    workflow_json = json.loads(test.get_workflow_details(simulation_name))
-    entity_json = json.loads(test.get_entity_info(simulation_name))
-    avg_entity_time = test.avg_entity_time(simulation_name)
-    chart1 = test.get_component_count(simulation_name)
-    overview_table = test.get_comp_name_cat_workflow(simulation_name)
+    # total_time = test.last_element_time()
+    # workflow_json = json.loads(test.get_workflow_details(simulation_name))
+    # entity_json = json.loads(test.get_entity_info(simulation_name))
+    # avg_entity_time = test.avg_entity_time(simulation_name)
+    # chart1 = test.get_component_count(simulation_name)
+    # overview_table = test.get_comp_name_cat_workflow(simulation_name)
 
     final_json = {
         "details": {
@@ -63,6 +66,8 @@ def overview(simulation_name):
         "overview_table": overview_table
     }
 
+    #TODO: added .....
+    return final_json
     print(final_json)
 
-overview("SimulationTable2")
+# overview("SimulationTable2")

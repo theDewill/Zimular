@@ -88,7 +88,7 @@ class DataManager:
         return comp
 
 
-# ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI)
+ZIMDB = DataManager(DBNAME, SETNAME, TABLENAME, MONGO_URI)
 
 # ZIMDB.test1()
 # #ZIMDB.test2()

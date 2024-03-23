@@ -75,6 +75,13 @@ class CEvent {
         }
     }
 
+    reset () {
+        this.waiting = new Promise((res,rej)=> {
+            this.changeState = res;
+            this.rejectPromise = rej;
+        });
+    }
+
     reject (reason : any) {
         if (this.rejectPromise) {
             this.rejectPromise(reason);
@@ -107,11 +114,23 @@ class EventManager {
         let State : Map<any,any> = new Map();
         State.set("ui", new CEvent("ui"));
         State.set("input", new CEvent("input"));
+        State.set("overview" , new CEvent("overview"));
+        State.set("component" , new CEvent("component")); //this will
+        State.set("table" , new CEvent("table"));
+        State.set("onecomponent" , new CEvent("onecomponent"));
+
+
         //so on ....
 
-        let Event : Map<any,any> = new Map(); 
-        Event.set(Number(sid), State);
-        this.eventPool.set(Number(uid) , Event);
+        // let Event : Map<any,any> = new Map(); 
+        // Event.set(Number(sid), State);
+        // this.eventPool.set(Number(uid) , Event);
+
+        if (Number(sid)==1) {
+        this.eventPool.set(Number(uid) , new Map());}
+
+        let userEV = this.eventPool.get(Number(uid));
+        userEV.set(Number(sid) , State);
     }
 
     checkEvent(uid : number , sesid : number) {
@@ -125,8 +144,6 @@ class EventManager {
     getEvent(uid : string, sid : string) {
         return this.eventPool.get(Number(uid)).get(Number(sid));
     }
-
-
 
     emit (uid : string , sid : string , state : string) {
         let event = this.eventPool.get(Number(uid)).get(Number(sid)).get(state);

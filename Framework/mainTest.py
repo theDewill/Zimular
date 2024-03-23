@@ -12,6 +12,8 @@ import subprocess as sb
 #from zimdb.ts import ZIMDB
 from ZIM.ZComponets import componet_handler
 from ZIM.ZDB import ZIMDB
+from zimdb.tss import overview
+import pprint
 
 
 env = simpy.Environment()
@@ -27,6 +29,11 @@ def run_simulation():
 def initiate():
     runReady()
     run_simulation()
+
+    #TODO: uptp here WORKING------------
+
+
+
     #System_Output.show_table()
     ZIMDB.uptable()
     ZIMDB.send_db()
@@ -60,44 +67,53 @@ async def socket_connect(url,u_id):
             
             json_reponse = json.loads(response)
             #TODO: Temp testngs-- Remoce this once tested
-            print(json_reponse)
+            pprint.pprint(json_reponse)
 
             if json_reponse['type'] == "calib":
                 #TODO: yet to be implemented [UNCOMMENT]
                 print("calib recieved")
+
+            elif json_reponse['type'] == "subreq":
+                
+                send_package = {
+                        "type" : "data",
+                        "uid" : json_reponse["uid"],
+                        "sid" : json_reponse["sid"],
+                        "content" : {
+                            #  "rawData" : json.load(outfile),
+                             "overview": "Here the placeholder for overview..."},
+                    }
+                await websocket.send(json.dumps(send_package))
+                print("overview output file sent via Socket")
+
                 
             elif json_reponse['type'] == "data":
                 #TODO: yet to be implemented [UNCOMMENT]
                 file_name = json_reponse["file_name"]
                 out_file_name = file_name[file_name.find('_'):]
                 
-                #with open(f"/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/MultiAPI/ModelApi/JSON/recieved/{file_name}.json", "a") as file:
-
-                # with open(f"/Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/MultiAPI/ModelApi/JSON/recieved/inputs.json", "w") as file:
-                #     json.dump(json_reponse, file)
-                #     print("Got the input file and saved")
 
                 SIMINPUT.input_data_path = json_reponse["content"]
                 
-                #TODO: replace this with the actual engine from appa
-                #os.system("python3 /Users/nominsendinu/DEWILL/CODE/Projects/Zimular/ZIM/API/engineClone.py")
-                initiate()
+                
+                #TODO: uncomment this once testes
+                print(f"recieved inputs and stored them....: {SIMINPUT.input_data_path}")
+                #initiate()
 
-                # #zim engine starts and aftr generating output json in outputs
+               
 
                 #TODO: complete from here ..............
                
                 send_package = {
                         "type" : "data",
-                        "file_name" : out_file_name,
                         "uid" : json_reponse["uid"],
                         "sid" : json_reponse["sid"],
                         "content" : {
-                             "rawData" : json.load(outfile),
-                             "overview": json.load()},
+                            #  "rawData" : json.load(outfile),
+                             "overview": "Here the placeholder for overview..."},
                     }
                 await websocket.send(json.dumps(send_package))
-                print("output file sent via Socket")
+                print("overview output file sent via Socket")
 
             elif json_reponse['type'] == "outreq":
                  #TODO: yet to add the mongo querying and sending the file

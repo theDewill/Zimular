@@ -22,7 +22,7 @@ SIMINPUT = InputHandler()
 
 #TEMP TODO: remove this
 SIMINPUT.input_structure = {
-    "user_id": "test_user_from_SIMINPUT.input_structure",
+    "user_id": "test_user_from_SIMINPUT.input_structure now updated",
       "input":"Input_01",
       "group": [
         {
