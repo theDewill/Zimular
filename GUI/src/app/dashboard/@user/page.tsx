@@ -19,7 +19,7 @@ export default async function Userdash (){
                             ensuring a streamlined workflow. Experience the future of productivity – <br></br>
                             start simulating your workload today!</p>
                 <div className='flex space-x-4'>
-                    <Link href="/dashboard/Input"><button className='px-8 py-2 border' >Start Zimular!</button></Link>
+                    <Link href="/dashboard/input"><button className='px-8 py-2 border' >Start Zimular!</button></Link>
                 </div>
                 </div>
              </div>
