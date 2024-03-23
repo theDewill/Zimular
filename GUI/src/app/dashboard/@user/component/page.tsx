@@ -6,6 +6,7 @@ import DetailsTable from '@/components/tables/DetailsTable';
 import FilterComponentTable from '@/components/tables/DynamicFiltertable';
 import Card from '@/components/card';
 import React from 'react'
+import Card from '@/components/card';
 
 const options = [
   { value: '', label: 'Components' },
@@ -77,6 +78,11 @@ const Componentpg = () => {
         <div className='flex justify-between'>
           <div className='text-3xl font-semibold'>
             Component Name: {"Replace with Component Name"}
+          </div>
+          <div>
+            
+            <hr className=" border-black border-5 my-8" />
+            
           </div>
           <div>
             <DynamicSelect options={options}/>

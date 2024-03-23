@@ -85,7 +85,7 @@ let piedata = Object.entries(pieLiterel).map(([name, value]) => ({ name: name.to
 
 const Overviewpg = () => {
   return (
-    <div className='flex flex-col items-center gap-4 outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-1  rounded-lg'>
+    <div className='flex flex-col  gap-4 outline outline-offset-1 outline-2 outline-gray-500 mt-0 p-12 mx-1  rounded-lg'>
         <div>
             <div className='text-lg mb-2 font-semibold'>
                 Details
@@ -93,18 +93,18 @@ const Overviewpg = () => {
             <DetailsTable data={detailtableData}/>
         </div>
         <div>
-            <div className='text-lg mb-2 font-semibold'>
+            <div className='text-lg mb-2 font-semibold mt-5'>
                 Workflows
             </div>
             <DynamicTable headers = {workflowheaders} data={workflowdata}/>     
         </div>
         <div>
-            <div className='text-lg mb-2 font-semibold'>
+            <div className='text-lg mb-2 font-semibold mt-5'>
                 Entities
             </div>
             <DynamicTable headers = {entityheaders} data={entitydata}/>
         </div>
-        <div className="flex justify-around gap-[120px]">
+        <div className="flex justify-around gap-[120px] mt-5">
           <Card>
             <PieChartcomponent data={piedata}/>
           </Card>
