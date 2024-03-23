@@ -5,7 +5,7 @@ import MultiLineChartComponent from '@/components/charts/MultiLineBarAreachrt';
 import DetailsTable from '@/components/tables/DetailsTable';
 import FilterComponentTable from '@/components/tables/DynamicFiltertable';
 import React from 'react'
-import Card from '@/components/Card';
+import Card from '@/components/card';
 
 const options = [
   { value: '', label: 'Components' },

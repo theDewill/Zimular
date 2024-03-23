@@ -3,7 +3,7 @@ import DetailsTable from '@/components/tables/DetailsTable';
 import DynamicTable from '@/components/tables/Dynamictable';
 import LineChartComponent from '@/components/charts/Linechrt';
 import PieChartcomponent from '@/components/charts/Piechart';
-import Card from '@/components/Card';
+import Card from '@/components/card';
 
 const detailtableData = [
     ['Row 1, Column 1', 'Row 1, Column 2'],
