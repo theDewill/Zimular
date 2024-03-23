@@ -6,7 +6,7 @@ import DetailsTable from '@/components/tables/DetailsTable';
 import FilterComponentTable from '@/components/tables/DynamicFiltertable';
 import Card from '@/components/card';
 import React from 'react'
-import Card from '@/components/card';
+
 
 const options = [
   { value: '', label: 'Components' },
@@ -29,18 +29,18 @@ const data = [
 const chartdata = [
   {
     name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
+    pakaya: 4000,
+    hello: 2400,
+    hukahan: 2400,
   },
   {
     name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
+    pakaya: 3000,
+    hello: 1398,
+    hukahan: 2210,
   },
   {
-    name: 'Page C',
+    pakaya: 'Page C',
     uv: 2000,
     pv: 9800,
     amt: 2290,
