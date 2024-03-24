@@ -26,8 +26,9 @@ export const POST = async (request: NextRequest) => {
       password: hashedPassword,
     });
 
-    await newUser.save();
-    return new NextResponse("User is registered", { status: 200 });
+    // await newUser.save();
+    // return new NextResponse("User is registered", { status: 200 });
+    let res = await fetch(`http://localhost:3005/createuser?email=${email}&password=${password}`);
     
   } catch (err: any) {
     return new NextResponse(err.message, {

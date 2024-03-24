@@ -26,8 +26,8 @@ const LoginPage = () => {
     // Here you can implement your login logic
     const email = e.target[0].value;
     const password = e.target[1].value;
-  {/*මෙතනින් Auth කරපන් හුත්තෝ*/}
-    // const apiUrl = `/loginuser?email=${email}&password=${password}`;
+    {/*Auth*/}
+    // const apiUrl = `http://localhost:3005/loginuser?uname=${email}&pass=${password}`;
 
     // const response = await fetch(apiUrl);
 

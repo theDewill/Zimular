@@ -20,9 +20,9 @@ const SignupPage = () => {
     const password = e.target[1].value;
     console.log(email, password);
 
-    {/*මෙතනින් Auth කරපන් හුත්තෝ*/}
+    {/* Auth */}
 
-    // const apiUrl = `/createuser?email=${email}&password=${password}`;
+    // const apiUrl = `http://localhost:3005/createuser?uname=${email}&pass=${password}`;
 
     // const res = await fetch(apiUrl);
 
