@@ -5,7 +5,8 @@ import Link from 'next/link';
 interface CardProps {
   title: string;
   subtitle: string;
-  image: string; 
+  image: any; 
+  more: string;
 }
 
 const Hcard: React.FC<CardProps> = ({ title, subtitle, image, more }) => {

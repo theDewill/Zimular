@@ -2,7 +2,7 @@
 import DynamicSelect from '@/components/DynamicSelection'
 import LineChartComponent from '@/components/charts/Linechrt';
 import MultiLineChartComponent from '@/components/charts/MultiLineBarAreachrt';
-import DetailsTable from '@/components/tables/DetailsTable';
+import DetailsTable from '@/components/tables/Detailstable';
 import FilterComponentTable from '@/components/tables/DynamicFiltertable';
 import React, { useEffect, useState } from 'react'
 import Card from '@/components/card';
