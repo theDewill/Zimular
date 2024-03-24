@@ -26,6 +26,10 @@ const LoginPage = () => {
     // Here you can implement your login logic
     const email = e.target[0].value;
     const password = e.target[1].value;
+  {/*මෙතනින් Auth කරපන් හුත්තෝ*/}
+    // const apiUrl = `/loginuser?email=${email}&password=${password}`;
+
+    // const response = await fetch(apiUrl);
 
     if (!isValidEmail(email)) {
       setError("Email is invalid");
@@ -53,7 +57,7 @@ const LoginPage = () => {
   };
 
   return (
-    // sessionStatus !== "authenticated" && (
+    sessionStatus !== "authenticated" && (
       <div className="min-h-screen flex items-center justify-center bg-gray-400 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
       <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -100,9 +104,8 @@ const LoginPage = () => {
         </div>
         </div>
       </div>
-    )
-    
-  // );
+    )   
+  );
 };
 
 export default LoginPage;
