@@ -47,6 +47,7 @@ export default function Inputform(){
 
       
       async function fetchData() {
+        console.log("fetching data from server");
         let tmpinputs = [];
         const response = await fetch(`http://localhost:3005/getui?uid=1`);
         const result = await response.json();
@@ -56,7 +57,7 @@ export default function Inputform(){
       }
     
       fetchData();
-    }, [inputs]);
+    }, []);
 
     
 
