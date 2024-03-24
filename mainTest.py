@@ -194,9 +194,30 @@ def ignite():
 
 #TODO: check ignite command
 #argument must be the url path in node server which return sokcet ur and process the sent json 
-asyncio.get_event_loop().run_until_complete(socket_connect('http://localhost:3005/handshake',1))
+#asyncio.get_event_loop().run_until_complete(socket_connect('http://localhost:3005/handshake',1))
 
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "runlocal":
+            print(f'-> {sys.argv[1]}')
 
+            # run_simulation()
+            #     #System_Output.show_table()
+            # ZIMDB.uptable()
+            # ZIMDB.send_db()    
+        elif sys.argv[1] == "runserver":
+            if not sys.argv[2]:
+                print("Invalid argument eg : python mainTest.py runlocal/ runserver <>user_id<>")
+                sys.exit(1)
+            else:
+                print(f'-> {sys.argv[1]} {sys.argv[2]}')
+                # user_id = sys.argv[2]
+                # asyncio.get_event_loop().run_until_complete(socket_connect('http://localhost:3005/handshake', user_id))
+            
+
+    else:
+        print("Invalid argument eg : python mainTest.py runlocal/ runserver <>user_id<>")
+        sys.exit(1)
 
 
     

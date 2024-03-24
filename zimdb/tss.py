@@ -3,7 +3,7 @@ import json
 from pprint import pprint
 DBNAME = "SimulationDB"
 SETNAME = "SimulationSet"
-TABLENAME = "SimulationTable2"
+TABLENAME = "SimulationTable1_1711126364.3552322"
 MONGO_URI = "mongodb://localhost:27017"
 
 
@@ -47,8 +47,13 @@ test = zimdb.QueryDB(
 # too4 = test.get_container_put_count("Modeling_Machien_0")
 # print("container put", too4)
 
-tii = test.resource_queued_time_chart("Modeling_Machien_0")
-print(tii)
+# tii = test.container_amount_time_chart("Modeling_Machien_0")
+# print(tii)
+# t33 = test.store_amount_time_chart("Modeling_Store")
+# print(t33)
+
+full = test.get_full_data(None, "Store", None, None, None, None)
+print(json.loads(full))
 # print(tot)
 # print(teee)
 

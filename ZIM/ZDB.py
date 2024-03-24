@@ -49,7 +49,11 @@ class DataManager:
         self.data = zimdb.ZimDB(
             self.dbname, self.setname, self.uri, self.table, self.buffer_size
         )
-        print("DB connected ..............................")
+        self.databaseconnected = True
+        print("[Database] Connected to the database.")
+
+    def set_database_connection(self, connection: bool):
+        self.databaseconnected = connection
 
     def add_data(
         self,
@@ -67,9 +71,10 @@ class DataManager:
 
         # print(time, componet_cat, componet_name, action, entity, info, metadata)
         # need error handling
-        self.data.add_data(
-            time, componet_cat, componet_name, action, entity, info, metadata
-        )
+        if self.databaseconnected:
+            self.data.add_data(
+                time, componet_cat, componet_name, action, entity, info, metadata
+            )
 
     def add_workflow(self, workflow: str):
         '''
@@ -191,7 +196,7 @@ class APIQueryManager:
             "resource_queued_count": resource_queued,
             "resource_enter_time_chart": resource_enter_time_chart,
             "resource_leave_time_chart": resource_leave_time_chart,
-            "resource_queued_time_chart": resource_queued_time_chart
+            "resource_queued_time_chart": json.loads(resource_queued_time_chart)
         }
 
         return final_json
@@ -204,15 +209,13 @@ class APIQueryManager:
     
             container_put = self.data.get_container_put_count(container_name)
             container_get = self.data.get_container_get_count(container_name)
-            container_put_chart = self.data.container_put_time_chart(container_name)
-            container_get_chart = self.data.container_get_time_chart(container_name)
+            container_amount_chart = self.data.container_amount_time_chart(container_name)
     
             final_json = {
                 "container_name": container_name,
                 "container_enter_count": container_put,
                 "container_leave_count": container_get,
-                "container_put_time_chart": container_put_chart,
-                "container_get_time_chart": container_get_chart
+                "container_put_time_chart": container_amount_chart,
             }
     
             return final_json
@@ -226,15 +229,13 @@ class APIQueryManager:
     
             store_put = self.data.get_store_put_count(store_name)
             store_get = self.data.get_store_get_count(store_name)
-            store_put_chart = self.data.store_put_time_chart(store_name)
-            store_get_chart = self.data.store_get_time_chart(store_name)
+            store_amount_chart = self.data.store_amount_time_chart(store_name)
     
             final_json = {
                 "store_name": store_name,
                 "store_enter_count": store_put,
                 "store_leave_count": store_get,
-                "store_put_time_chart": store_put_chart,
-                "store_get_time_chart": store_get_chart
+                "store_put_time_chart": store_amount_chart,
             }
     
             return final_json
@@ -250,7 +251,8 @@ class APIQueryManager:
 
     def table_filter(
         self, 
-        simulation_name: str, 
+        time: float,
+        component_cat: str, 
         component_name: str, 
         action: str, 
         entity: str, 
@@ -262,7 +264,8 @@ class APIQueryManager:
         '''
 
         data = self.data.get_full_data(
-            simulation_name,
+            time,
+            component_cat,
             component_name,
             action,
             entity,

@@ -348,24 +348,21 @@ impl QueryDB {
 
         let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
 
-
         if let Ok(cursor) = coll.find(filter, opt) {
             for result in cursor {
                 if let Ok(document) = result {
                         if let Ok(time_float) = document.get_f64("time") {
-                            if let Ok(entity) = document.get_str("entity") {
                                 if let Ok(info) = document.get_f64("info") {
                                     res.push(json!({
                                         "time": time_float,
                                         "component_category": document.get_str("component_category").unwrap().to_string(),
                                         "component_name": document.get_str("component_name").unwrap().to_string(),
                                         "action": document.get_str("action").unwrap().to_string(),
-                                        "entity": Some(entity.to_string()),
+                                        "entity": Some(document.get_str("entity").unwrap_or_default().to_string()),
                                         "info": Some(info)
                                 }));
                                     
                                 }
-                            }
                         }
                 } else {
                     println!("Error: document is not found");
@@ -623,7 +620,7 @@ impl QueryDB {
         Ok(json!(res).to_string())
     }
 
-    fn resource_queued_time_chart(&self, res_name: &str) -> PyResult<String> {
+    fn resource_queued_time_chart(&self, res_name: &str) -> PyResult<Vec<(f64, f64)>> {
         let client = Client::with_uri_str(&self.db_string).unwrap();
         let db = client.database(&self.db_name);
         let coll = db.collection::<Document>(&self.db_coll_name);
@@ -651,17 +648,17 @@ impl QueryDB {
             }
         }
         //println!("{:?}", res);
-        Ok(json!(res).to_string())
+        Ok(res)
     }
 
-    fn container_put_time_chart(&self, cont_name: &str) -> PyResult<String> {
+    fn container_amount_time_chart(&self, cont_name: &str) -> PyResult<String> {
         let client = Client::with_uri_str(&self.db_string).unwrap();
         let db = client.database(&self.db_name);
         let coll = db.collection::<Document>(&self.db_coll_name);
 
         let mut res: Vec<(f64, f64)> = Vec::new();
 
-        let filter = doc! {"component_name": cont_name, "action": "put"};
+        let filter = doc! {"component_name": cont_name};
 
         let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
 
@@ -685,14 +682,45 @@ impl QueryDB {
         Ok(json!(res).to_string())
     }
 
-    fn container_get_time_chart(&self, cont_name: &str) -> PyResult<String> {
+    // fn container_get_time_chart(&self, cont_name: &str) -> PyResult<String> {
+    //     let client = Client::with_uri_str(&self.db_string).unwrap();
+    //     let db = client.database(&self.db_name);
+    //     let coll = db.collection::<Document>(&self.db_coll_name);
+
+    //     let mut res: Vec<(f64, f64)> = Vec::new();
+
+    //     let filter = doc! {"component_name": cont_name, "action": "get"};
+
+    //     let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+    //     if let Ok(cursor) = coll.find(filter, opt) {
+    //         for result in cursor {
+    //             if let Ok(document) = result {
+    //                 if let Ok(time_float) = document.get_f64("time") {
+    //                      if let Ok(entity) = document.get_f64("info") {
+    //                         if res.is_empty() || time_float != res.last().unwrap().0 {
+    //                             res.push((time_float, entity));
+    //                         } else{
+    //                             res.last_mut().unwrap().1 = entity;
+    //                         }
+
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     //println!("{:?}", res);
+    //     Ok(json!(res).to_string())
+    // }
+
+    fn store_amount_time_chart(&self, store_name: &str) -> PyResult<String> {
         let client = Client::with_uri_str(&self.db_string).unwrap();
         let db = client.database(&self.db_name);
         let coll = db.collection::<Document>(&self.db_coll_name);
 
         let mut res: Vec<(f64, f64)> = Vec::new();
 
-        let filter = doc! {"component_name": cont_name, "action": "get"};
+        let filter = doc! {"component_name": store_name};
 
         let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
 
@@ -716,67 +744,36 @@ impl QueryDB {
         Ok(json!(res).to_string())
     }
 
-    fn store_put_time_chart(&self, store_name: &str) -> PyResult<String> {
-        let client = Client::with_uri_str(&self.db_string).unwrap();
-        let db = client.database(&self.db_name);
-        let coll = db.collection::<Document>(&self.db_coll_name);
+    // fn store_get_time_chart(&self, store_name: &str) -> PyResult<String> {
+    //     let client = Client::with_uri_str(&self.db_string).unwrap();
+    //     let db = client.database(&self.db_name);
+    //     let coll = db.collection::<Document>(&self.db_coll_name);
 
-        let mut res: Vec<(f64, f64)> = Vec::new();
+    //     let mut res: Vec<(f64, f64)> = Vec::new();
 
-        let filter = doc! {"component_name": store_name, "action": "put"};
+    //     let filter = doc! {"component_name": store_name, "action": "get"};
 
-        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+    //     let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
 
-        if let Ok(cursor) = coll.find(filter, opt) {
-            for result in cursor {
-                if let Ok(document) = result {
-                    if let Ok(time_float) = document.get_f64("time") {
-                         if let Ok(entity) = document.get_f64("info") {
-                            if res.is_empty() || time_float != res.last().unwrap().0 {
-                                res.push((time_float, entity));
-                            } else{
-                                res.last_mut().unwrap().1 = entity;
-                            }
+    //     if let Ok(cursor) = coll.find(filter, opt) {
+    //         for result in cursor {
+    //             if let Ok(document) = result {
+    //                 if let Ok(time_float) = document.get_f64("time") {
+    //                      if let Ok(entity) = document.get_f64("info") {
+    //                         if res.is_empty() || time_float != res.last().unwrap().0 {
+    //                             res.push((time_float, entity));
+    //                         } else{
+    //                             res.last_mut().unwrap().1 = entity;
+    //                         }
 
-                        }
-                    }
-                }
-            }
-        }
-        //println!("{:?}", res);
-        Ok(json!(res).to_string())
-    }
-
-    fn store_get_time_chart(&self, store_name: &str) -> PyResult<String> {
-        let client = Client::with_uri_str(&self.db_string).unwrap();
-        let db = client.database(&self.db_name);
-        let coll = db.collection::<Document>(&self.db_coll_name);
-
-        let mut res: Vec<(f64, f64)> = Vec::new();
-
-        let filter = doc! {"component_name": store_name, "action": "get"};
-
-        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
-
-        if let Ok(cursor) = coll.find(filter, opt) {
-            for result in cursor {
-                if let Ok(document) = result {
-                    if let Ok(time_float) = document.get_f64("time") {
-                         if let Ok(entity) = document.get_f64("info") {
-                            if res.is_empty() || time_float != res.last().unwrap().0 {
-                                res.push((time_float, entity));
-                            } else{
-                                res.last_mut().unwrap().1 = entity;
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-        //println!("{:?}", res);
-        Ok(json!(res).to_string())
-    }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     //println!("{:?}", res);
+    //     Ok(json!(res).to_string())
+    // }
 
 }
 

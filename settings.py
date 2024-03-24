@@ -7,7 +7,7 @@ from ZIM.config import CONFIG
 DBNAME = "SimulationDB"
 SETNAME = "SimulationSet"
 TABLENAME = "SimulationTable1"
-MONGO_URI = "mongodb://admin:pass2@127.0.0.1:27018"
+MONGO_URI = "mongodb://localhost:27017"
 BUFFER_SIZE = 1000
 # "mongodb+srv://antiloger:077antiloger@cluster0.i9knr5x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 

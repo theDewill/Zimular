@@ -1,4 +1,4 @@
-from run import Modeling_workspace
+from run import MainWorkflow
 from ZIM.ZGen import EntityGenerator
 
 
@@ -7,7 +7,7 @@ def executer():
 
 
 def customer_generator(env):
-    workinit = Modeling_workspace(env)
+    workinit = MainWorkflow(env)
 
     entity_format = {
         "type": "customer",
@@ -17,8 +17,9 @@ def customer_generator(env):
 
     generator = EntityGenerator(env, workinit, entity_format, init_count=1)
 
-    for _ in range(5):
+    for _ in range(10):
         entity = generator.generate_entity()
+        print(entity)
         env.process(workinit.run(entity))
         yield env.timeout(1)
 
