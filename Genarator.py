@@ -1,4 +1,4 @@
-from run import MainWorkflow
+from workflow import MainWorkflow
 from ZIM.ZGen import EntityGenerator
 
 
