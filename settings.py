@@ -7,93 +7,79 @@ from ZIM.config import CONFIG
 DBNAME = "SimulationDB"
 SETNAME = "SimulationSet"
 TABLENAME = "SimulationTable1"
-MONGO_URI = "mongodb://admin:pass2@127.0.0.1:27018"
+MONGO_URI = "mongodb://localhost:27017"
 BUFFER_SIZE = 1000
 # "mongodb+srv://antiloger:077antiloger@cluster0.i9knr5x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 # API INPUT DATA
 INPUT = {
-    # "group 1": {
-    #     "name": "",
-    #     "counter_t1": {
-    #         "value": 2,
-    #         "default": "trutyle={{ height: '100%', width: '100e",
-    #     },
-    #     "input 2": {"value": "", "default": "true"},
-    #     "input 3": {"value": "", "default": "true"},
-    # }
+
     "user_id": "test_user_from_SIMINPUT.input_structure",
         "input": "Input_01",
         "group": [
           {
             "group_id": "test_01",
-            "name": "Resource_01_now_testing",
+            "name": "Machine_count",
             "fields": [
               {
                 "id": "in_01",
-                "name": "Input 01",
+                "name": "modeling_machine_count",
                 "type": "text",
-                "defult_value": "test_01",
-                "data_type": "string"
+                "defult_value": "5",
+                "data_type": "int"
               },
               {
                 "id": "in_02",
-                "name": "Input 02",
+                "name": "inspection_machine_count",
                 "type": "text",
-                "defult_value": "test_02",
-                "data_type": "string"
+                "defult_value": "5",
+                "data_type": "int"
               },
               {
                 "id": "in_03",
-                "name": "Input 03",
+                "name": "packing_machine_count",
                 "type": "text",
-                "defult_value": "test_03",
-                "data_type": "number"
-              },
-              {
-                "id": "in_04",
-                "name": "Input 04",
-                "type": "checkbox",
-                "defult_value": "false",
-                "data_type": "bool"
+                "defult_value": "5",
+                "data_type": "int"
               }
             ]
           },
           {
             "group_id": "test_02",
-            "name": "Resource_02",
+            "name": "Core_Data",
             "fields": [
-              {
+                {
+                "id": "in_04",
+                "name": "Simualtion_time",
+                "type": "text",
+                "defult_value": "100",
+                "data_type": "int"
+                },
+                {
                 "id": "in_05",
-                "name": "Input 05",
+                "name": "entity_per_time",
                 "type": "text",
-                "defult_value": "test_05",
-                "data_type": "string"
-              },
-              {
+                "defult_value": "1",
+                "data_type": "int"
+                },
+                {
                 "id": "in_06",
-                "name": "Input 06",
+                "name": "modeling_store_threshold",
                 "type": "text",
-                "defult_value": "test_06",
-                "data_type": "string"
-              },
-              {
+                "defult_value": "10",
+                "data_type": "int"
+                },
+                {
                 "id": "in_07",
-                "name": "Input 07",
+                "name": "inspection_store_threshold",
                 "type": "text",
-                "defult_value": "test_07",
-                "data_type": "number"
-              },
-              {
-                "id": "in_08",
-                "name": "Input 08",
-                "type": "checkbox",
-                "defult_value": "false",
-                "data_type": "bool"
-              }
-            ]
-          }
-        ]
+                "defult_value": "10",
+                "data_type": "int"
+                }
+              ]
+            }
+          ]
+          
 }  # input data from API
 
 SAVE_FOLDER = os.path.join(os.getcwd(), "save")

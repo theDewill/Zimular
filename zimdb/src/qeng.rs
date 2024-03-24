@@ -778,6 +778,132 @@ impl QueryDB {
         Ok(json!(res).to_string())
     }
 
+    fn get_time_entity(&self, entity_name: &str) -> PyResult<Vec<(f64, String, String)>> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res: Vec<(f64, String, String)> = Vec::new();
+
+        let filter = doc! {"entity": entity_name};
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_float) = document.get_f64("time") {
+                        res.push((time_float, document.get_str("component_name").unwrap().to_string() , document.get_str("action").unwrap().to_string()));
+                    }
+                }
+            }
+        }
+
+        Ok(res)
+
+    }
+
+    fn get_time_comp_info(&self, comp_name: &str, action: &str) -> PyResult<Vec<(f64, f64)>> {
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+
+        let mut res: Vec<(f64, f64)> = Vec::new();
+
+        let filter: Document;
+
+        if action == "full" {
+            filter = doc! {"component_name": comp_name};
+        } else {
+            filter = doc! {"component_name": comp_name, "action": action};
+        }
+
+        //let filter = doc! {"component_name": comp_name, "action": action};
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                    if let Ok(time_float) = document.get_f64("time") {
+                        if let Ok(info) = document.get_f64("info") {
+                            res.push((time_float, info));
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(res)
+
+    }
+
+    fn get_full_setdata(
+        &self,
+        time: Option<f64>,
+        comp_cat: Option<&str>,
+        comp_name: Option<&str>,
+        action: Option<&str>,
+        entity: Option<&str>,
+        info: Option<f64>,
+    ) -> PyResult<Vec<(f64, String, String, String, Option<String>, Option<f64>)>>{
+        let client = Client::with_uri_str(&self.db_string).unwrap();
+        let db = client.database(&self.db_name);
+        let coll = db.collection::<Document>(&self.db_coll_name);
+        let mut res = Vec::new();
+
+        let mut filter = doc! {};
+
+        if let Some(e) = entity {
+            filter.insert("entity", e);
+        }
+        if let Some(t) = time {
+            filter.insert("time", t);
+        }
+        if let Some(b) = comp_name {
+            filter.insert("component_name", b);
+        }
+        if let Some(c) = comp_cat {
+            filter.insert("component_category", c);
+        }
+        if let Some(a) = action {
+            filter.insert("action", a);
+        }
+        if let Some(i) = info {
+            filter.insert("info", i);
+        }
+
+
+        let opt = FindOptions::builder().sort(doc! {"time": 1}).build();
+
+
+        if let Ok(cursor) = coll.find(filter, opt) {
+            for result in cursor {
+                if let Ok(document) = result {
+                        if let Ok(time_float) = document.get_f64("time") {
+                            
+                                if let Ok(info) = document.get_f64("info") {
+                                    res.push((
+                                        time_float,
+                                        document.get_str("component_category").unwrap().to_string(),
+                                        document.get_str("component_name").unwrap().to_string(),
+                                        document.get_str("action").unwrap().to_string(),
+                                        Some(document.get_str("entity").unwrap_or_default().to_string()),
+                                        Some(info)
+                                ));
+                                    
+                                }
+                            
+                        }
+                } else {
+                    println!("Error: document is not found");
+                }
+            }
+        }else {
+            println!("cursor is not found");
+        }
+        Ok(res)
+    }
 }
 
 // fn vec_sum(v1: Vec<f64, String>, v2: Vec<f64, String>) -> Vec<(f64, String)> {

@@ -4,6 +4,7 @@ from typing import List, Union
 import pprint
 import json
 from ZIM.config import CONFIG
+from ZIM.output_table import print_table, print_row_table
 
 DBNAME = CONFIG.get_db_name()
 SETNAME = CONFIG.get_db_set_name()
@@ -134,6 +135,36 @@ class QueryManger:
         self.setname = setname
         self.table = tablename
         self.uri = uri
+
+        self.data = zimdb.QueryDB(self.uri, self.setname, self.dbname, self.table)
+
+    def get_full_dataset(self):
+        return self.data.get_full_setdata()
+    
+    def view_full_dataset(self):
+        print_table(
+            "full log",
+            ["Time", "Category", "Component", "Action", "Entity", "Info"],
+            self.get_full_dataset()
+        )
+
+    def get_overview(self):
+        raw = []
+        raw.append(["name", self.table])
+        raw.append(["total time", self.data.last_element_time()])
+        raw.append(["avg entity time", self.data.avg_entity_time(self.table)])
+
+        print_row_table(
+            titel="overview",
+            data=raw
+        )
+
+    def get_time_component(self, component: str, action: str) -> List:
+        return self.data.get_time_comp_info(component, action)
+    
+    def get_time_entity(self, entity: str) -> List:
+        return self.data.get_time_entity(entity)
+
 
 class APIQueryManager:
     def __init__(self, dbname, setname, tablenamecoll, uri):

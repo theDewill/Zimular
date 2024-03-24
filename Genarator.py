@@ -15,11 +15,11 @@ def customer_generator(env):
         #"priority": lambda: executer(),
     }
 
-    generator = EntityGenerator(env, workinit, entity_format, init_count=1)
+    generator = EntityGenerator(env, workinit, entity_format, init_count=0)
 
-    for _ in range(100):
-        entity = generator.generate_entity()
-        env.process(workinit.run(entity))
+    while True:
+        for _ in range(1):
+            entity = generator.generate_entity()
+            workinit.run(entity)
+
         yield env.timeout(1)
-
-    generator.save_entity()

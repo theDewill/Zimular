@@ -1,12 +1,15 @@
 # Path: zimular/ZIM/ZResource.py
 from ZIM.ZDB import ZIMDB
 
+GENPOOL = {}
+
 class EntityGenerator:
     def __init__(self, env, workflow, entity_format, init_count=0):
         self.env = env
         self.workflow = workflow
         self.entity_format = entity_format
         self.entity_count = init_count
+        GENPOOL[self.entity_format["type"]] = self
 
     def generate_entity(self):
         

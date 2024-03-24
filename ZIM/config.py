@@ -100,22 +100,24 @@ class Config:
 
         self.api_input = api_input
 
-    def getinput(self, group: str, name: str):
-
-        '''
-            This function is used to get the input value from the input structure
-        '''
-
-        data = self.api_input[group][name]
-
-        if data is None:
-            print("Input not found.")
-            return None
-        
-        if data["value"] == "":
-            return data["default"]
-        else:
-            return data["value"]
+    def getinput(self, group_name, input_name):
+        for group in self.input_struct["group"]:
+            if group["name"] == group_name:
+                for field in group["fields"]:
+                    if field["name"] == input_name:
+                        value = field.get("value", field["defult_value"])
+                        data_type = field["data_type"]
+                        if value == "":
+                            value = field["defult_value"]
+                        if data_type == "string":
+                            return str(value)
+                        elif data_type == "int":
+                            return int(value)
+                        elif data_type == "float":
+                            return float(value)
+                        elif data_type == "bool":
+                            return value.lower() == "true"
+        return None  # If group or input name not found
 
     
     

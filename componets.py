@@ -51,7 +51,7 @@ class Modeling_Store(ZStore):
     def __init__(self, env, workflow_name):
         super().__init__(
             env,
-            simpy.Store(env, capacity=10),
+            simpy.Store(env, capacity=100),
             "Modeling_Store",
             workflow_name=workflow_name,
         )
@@ -60,17 +60,16 @@ class Inspection_Store(ZStore):
     def __init__(self, env, workflow_name):
         super().__init__(
             env,
-            simpy.Store(env, capacity=10),
+            simpy.Store(env, capacity=100),
             "Inspection_Store",
             workflow_name=workflow_name,
         )
 
-# -------------template----------------
-
-# class <Componet_Name>(componet_type_class):
-#     def __init__(self) -> None:
-#         super.__init__(env, simpyInit, name)
-#         // other init likes outputs
-
-#     def method(self, args):
-#         pass
+class Packing_Store(ZStore):
+    def __init__(self, env, workflow_name):
+        super().__init__(
+            env,
+            simpy.Store(env, capacity=100),
+            "Packing_Store",
+            workflow_name=workflow_name,
+        )

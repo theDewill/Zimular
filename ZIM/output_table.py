@@ -33,6 +33,25 @@ class OutputTable:
         console.print(table)
         #print("table printed")
 
+def print_table(titel, header, data):
+    table = Table(title=titel)
+    for col in header:
+        table.add_column(col)
+
+    for row in data:
+        table.add_row(*map(str, row))
+
+    console = Console()
+    console.print(table)
+
+def print_row_table(titel, data):
+    table = Table(title=titel)
+    for row in data:
+        table.add_row(*map(str, row))
+
+    console = Console()
+    console.print(table)
+
 
 System_table_col = ["Time", "Entity", "Component", "Action", "Additional Info"]
 

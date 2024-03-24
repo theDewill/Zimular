@@ -11,18 +11,28 @@ CONFIG.set_config(
     INPUT
 )
 import simpy
+from ZIM.ZGen import GENPOOL
 from Genarator import customer_generator
 from ZIM.ZComponets import componet_handler
-from ZIM.ZDB import ZIMDB
+from ZIM.ZDB import ZIMDB, QueryManger
 
 env = simpy.Environment()
 
 def output():
-    pass
+    data = QueryManger(
+        CONFIG.db_name,
+        CONFIG.db_set_name,
+        CONFIG.sim_table_name,
+        CONFIG.mongo_uri
+    )
+
+    data.get_overview()
+    data.view_full_dataset()
 
 def run_simulation():
     env.process(customer_generator(env=env))
-    env.run()
+    env.run(until=10)
+    GENPOOL["customer"].save_entity()
     print("Simulation done.")
 
     
@@ -35,6 +45,7 @@ if __name__ == "__main__":
     #System_Output.show_table()
     ZIMDB.uptable()
     ZIMDB.send_db()
+    output()
     print("+++++++++++++++++++++++++++++++++++++")
     #ZIMDB.testroute()
     componet_handler.show_data()
