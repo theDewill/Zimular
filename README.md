@@ -10,9 +10,9 @@ To get started with the Zimular framework, follow these installation instruction
    ```
 or
 
-    ```
-    pip install zimular-alpha
-    ```
+   ```
+   pip install zimular-alpha
+   ```
 
 
 2. Navigate to the cloned directory:
