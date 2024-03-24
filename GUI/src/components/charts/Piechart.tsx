@@ -21,7 +21,7 @@ const PieChartcomponent = ({data}:{data:any}) => {
           <Pie
             dataKey="Value"
             isAnimationActive={true}
-            data={data01}
+            data={data}
             cx="50%"
             cy="50%"
             outerRadius={80}

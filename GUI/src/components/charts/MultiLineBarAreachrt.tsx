@@ -16,13 +16,14 @@ const MultiLineChartComponent = ({data}:{data:any}) => {
     }}
   >
     <CartesianGrid strokeDasharray="3 3" />
-    <XAxis dataKey="name" />
-    <YAxis />
+    <XAxis dataKey="time" />
+    <YAxis dataKey="amount"/>
     <Tooltip />
     <Legend />
-    <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-    <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-    <Line type="monotone" dataKey="amt" stroke="#000000" />
+    <Line type="monotone" dataKey="" stroke="#8884d8" activeDot={{ r: 8 }} />
+    <Line type="monotone" dataKey="amount" stroke="#000000" />
+    <Line type="monotone" dataKey="" stroke="#000000" />
+    
   </LineChart>
   )
 }

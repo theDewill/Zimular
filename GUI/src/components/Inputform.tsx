@@ -1,90 +1,14 @@
 "use client"
 import { useSession } from "next-auth/react";
-import React, { useEffect } from "react";
-
-const inputs_test = [
-    {
-      "user_id": "test_user_id",
-      "input":"Input_01",
-      "group": [
-        {
-          "group_id": "test_01",
-          "name" : "Resource_01",
-          "fields": [
-            {
-              "id" : "in_01",
-              "name" : "Input 01",
-              "type": "text",
-              "defult_value": "test_01",
-              "data_type": "string",
-            },
-            {
-              "id" : "in_02",
-              "name" : "Input 02",
-              "type": "text",
-              "defult_value": "test_02",
-              "data_type": "string",
-            },
-            {
-              "id" : "in_03",
-              "name" : "Input 03",
-              "type": "text",
-              "defult_value": "test_03",
-              "data_type": "number",
-            },
-            {
-              "id" : "in_04",
-              "name" : "Input 04",
-              "type": "checkbox",
-              "defult_value": "false",
-              "data_type": "bool",
-            }
-          ]
-        },
-        {
-          "group_id": "test_02",
-          "name" : "Resource_02",
-          "fields": [
-            {
-              "id" : "in_05",
-              "name" : "Input 05",
-              "type": "text",
-              "defult_value": "test_05",
-              "data_type": "string",
-            },
-            {
-              "id" : "in_06",
-              "name" : "Input 06",
-              "type": "text",
-              "defult_value": "test_06",
-              "data_type": "string",
-            },
-            {
-              "id" : "in_07",
-              "name" : "Input 07",
-              "type": "text",
-              "defult_value": "test_07",
-              "data_type": "number",
-            },
-            
-            
-            {
-              "id" : "in_08",
-              "name" : "Input 08",
-              "type": "checkbox",
-              "defult_value": "false",
-              "data_type": "bool",
-            }
-          ]
-        }
-      ]
-    }
-  ]
+import React, { useEffect, useState } from "react";
 
 
-let inputs : any = [];
+//let inputs : any = [];
+
 
 export default function Inputform(){
+
+    const [inputs, setInputs] = useState([]);
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -96,13 +20,13 @@ export default function Inputform(){
                     if(field.type === "text"){
                         field.value= e.target[field.id].value;
                     }else{
-                        field.value = e.target[field.id].checked;
+                        field.value = 0;//e.target[field.id].checked;
                     }
                 })
             })
         })
 
-      const queryString = `data=${encodeURIComponent(JSON.stringify(toSendData))}`;    
+      const queryString = `uid=1&data=${encodeURIComponent(JSON.stringify(toSendData))}`;    
       const apiUrl = `http://localhost:3005/sendInputs?${queryString}`;
     try {
         const response = await fetch(apiUrl);
@@ -117,18 +41,22 @@ export default function Inputform(){
         
     }
     }
-    const { data: session } = useSession();
+    //const { data: session } = useSession();
 
     useEffect(() => {
+
+      
       async function fetchData() {
-        const response = await fetch(`http://localhost:3005/getui?uid=1&simID=1`);
+        let tmpinputs = [];
+        const response = await fetch(`http://localhost:3005/getui?uid=1`);
         const result = await response.json();
-        inputs.push(result.data);
-        console.log("result ek recieved : " , inputs);
+        tmpinputs.push(result.data);
+        setInputs(tmpinputs);
+        console.log("result ek recieved : " , result.data);
       }
     
       fetchData();
-    }, []);
+    }, [inputs]);
 
     
 

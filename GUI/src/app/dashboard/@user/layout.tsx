@@ -8,6 +8,11 @@ const options = [
     { value: 'out1', label: 'Output 1' },
     { value: 'out2', label: 'Output 2' },
   ];
+
+const terminateSim = async () => {
+    const response = await fetch(`http://localhost:3005/terminateSim?uid=1`);
+}
+
 export default function dashLayout ({ children }: { children: React.ReactNode}) {
 
     return (
@@ -32,9 +37,9 @@ export default function dashLayout ({ children }: { children: React.ReactNode}) 
                         <div className='flex gap-2'>
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                onClick={() => {console.log("Hukpn")}}
+                                onClick={terminateSim}
                             >
-                                Nomin Hukpn
+                                Terminate
                             </button>
                             <DynamicSelect options={options}/>
                         </div>

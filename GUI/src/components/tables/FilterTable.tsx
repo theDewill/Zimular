@@ -2,45 +2,61 @@
 import React, { useState } from 'react';
 
 interface FormData {
-  time: string;
-  componentCategory: string;
-  componentName: string;
-  action: string;
-  entity: string;
+  time: any;
+  componentCategory: any;
+  componentName: any;
+  action: any;
+  entity: any;
 }
 
-const FilterdbTable: React.FC = () => {
+interface FilterdbTableProps {
+  headers: string[];
+  data: any[][];
+}
+
+const FilterdbTable: React.FC<FilterdbTableProps> = ({headers , data}) => {
   const [formData, setFormData] = useState<FormData>({
-    time: '',
-    componentCategory: '',
-    componentName: '',
-    action: '',
-    entity: '',
+    time: null,
+    componentCategory: null,
+    componentName: null,
+    action: null,
+    entity: null,
   });
   const [responseData, setResponseData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(100);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    if (e.target.name === 'time') {
+      setFormData(prevState => ({
+        ...prevState,
+        [e.target.name]: parseInt(e.target.value)
+      }));
+    } else {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
     }));
-  };
+  }};
 
   const fetchData = async () => {
     try {
       // Send a request to the server with formData
-      const response = await fetch('url', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-      const data = await response.json();
-      setResponseData(data);
+      // const response = await fetch('http://localhost:3005/sendSubReqs?uid=1&option=table', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify(formData)
+      // });
+
+      const formDataParam = encodeURIComponent(JSON.stringify(formData));
+      const response = await fetch(`http://localhost:3005/sendSubReqs?uid=1&option=table&formData=${formDataParam}`);
+      const resp = await response.json();
+      
+      setResponseData(resp.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -120,8 +136,8 @@ const FilterdbTable: React.FC = () => {
             {currentRows.map((dataItem: any, index: number) => (
                 <tr key={index}>
                 <td className="border px-4 py-2">{dataItem.time}</td>
-                <td className="border px-4 py-2">{dataItem.componentCategory}</td>
-                <td className="border px-4 py-2">{dataItem.componentName}</td>
+                <td className="border px-4 py-2">{dataItem.component_category}</td>
+                <td className="border px-4 py-2">{dataItem.component_name}</td>
                 <td className="border px-4 py-2">{dataItem.action}</td>
                 <td className="border px-4 py-2">{dataItem.entity}</td>
                 </tr>

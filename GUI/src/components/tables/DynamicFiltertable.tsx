@@ -1,41 +1,52 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface FormData {
-  time: string;
-  action: string;
+  time: any;
+  action: any;
 }
 
 const FilterComponentTable: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    time: '',
-    action: '',
+    time: null,
+    action: null,
   });
   const [responseData, setResponseData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(25);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === 'time') {
+      setFormData(prevState => ({
+        ...prevState,
+        [e.target.name]: parseInt(e.target.value)
+      }));
+    } else {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
     }));
+  }
   };
 
   const fetchData = async () => {
     try {
       // Send a request to the server with formData
-      // For example:
-      const response = await fetch('url', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-      const data = await response.json();
-      setResponseData(data);
+      // const response = await fetch('http://localhost:3005/sendSubReqs?uid=1&option=table', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify(formData)
+      // });
+      let newformData = { ...formData , componentCategory : null, componentName : null, entity : null};
+      console.log("newformData : ", newformData);
+      const formDataParam = encodeURIComponent(JSON.stringify(newformData));
+      const response = await fetch(`http://localhost:3005/sendSubReqs?uid=1&option=table&formData=${formDataParam}`);
+      const resp = await response.json();
+      console.log(resp.data);
+      setResponseData(resp.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -49,6 +60,10 @@ const FilterComponentTable: React.FC = () => {
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  useEffect(() => {
+    fetchData();
+  },[]);
+  //fetchData();
   return (
     <div>
       <div className="mb-4">
@@ -92,8 +107,8 @@ const FilterComponentTable: React.FC = () => {
           {currentRows.map((dataItem: any, index: number) => (
             <tr key={index} >
               <td className="border px-4 py-2 ">{dataItem.time}</td>
-              <td className="border px-4 py-2">{dataItem.componentCategory}</td>
-              <td className="border px-4 py-2">{dataItem.componentName}</td>
+              <td className="border px-4 py-2">{dataItem.component_category}</td>
+              <td className="border px-4 py-2">{dataItem.component_name}</td>
               <td className="border px-4 py-2">{dataItem.action}</td>
               <td className="border px-4 py-2">{dataItem.entity}</td>
             </tr>
