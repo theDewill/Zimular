@@ -190,7 +190,7 @@ def ignite():
         print("Error: ", e.stderr)
         return False
     
-#sys.argv[1]
+# sys.argv[1]
 
 #TODO: check ignite command
 #argument must be the url path in node server which return sokcet ur and process the sent json 

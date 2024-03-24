@@ -6,7 +6,9 @@ import random
 class Modeling_Machien(IRes):
     def __init__(self, env, name, workflow_name):
         super().__init__(
-            env, simpy.Resource(env, capacity=1), name, workflow_name=workflow_name
+            env, simpy.Resource(env, capacity=1),
+            name,
+            workflow_name=workflow_name
         )
 
     @IRes.run
@@ -22,7 +24,9 @@ class Modeling_Machien(IRes):
 class Inspection_Machien(IRes):
     def __init__(self, env, name, workflow_name):
         super().__init__(
-            env, simpy.Resource(env, capacity=1), name, workflow_name=workflow_name
+            env, simpy.Resource(env, capacity=1),
+            name,
+            workflow_name=workflow_name
         )
 
     @IRes.run
@@ -33,7 +37,9 @@ class Inspection_Machien(IRes):
 class Packing_Machien(IRes):
     def __init__(self, env, name, workflow_name):
         super().__init__(
-            env, simpy.Resource(env, capacity=1), name, workflow_name=workflow_name
+            env, simpy.Resource(env, capacity=1),
+            name,
+            workflow_name=workflow_name
         )
 
     @IRes.run
@@ -50,6 +56,14 @@ class Modeling_Store(ZStore):
             workflow_name=workflow_name,
         )
 
+class Inspection_Store(ZStore):
+    def __init__(self, env, workflow_name):
+        super().__init__(
+            env,
+            simpy.Store(env, capacity=10),
+            "Inspection_Store",
+            workflow_name=workflow_name,
+        )
 
 # -------------template----------------
 

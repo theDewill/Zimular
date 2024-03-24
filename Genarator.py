@@ -1,4 +1,4 @@
-from run import Modeling_workspace
+from run import MainWorkflow
 from ZIM.ZGen import EntityGenerator
 
 
@@ -7,7 +7,7 @@ def executer():
 
 
 def customer_generator(env):
-    workinit = Modeling_workspace(env)
+    workinit = MainWorkflow(env)
 
     entity_format = {
         "type": "customer",
