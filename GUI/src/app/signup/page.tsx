@@ -20,6 +20,12 @@ const SignupPage = () => {
     const password = e.target[1].value;
     console.log(email, password);
 
+    {/*මෙතනින් Auth කරපන් හුත්තෝ*/}
+
+    // const apiUrl = `/createuser?email=${email}&password=${password}`;
+
+    // const res = await fetch(apiUrl);
+
     if(!isValidEmail(email)){
       setError("Invalid email");  
       return;
