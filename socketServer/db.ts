@@ -18,6 +18,57 @@ class MongoTools {
     }
 
 
+    public async getLatestUser() {
+        await this.connect();
+        const collection = this.Mongo.db("ZimularDB").collection("users");
+    
+        // Find the user with the highest uid
+        const latestUser = await collection.find().sort({uid: -1}).limit(1).toArray();
+        if (latestUser.length === 0) {
+          // Handle the case where there are no users yet
+          return null;
+        }
+        return latestUser[0];
+      }
+    
+      public async createUser(uname : string, pass : string) {
+        await this.connect();
+        const collection = this.Mongo.db("ZimularDB").collection("users");
+
+        let customStructure = {
+            uname : uname,
+            password :  pass,
+            simulations : {
+                1 : {
+                    status : "active",
+                    sessions : {
+                        1 : {
+                            inputs : {},
+                            outputOV : {}
+                        }
+                    },
+                    ui : {}
+                }
+            }
+        }
+        // Get the latest user to determine the next uid
+        const latestUser = await this.getLatestUser();
+        const nextUid = latestUser ? latestUser.uid + 1 : 1; // Start from 1 if no users are found
+    
+        // Create the new user document with the custom structure and the next uid
+        const newUser = {
+          uid: nextUid,
+          ...customStructure, // Merge the custom structure into the new user document
+        };
+    
+        // Insert the new user document into the collection
+        await collection.insertOne(newUser);
+    
+        console.log("New user created with uid:", nextUid);
+        return newUser;
+      }
+
+
     async findActiveSim(userId : number) {
         try {
             await this.connect()
@@ -48,6 +99,8 @@ class MongoTools {
             throw error; // Or handle it as per your application's error handling policy
         }
     }
+
+    
 
     async getLatestSimulationId(userId : number) {
         try {
@@ -194,7 +247,7 @@ class MongoTools {
         const col = this.Mongo.db("ZimularDB").collection("users");
         const query = { uid: u_id };
         const result = await col.findOne(query);
-        return result.simulations[String(simID)].ui;
+        return result.simulations[simID].ui;
     }
 
     async terminateSim (uid : number) {

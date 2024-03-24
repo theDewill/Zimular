@@ -21,6 +21,13 @@ const wsk = new Server({ server });
     let uid = req.query.uid;
     await mongo.terminateSim(Number(uid));
   })
+
+  app.get('createuser' , async (req : any, res : any)=> {
+    let uname = req.query.uname;
+    let pass = req.query.pass;
+    let resp = await mongo.createUser(uname,pass);
+    res.json({"uid":resp.uid});
+  })
   
   app.get('/sendSubReqs', async (req : any,res : any) => {
     //i must pass this 2 only with query or whatevr
@@ -59,7 +66,7 @@ const wsk = new Server({ server });
     if (option == "overview") {
       //TODO: here the retrieval of mongo
       let send_data = await mongo.getOutput(Number(uid), Number(ifActiveSim) , Number(sid));
-      console.log(send_data)
+      console.log(send_data);
       res.json({"data" : send_data});
 
     }
