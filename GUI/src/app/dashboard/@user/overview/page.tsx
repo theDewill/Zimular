@@ -1,10 +1,10 @@
 'use client';
 import React, { useEffect, useState } from 'react'
-import DetailsTable from '@/components/tables/DetailsTable';
+import DetailsTable from '@/components/tables/Detailstable';
 import DynamicTable from '@/components/tables/Dynamictable';
 import LineChartComponent from '@/components/charts/Linechrt';
 import PieChartcomponent from '@/components/charts/Piechart';
-import Card from '@/components/Card';
+import Card from '@/components/card';
 
 const workflowheaders = ['Workflow Name', 'Resource Count', 'Priority Res. Count', 'Premitive Res. Count', 'Container Count', 'Store', 'Priority Store', 'Filter Store', 'Custom'];
 

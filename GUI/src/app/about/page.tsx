@@ -4,9 +4,15 @@ function page() {
   return (
     <div className='h-screen  bg-fixed bg-center bg-cover custom-img overflow-hidden'>
     <div className="container mx-auto p-8 "> 
-      <h1 className="text-3xl font-bold mb-4 text-white">About Our Zimular</h1>
+      <h1 className="text-3xl font-bold mb-4 text-white">Welcome to Our Innovative Workload Simulation Tool</h1>
       <p className="text-lg text-white">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil reprehenderit nulla sunt velit dolore ipsa odio, impedit placeat necessitatibus aperiam corporis perferendis dignissimos corrupti repellat nesciunt repellendus soluta aliquid ab.
+      At Zimular, we're dedicated to revolutionizing the way you manage your tasks and projects. With our groundbreaking workload simulation tool, predicting and optimizing task durations has never been easier. 
+
+      Imagine effortlessly ensuring a streamlined workflow, where every task is executed with precision and efficiency. Our tool empowers you to experience the future of productivity firsthand.
+
+      Gone are the days of guesswork and uncertainty. With our advanced simulation technology, you can start simulating your workload today and unlock unparalleled insights into your operations.
+
+      Discover a new era of productivity with Zimular. Join us as we redefine the possibilities of task management and propel your business towards unprecedented success.
       </p>
 
       {/* Developer Table */}
@@ -39,4 +45,3 @@ function page() {
 };
 
 export default page
-

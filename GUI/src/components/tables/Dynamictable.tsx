@@ -19,7 +19,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ headers, data }) => {
         {data.map((row, rowIndex) => (
           <tr key={rowIndex}>
             {row.map((cell, cellIndex) => (
-              <td key={cellIndex} className="px-4 py-2 odd:bg-white even:bg-gray-200">{cell}</td>
+              <td key={cellIndex} className="px-4 py-2 odd:bg-white even:bg-gray-100">{cell}</td>
             ))}
           </tr>
         ))}
