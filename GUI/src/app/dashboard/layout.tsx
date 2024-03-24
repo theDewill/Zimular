@@ -6,10 +6,7 @@ export default async function DashLayout({
     user}:{
     user: React.ReactNode
 }) {
-    // const session = await getServerSession();
-    // if (!session) {
-    //     redirect('/');
-    // }
+    
     return (
         <div className=''>
             { user }
