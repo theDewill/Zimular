@@ -4,11 +4,17 @@ import React, { useEffect, useState } from 'react';
 interface FormData {
   time: any;
   action: any;
+ //componentName: string;
 }
 
-const FilterComponentTable: React.FC = () => {
+
+interface FilterComponentTableProps {
+  componame: string; // Assuming componame is of type string
+}
+const FilterComponentTable: React.FC <FilterComponentTableProps>= ({componame }) => {
   const [formData, setFormData] = useState<FormData>({
     time: null,
+    //componentName : componame,
     action: null,
   });
   const [responseData, setResponseData] = useState<any[]>([]);
@@ -40,7 +46,7 @@ const FilterComponentTable: React.FC = () => {
       //   },
       //   body: JSON.stringify(formData)
       // });
-      let newformData = { ...formData , componentCategory : null, componentName : null, entity : null};
+      let newformData = { ...formData , componentCategory : null, componentName : componame ,entity : null};
       console.log("newformData : ", newformData);
       const formDataParam = encodeURIComponent(JSON.stringify(newformData));
       const response = await fetch(`http://localhost:3005/sendSubReqs?uid=1&option=table&formData=${formDataParam}`);

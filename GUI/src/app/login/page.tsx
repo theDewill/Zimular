@@ -27,27 +27,28 @@ const LoginPage = () => {
     const email = e.target[0].value;
     const password = e.target[1].value;
 
-    if (!isValidEmail(email)) {
-      setError("Email is invalid");
-      return;
-    }
+  
 
-    if (!password ) {
-      setError("Password is invalid");
-      return;
-    }
+    // const res = await signIn("credentials", {
+    //   redirect: false,
+    //   email,
+    //   password,
+    // });
 
-    const res = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
+    // if (res?.error) {
+    //   setError("Invalid email or password");
+    //   if (res?.url) router.replace("/dashboard");
+    // } else {
+    //   setError("");
+    // }
 
-    if (res?.error) {
-      setError("Invalid email or password");
-      if (res?.url) router.replace("/dashboard");
-    } else {
-      setError("");
+    let res : any = await fetch(`http://localhost:3005/loginuser?email=${email}&pass=${password}`);
+
+    console.log("sign in result ",res);
+    if (res.ok){
+      
+      router.push("/dashboard");
+
     }
     
   };

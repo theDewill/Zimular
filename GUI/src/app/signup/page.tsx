@@ -31,13 +31,7 @@ const SignupPage = () => {
     }
 
     try {
-      const res = await fetch("/api/signup",{
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({email, password})
-      })
+      const res = await fetch(`http://localhost:3005/createuser?email=${email}&password=${password}`);
       if(res.status == 400){
         setError("This email is already in use");
       }

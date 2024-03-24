@@ -57,19 +57,16 @@ const Componentpg = ({ option }) => {
   //   setoptionType(optionValue.com_name);
   //     setCatType(optionValue.com_cat);
   // });
-  
   let handleOptionChange = (optionValue : any) => {
     console.log("option value is ", optionValue.com_name, optionValue.com_cat);
         
         setoptionType(optionValue.com_name);
         setCatType(optionValue.com_cat);
       }
-
   useEffect(() => {
 
     castData = { tableData: [], data: [], chartdata: [], options : [] , mlchartdata: [], lnchartdata: []};
     
-
     async function fetchData() {
 
       if (count == 0) {
@@ -192,7 +189,7 @@ const Componentpg = ({ option }) => {
           </Card> */}
         </div>
         <div>
-          <FilterComponentTable/>
+          <FilterComponentTable componame={optionType}/>
         </div>
       </div>
     </>
