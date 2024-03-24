@@ -7,6 +7,8 @@ import FilterComponentTable from '@/components/tables/DynamicFiltertable';
 import React, { useEffect, useState } from 'react'
 import Card from '@/components/Card';
 import { set } from 'mongoose';
+import { useRouter } from 'next/router';
+import { useDashboard } from '@/app/dashContext';
 
 
 
@@ -36,9 +38,13 @@ let castData : any = {
 
 let castDataJson : any = {};
 
-const Componentpg = () => {
+const Componentpg = ({ option }) => {
 
-  
+  //const { optionTypek , setOptionTypek } = useDashboard();
+
+  // const router = useRouter();
+  // const { query } = router;
+  //console.log("component options from child element:" , optionTypek);
   
   const [castDatanew, setCastData] = useState({ tableData: [],data: [] , chartdata: [] , options : [], mlchartdata: [], lnchartdata: [] });
   
@@ -84,7 +90,7 @@ const Componentpg = () => {
       setCatType(castData.options[0].value.com_cat);
       setCount(1);
     } else {
-      console.log("inside else");
+      console.log("inside else and executing the new url :", `http://localhost:3005/sendSubReqs?uid=1&option=component` );
 
     const responsetmp = await fetch(`http://localhost:3005/sendSubReqs?uid=1&option=component`);
       castDataJson = await responsetmp.json();
