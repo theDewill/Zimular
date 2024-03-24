@@ -1,13 +1,19 @@
 
 const { MongoClient, ServerApiVersion }  = require('mongodb');
+import * as dotenv from 'dotenv';
+import path from 'path';
+// Configure dotenv to load the .env file from the 'test' directory
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
+// Now you can access the environment variables as usual
+console.log(process.env.YOUR_ENV_VARIABLE);
 
 class MongoTools {
 
     public Mongo;
     public url;
     constructor(usrnm : string, pass : string)  {
-        this.url = `mongodb://${usrnm}:${pass}@127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.8.0`;
+        this.url = process.env.MONGO_URL;
         this.Mongo = new MongoClient(this.url,  {
             serverApi: {
                 version: ServerApiVersion.v1,
@@ -16,6 +22,9 @@ class MongoTools {
             }
         });
     }
+
+
+
 
 
     public async getLatestUser() {
@@ -36,7 +45,7 @@ class MongoTools {
         const collection = this.Mongo.db("ZimularDB").collection("users");
 
         let customStructure = {
-            uname : uname,
+            email : uname,
             password :  pass,
             simulations : {
                 1 : {
@@ -45,6 +54,7 @@ class MongoTools {
                         1 : {
                             inputs : {},
                             outputOV : {}
+                            
                         }
                     },
                     ui : {}
@@ -99,6 +109,79 @@ class MongoTools {
             throw error; // Or handle it as per your application's error handling policy
         }
     }
+
+
+    public async getSesForOutputs(uid: number) {
+        let simulation_id = await this.findActiveSim(uid);
+        await this.connect();
+        const collection = this.Mongo.db("ZimularDB").collection("users");
+      
+        // Find the user with the given uid
+        const user = await collection.findOne({ uid: uid });
+        if (!user) throw new Error('User not found.');
+      
+        const simulations = user.simulations;
+        if (!simulations) throw new Error('Simulations not found.');
+      
+        const simulation = simulations[simulation_id];
+        if (!simulation) throw new Error(`Simulation ${simulation_id} not found.`);
+      
+        const sessions = simulation.sessions;
+        if (!sessions) throw new Error('Sessions not found.');
+      
+        // Extract session names and ids
+        const sessionEntries = Object.entries(sessions);
+        const sessionInfoArray = sessionEntries.map(([ses_id, _]) => ({
+          ses_name: `session_${ses_id}`,
+          ses_id: ses_id,
+        }));
+      
+        return sessionInfoArray;
+      }
+      
+
+    public async getSimsForOutputs() {
+        await this.connect();
+        const collection = this.Mongo.db("ZimularDB").collection("users");
+        const pipeline = [
+            {
+                $project: {
+                    simulationsArray: { $objectToArray: "$simulations" }
+                }
+            },
+            { $unwind: "$simulationsArray" },
+            {
+                $project: {
+                    sim_id: "$simulationsArray.k",
+                    sim_name: "$simulationsArray.v.sessions.1.outputOV.overview.details.simulation_name"
+                }
+            }
+        ];
+        const result = await collection.aggregate(pipeline).toArray();
+        return result.map(({ sim_id, sim_name }) => ({
+            sim_id: parseInt(sim_id), // Convert string ID to integer if necessary
+            sim_name
+        }));
+    }
+
+
+    public async loginUser(uname: string, pass: string) {
+        await this.connect();
+        const collection = this.Mongo.db("ZimularDB").collection("users");
+    
+        // Attempt to find the user by username
+        const user = await collection.findOne({ uname: uname });
+    
+        // If the user is found, check the password
+        if (user && user.password === pass) {
+          console.log("Login successful");
+          return true; // Password matches, login successful
+        } else {
+          console.log("Login failed");
+          return false; // User not found or password does not match
+        }
+      }
+    
 
     
 
@@ -318,9 +401,9 @@ class MongoTools {
         return result.simulations[sim_id].sessions[ses_id].outputOV.overview;
     }
  
-    async getsuboutputs (uid : number, ses_id : number, option : string) {
+    async getsuboutputs (uid : number, sim_id : number ,ses_id : number, option : string) {
         await this.connect()
-        let sim_id = await this.findActiveSim(uid);
+        //let sim_id = await this.findActiveSim(uid);
         const col = this.Mongo.db("ZimularDB").collection("users");
         const query = { uid: Number(uid) };
         const result = await col.findOne(query);

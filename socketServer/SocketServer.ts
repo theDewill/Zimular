@@ -22,9 +22,24 @@ const wsk = new Server({ server });
     await mongo.terminateSim(Number(uid));
   })
 
-  app.get('createuser' , async (req : any, res : any)=> {
+
+  app.get('/getSesList' , async (req : any, res : any) => {
+    let uid = req.query.uid;
+    let sims = await mongo.getSesForOutputs(Number(uid));
+    res.json({"sesset" : sims});
+  })
+
+  //TODO: Add /loginuser to mongoDB
+  app.get('/loginuser' , async (req : any, res : any)=> {
     let uname = req.query.uname;
     let pass = req.query.pass;
+    let resp = await mongo.loginUser(uname,pass);
+    res.json({"result":resp});
+  })
+
+  app.get('/createuser' , async (req : any, res : any)=> {
+    let uname = req.query.email;
+    let pass = req.query.password;
     let resp = await mongo.createUser(uname,pass);
     res.json({"uid":resp.uid});
   })
@@ -64,8 +79,16 @@ const wsk = new Server({ server });
     }
 
     if (option == "overview") {
-      //TODO: here the retrieval of mongo
-      let send_data = await mongo.getOutput(Number(uid), Number(ifActiveSim) , Number(sid));
+      //TODO: edited here
+      let send_data;
+      // if(req.query.sesid) {
+      //   console.log("no sim id");
+      //   send_data = await mongo.getOutput(Number(uid), Number(ifActiveSim) , Number(req.query.sesid));
+      // }else {
+        console.log("with sim id");
+        send_data = await mongo.getOutput(Number(uid), Number(ifActiveSim) , Number(sid));
+      //}
+
       console.log(send_data);
       res.json({"data" : send_data});
 
@@ -80,12 +103,16 @@ const wsk = new Server({ server });
     EventHandler.getEvent(uid, String(sid)).get(option).reset();
     console.log("event reset")
 
-    let sendData = await mongo.getsuboutputs(Number(uid), Number(sid),option);
-    console.log("subout data: ", sendData);
-    res.json({"data" : sendData});
-
+      let send_data;
+    // if(req.query.sesid) {
+    //   send_data = await mongo.getsuboutputs(Number(uid),Number(ifActiveSim), Number(req.query.sesid),option);
+    //   }else {
+        //send_data = await mongo.getOutput(Number(uid), Number(ifActiveSim) , Number(sid));
+        send_data = await mongo.getsuboutputs(Number(uid),Number(ifActiveSim), Number(sid),option);
+      //}
+    console.log("subout data: ", send_data);
+    res.json({"data" : send_data});
     }
-
 
   })
 
